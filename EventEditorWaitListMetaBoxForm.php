@@ -5,6 +5,7 @@ use EE_Admin_Two_Column_Layout;
 use EE_Form_Section_Proper;
 use EE_Text_Input;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use LogicException;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -79,6 +80,56 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 				)
 			)
 		);
+
+	}
+
+
+
+	/**
+	 * takes the generated form and displays it along with ony other non-form HTML that may be required
+	 * returns a string of HTML that can be directly echoed in a template
+	 *
+	 * @return string
+	 * @throws LogicException
+	 * @throws \EE_Error
+	 */
+	public function display() {
+		// inject some additional subsections with HTML that's for display only
+		$this->form(true)->add_subsections(
+			array(
+				'' => new \EE_Form_Section_HTML(
+					\EEH_HTML::br()
+					. \EEH_HTML::span(
+						'',
+						'',
+						'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
+					)
+					. \EEH_HTML::link(
+						add_query_arg(
+							array(
+								'route'       => 'default',
+								'_reg_status' => \EEM_Registration::status_id_wait_list,
+								'event_id'    => $this->event->ID(),
+							),
+							REG_ADMIN_URL
+						),
+						esc_html__( 'Wait List Registrations', 'event_espresso' ),
+						esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
+					)
+					. ' : ' . \EEM_Registration::instance()->count(
+						array(
+							array(
+								'STS_ID'       => \EEM_Registration::status_id_wait_list,
+								'Event.EVT_ID' => $this->event->ID()
+							)
+						)
+					)
+					. \EEH_HTML::br( 2 )
+				)
+			),
+			'wait_list_spaces'
+		);
+		return parent::display();
 	}
 
 

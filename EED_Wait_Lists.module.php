@@ -116,39 +116,15 @@ class EED_Wait_Lists extends EED_Module {
 	 * @throws \EE_Error
 	 */
 	public static function event_wait_list_meta_box() {
-		$registrations = \EEM_Registration::instance()->count(
-			array(
-				array(
-					'STS_ID'       => \EEM_Registration::status_id_wait_list,
-					'Event.EVT_ID' => EED_Wait_Lists::$admin_page->get_event_object()->ID()
-				)
-			)
-		);
-		$html = \EEH_HTML::span( '', '', 'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20' );
-		$html .= \EEH_HTML::link(
-			add_query_arg(
-				array(
-					'route'       => 'default',
-					'_reg_status' => \EEM_Registration::status_id_wait_list,
-					'event_id'    => EED_Wait_Lists::$admin_page->get_event_object()->ID(),
-				),
-				REG_ADMIN_URL
-			),
-			esc_html__( 'Wait List Registrations', 'event_espresso' ),
-			esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
-		);
-		$html .= ' : ' . $registrations;
-		$html .= \EEH_HTML::br(2);
 		try {
-			$wait_list_settings_form = new EventEspresso\WaitList\EventEditorWaitListMetaBoxForm(
+			$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
 				EED_Wait_Lists::$admin_page->get_event_object(),
 				EE_Registry::instance()
 			);
-			$html .= $wait_list_settings_form->display();
+			echo $wait_list_settings_form->display();
 		} catch ( Exception $e ) {
 			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
 		}
-		echo $html;
 	}
 
 

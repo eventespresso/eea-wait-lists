@@ -1,9 +1,9 @@
 <?php
 namespace EventEspresso\WaitList;
 
-use EE_Admin_Two_Column_Layout;
 use EE_Form_Section_Proper;
 use EE_Text_Input;
+use EE_Yes_No_Input;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use LogicException;
 
@@ -52,7 +52,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 	/**
 	 * creates and returns the actual form
 	 *
-	 * @return EE_Form_Section_Proper
+	 * @return void
 	 * @throws \EE_Error
 	 */
 	public function generate() {
@@ -72,10 +72,28 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 								),
 								'other_html_attributes' => ' size="4"',
 								'html_class'      => 'ee-numeric',
-								'default'         => absint( $this->event->get_extra_meta( 'ee_wait_list_spaces', true ) ),
+								'default'         => absint(
+									$this->event->get_extra_meta( 'ee_wait_list_spaces', true )
+								),
 								'required'        => false
 							)
 						),
+						'lb1' => new \EE_Form_Section_HTML( \EEH_HTML::br() ),
+						'auto_promote_registrants' => new EE_Yes_No_Input(
+							array(
+								'html_label_text' => esc_html__( 'Auto Promote Registrants?', 'event_espresso' ),
+								'html_help_text'  => esc_html__(
+									'controls whether or not to automatically promote registrants from the wait list to the RPP “Pending Payment” status (or the default event reg status) based on their position on the wait list. If no, then this will need to be done manually.',
+									'event_espresso'
+								),
+								'default'         => filter_var(
+									$this->event->get_extra_meta( 'ee_wait_list_auto_promote', true ),
+									FILTER_VALIDATE_BOOLEAN
+								),
+								'required'        => false
+							)
+						),
+						'lb2' => new \EE_Form_Section_HTML( \EEH_HTML::br() ),
 					)
 				)
 			)
@@ -97,7 +115,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		// inject some additional subsections with HTML that's for display only
 		$this->form(true)->add_subsections(
 			array(
-				'' => new \EE_Form_Section_HTML(
+				'view_wait_list_link' => new \EE_Form_Section_HTML(
 					\EEH_HTML::br()
 					. \EEH_HTML::span(
 						'',
@@ -151,7 +169,17 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 			return false;
 		}
 		// \EEH_Debug_Tools::printr( $valid_data, '$valid_data', __FILE__, __LINE__ );
-		$this->event->update_extra_meta( 'ee_wait_list_spaces', absint( (int) $valid_data['wait_list_spaces'] ) );
+		$this->event->update_extra_meta(
+			'ee_wait_list_spaces',
+			absint( (int) $valid_data['wait_list_spaces'] )
+		);
+		$this->event->update_extra_meta(
+			'ee_wait_list_auto_promote',
+			filter_var(
+				$valid_data['auto_promote_registrants'],
+				FILTER_VALIDATE_BOOLEAN
+			)
+		);
 		// $meta = $this->event->get_extra_meta('ee_wait_list_spaces', true );
 		// \EEH_Debug_Tools::printr( $meta, '$meta', __FILE__, __LINE__ );
 		// die();

@@ -47,7 +47,7 @@ define( 'EE_WAIT_LISTS_PLUGIN_FILE', __FILE__ );
  *    captures plugin activation errors for debugging
  */
 function espresso_wait_lists_plugin_activation_errors() {
-	if ( WP_DEBUG ) {
+	if ( WP_DEBUG && ob_get_length() > 0 ) {
 		$activation_errors = ob_get_contents();
 		file_put_contents(
 			EVENT_ESPRESSO_UPLOAD_DIR . 'logs' . DS . 'espresso_wait_lists_plugin_activation_errors.html',
@@ -55,7 +55,6 @@ function espresso_wait_lists_plugin_activation_errors() {
 		);
 	}
 }
-
 add_action( 'activated_plugin', 'espresso_wait_lists_plugin_activation_errors' );
 
 
@@ -66,13 +65,12 @@ add_action( 'activated_plugin', 'espresso_wait_lists_plugin_activation_errors' )
 function load_espresso_wait_lists() {
 	if ( class_exists( 'EE_Addon' ) ) {
 		// wait_lists version
-		require_once( __DIR__ . DS );
+		require_once( __DIR__ . DS . 'EE_Wait_Lists.class.php' );
 		EE_Wait_Lists::register_addon();
 	} else {
 		add_action( 'admin_notices', 'espresso_wait_lists_activation_error' );
 	}
 }
-
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_wait_lists' );
 
 
@@ -85,7 +83,6 @@ function espresso_wait_lists_activation_check() {
 		add_action( 'admin_notices', 'espresso_wait_lists_activation_error' );
 	}
 }
-
 add_action( 'init', 'espresso_wait_lists_activation_check', 1 );
 
 

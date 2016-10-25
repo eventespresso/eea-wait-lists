@@ -37,6 +37,10 @@ Class  EE_Wait_Lists extends EE_Addon {
 				'plugin_slug'           => 'espresso_wait_lists',
 				'min_core_version'      => EE_WAIT_LISTS_CORE_VERSION_REQUIRED,
 				'main_file_path'        => EE_WAIT_LISTS_PLUGIN_FILE,
+				'namespace'             => array(
+					'FQNS' => 'EventEspresso\WaitList',
+					'DIR'  => __DIR__
+				),
 				// 'admin_path'            => EE_WAIT_LISTS_ADMIN,
 				// 'admin_callback'        => '',
 				// 'config_class'          => 'EE_Wait_Lists_Config',
@@ -57,20 +61,20 @@ Class  EE_Wait_Lists extends EE_Addon {
 					'checkPeriod'     => '24',
 					'use_wp_update'   => false,
 				),
-				'capabilities'          => array(
-					'administrator' => array(
-						'edit_wait_list',
-						'edit_wait_lists',
-						'edit_others_wait_lists',
-						'edit_private_wait_lists',
-					),
-				),
-				'capability_maps'       => array(
-					'EE_Meta_Capability_Map_Edit' => array(
-						'edit_wait_list',
-						array( 'Wait_Lists', 'edit_wait_lists', 'edit_others_wait_lists', 'edit_private_wait_lists' ),
-					),
-				),
+				// 'capabilities'          => array(
+				// 	'administrator' => array(
+				// 		'edit_wait_list',
+				// 		'edit_wait_lists',
+				// 		'edit_others_wait_lists',
+				// 		'edit_private_wait_lists',
+				// 	),
+				// ),
+				// 'capability_maps'       => array(
+				// 	'EE_Meta_Capability_Map_Edit' => array(
+				// 		'edit_wait_list',
+				// 		array( 'Wait_Lists', 'edit_wait_lists', 'edit_others_wait_lists', 'edit_private_wait_lists' ),
+				// 	),
+				// ),
 				// 'class_paths'           => EE_WAIT_LISTS_PATH . 'core' . DS . 'db_classes',
 				// 'model_paths'           => EE_WAIT_LISTS_PATH . 'core' . DS . 'db_models',
 				// 'class_extension_paths' => EE_WAIT_LISTS_PATH . 'core' . DS . 'db_class_extensions',

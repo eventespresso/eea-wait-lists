@@ -1,5 +1,6 @@
 <?php
 // use EventEspresso\WaitList\WaitListEventsCollection;
+use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
@@ -52,6 +53,10 @@ class EED_Wait_Lists extends EED_Module {
 			'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
 			array( 'EED_Wait_Lists', 'setup_page_config' ),
 			1, 2
+		);
+		add_filter(
+			'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
+			array( 'EED_Wait_Lists', 'event_update_callbacks' )
 		);
 	}
 
@@ -129,10 +134,53 @@ class EED_Wait_Lists extends EED_Module {
 				),
 				REG_ADMIN_URL
 			),
-			esc_html__( 'Wait List Registrations', 'event_espresso' )
+			esc_html__( 'Wait List Registrations', 'event_espresso' ),
+			esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
 		);
 		$html .= ' : ' . $registrations;
+		$html .= \EEH_HTML::br(2);
+		try {
+			$wait_list_settings_form = new EventEspresso\WaitList\EventEditorWaitListMetaBoxForm(
+				EED_Wait_Lists::$admin_page->get_event_object(),
+				EE_Registry::instance()
+			);
+			$html .= $wait_list_settings_form->display();
+		} catch ( Exception $e ) {
+			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
+		}
 		echo $html;
+	}
+
+
+
+	/**
+	 * @param array $event_update_callbacks
+	 * @return array
+	 */
+	public static function event_update_callbacks( array $event_update_callbacks) {
+		$event_update_callbacks = array_merge(
+			$event_update_callbacks,
+			array( array( 'EED_Wait_Lists', 'update_event_wait_list_settings' ) )
+		);
+		return $event_update_callbacks;
+	}
+
+
+
+	/**
+	 * @param \EE_Event $event
+	 * @param array     $form_data
+	 */
+	public static function update_event_wait_list_settings( \EE_Event $event, array $form_data) {
+		try {
+			$wait_list_settings_form = new EventEspresso\WaitList\EventEditorWaitListMetaBoxForm(
+				$event,
+				EE_Registry::instance()
+			);
+			$wait_list_settings_form->process($form_data);
+		} catch ( Exception $e ) {
+			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
+		}
 	}
 
 }

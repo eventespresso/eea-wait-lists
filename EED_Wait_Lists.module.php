@@ -111,7 +111,28 @@ class EED_Wait_Lists extends EED_Module {
 	 * @throws \EE_Error
 	 */
 	public static function event_wait_list_meta_box() {
-
+		$registrations = \EEM_Registration::instance()->count(
+			array(
+				array(
+					'STS_ID'       => \EEM_Registration::status_id_wait_list,
+					'Event.EVT_ID' => EED_Wait_Lists::$admin_page->get_event_object()->ID()
+				)
+			)
+		);
+		$html = \EEH_HTML::span( '', '', 'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20' );
+		$html .= \EEH_HTML::link(
+			add_query_arg(
+				array(
+					'route'       => 'default',
+					'_reg_status' => \EEM_Registration::status_id_wait_list,
+					'event_id'    => EED_Wait_Lists::$admin_page->get_event_object()->ID(),
+				),
+				REG_ADMIN_URL
+			),
+			esc_html__( 'Wait List Registrations', 'event_espresso' )
+		);
+		$html .= ' : ' . $registrations;
+		echo $html;
 	}
 
 }

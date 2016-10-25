@@ -94,6 +94,22 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							)
 						),
 						'lb2' => new \EE_Form_Section_HTML( \EEH_HTML::br() ),
+						'spaces_before_auto_promote' => new EE_Text_Input(
+							array(
+								'html_label_text' => esc_html__( 'Spaces Available before Auto Promoting', 'event_espresso' ),
+								'html_help_text'  => esc_html__(
+									'controls the number of spaces that need to be available before automatically promoting registrants from the wait list to another registration status. This allows you to manually control the last few spaces if you so desire. Setting this to zero puts the wait list under fully automatic control, and registrants will be managed completely by the system.',
+									'event_espresso'
+								),
+								'other_html_attributes' => ' size="4"',
+								'html_class'            => 'ee-numeric',
+								'default'         => absint(
+									$this->event->get_extra_meta( 'ee_wait_list_spaces_before_promote', true )
+								),
+								'required'        => false
+							)
+						),
+						'lb3' => new \EE_Form_Section_HTML( \EEH_HTML::br() ),
 					)
 				)
 			)
@@ -179,6 +195,10 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 				$valid_data['auto_promote_registrants'],
 				FILTER_VALIDATE_BOOLEAN
 			)
+		);
+		$this->event->update_extra_meta(
+			'ee_wait_list_spaces_before_promote',
+			absint($valid_data['spaces_before_auto_promote'])
 		);
 		// $meta = $this->event->get_extra_meta('ee_wait_list_spaces', true );
 		// \EEH_Debug_Tools::printr( $meta, '$meta', __FILE__, __LINE__ );

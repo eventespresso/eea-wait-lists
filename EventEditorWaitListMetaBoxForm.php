@@ -13,7 +13,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class EventEditorWaitListMetaBoxForm
- * Description
+ * an admin form for controlling an event's wait list settings.
+ * appears in an event editor sidebar metabox
  *
  * @package       Event Espresso
  * @author        Brent Christensen

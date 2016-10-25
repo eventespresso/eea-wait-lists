@@ -8,6 +8,7 @@ defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 /**
  * Class EED_Wait_Lists
+ * module class for controlling event registration wait lists
  *
  * @package       Event Espresso
  * @author        Brent Christensen
@@ -43,12 +44,6 @@ class EED_Wait_Lists extends EED_Module {
 	 * @return    void
 	 */
 	public static function set_hooks_admin() {
-		// add_filter(
-		// 	'FHEE__Extend_Events_Admin_Page__page_setup__page_routes',
-		// 	array( 'EED_Wait_Lists', 'setup_page_routes' ),
-		// 	10,
-		// 	2
-		// );
 		add_filter(
 			'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
 			array( 'EED_Wait_Lists', 'setup_page_config' ),
@@ -72,6 +67,8 @@ class EED_Wait_Lists extends EED_Module {
 		// TODO: Implement run() method.
 	}
 
+
+	/**************************** ADMIN FUNCTIONALITY ****************************/
 
 
 	/**
@@ -112,8 +109,6 @@ class EED_Wait_Lists extends EED_Module {
 	/**
 	 * callback that adds the main "event_wait_list_meta_box" meta_box
 	 * calls non static method below
-	 *
-	 * @throws \EE_Error
 	 */
 	public static function event_wait_list_meta_box() {
 		try {

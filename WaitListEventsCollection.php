@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class WaitListEventsCollection
- * Description
+ * a Collection of EE_Event objects that have been tagged as having an active wait list
  *
  * @package       Event Espresso
  * @author        Brent Christensen

@@ -4,7 +4,7 @@ namespace EventEspresso\WaitList;
 
 use EventEspresso\core\services\collections\Collection;
 
-defined( 'ABSPATH' ) || exit;
+defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 
 

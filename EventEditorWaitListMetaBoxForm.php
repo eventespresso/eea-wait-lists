@@ -7,7 +7,7 @@ use EE_Yes_No_Input;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use LogicException;
 
-defined( 'ABSPATH' ) || exit;
+defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 
 

@@ -33,6 +33,11 @@ class EED_Wait_Lists extends EED_Module {
 	public static function set_hooks() {
 		// $wait_list_events = new WaitListEventsCollection();
 		// \EEH_Debug_Tools::printr( $wait_list_events, '$wait_list_events', __FILE__, __LINE__ );
+		add_filter(
+			'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
+			array( 'EED_Wait_Lists', 'ticket_selector_html' ),
+			10, 2
+		);
 	}
 
 
@@ -68,7 +73,24 @@ class EED_Wait_Lists extends EED_Module {
 	}
 
 
+
+	/**************************** FRONTEND FUNCTIONALITY ***************************/
+
+
+
+	/**
+	 * @param string    $html
+	 * @param \EE_Event $event
+	 * @return string
+	 */
+	public static function ticket_selector_html( $html = '', \EE_Event $event ) {
+		return $html;
+	}
+
+
+
 	/**************************** ADMIN FUNCTIONALITY ****************************/
+
 
 
 	/**

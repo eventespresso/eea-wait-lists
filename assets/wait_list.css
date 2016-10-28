@@ -1,0 +1,15 @@
+.event_wait_list-hidden-inputs {
+    border: 1px solid #eee;
+    clear: both;
+    margin: 0 0 1em;
+    padding: 1em 1.5em .5em;
+}
+
+.event_wait_list-hidden-inputs label {
+    display: block;
+    margin: 1em 0 0;
+}
+
+.event_wait_list-hidden-inputs input[type="text"] {
+    width: 99%;
+}

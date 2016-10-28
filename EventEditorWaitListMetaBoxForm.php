@@ -30,12 +30,15 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 
 
 
-	/**
-	 * Form constructor.
-	 *
-	 * @param \EE_Event    $event
-	 * @param \EE_Registry $registry
-	 */
+    /**
+     * Form constructor.
+     *
+     * @param \EE_Event    $event
+     * @param \EE_Registry $registry
+     * @throws \DomainException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \InvalidArgumentException
+     */
 	public function __construct( \EE_Event $event, \EE_Registry $registry ) {
 		$this->event = $event;
 		parent::__construct(

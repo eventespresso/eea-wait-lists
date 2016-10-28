@@ -1,6 +1,8 @@
 <?php
 // use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
+use EventEspresso\WaitList\WaitListEventsCollection;
+use EventEspresso\WaitList\WaitListMonitor;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
@@ -23,6 +25,12 @@ class EED_Wait_Lists extends EED_Module {
 	protected static $admin_page;
 
 
+	/**
+	 * @var WaitListMonitor $wait_list_monitor
+	 */
+	protected static $wait_list_monitor;
+
+
 
 	/**
 	 * set_hooks - for hooking into EE Core, other modules, etc
@@ -31,13 +39,13 @@ class EED_Wait_Lists extends EED_Module {
 	 * @return    void
 	 */
 	public static function set_hooks() {
-		// $wait_list_events = new WaitListEventsCollection();
-		// \EEH_Debug_Tools::printr( $wait_list_events, '$wait_list_events', __FILE__, __LINE__ );
-		add_filter(
+        add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
+        add_filter(
 			'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
-			array( 'EED_Wait_Lists', 'ticket_selector_html' ),
+			array( 'EED_Wait_Lists', 'add_wait_list_form_for_event' ),
 			10, 2
 		);
+        EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
 	}
 
 
@@ -58,7 +66,15 @@ class EED_Wait_Lists extends EED_Module {
 			'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
 			array( 'EED_Wait_Lists', 'event_update_callbacks' )
 		);
-	}
+        add_action(
+            'wp_ajax_process_wait_list_form_for_event',
+            array('EED_Wait_Lists', 'process_wait_list_form_for_event')
+        );
+        add_action(
+            'wp_ajax_nopriv_process_wait_list_form_for_event',
+            array('EED_Wait_Lists', 'process_wait_list_form_for_event')
+        );
+    }
 
 	/**
 	 *    run - initial module setup
@@ -74,22 +90,96 @@ class EED_Wait_Lists extends EED_Module {
 
 
 
+	/**
+	 * @return \EventEspresso\WaitList\WaitListMonitor
+	 * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
+	 * @throws \EE_Error
+	 */
+	public static function getWaitListMonitor() {
+		// if not already generated, create a wait list monitor object
+		if ( ! self::$wait_list_monitor instanceof WaitListMonitor) {
+			self::$wait_list_monitor = new WaitListMonitor( new WaitListEventsCollection() );
+		}
+		return self::$wait_list_monitor;
+	}
+
+
+
 	/**************************** FRONTEND FUNCTIONALITY ***************************/
 
 
 
-	/**
-	 * @param string    $html
-	 * @param \EE_Event $event
-	 * @return string
-	 */
-	public static function ticket_selector_html( $html = '', \EE_Event $event ) {
-		return $html;
+    /**
+     * enqueue_styles_and_scripts
+     *
+     * @return void
+     */
+    public static function enqueue_styles_and_scripts()
+    {
+        // load css
+        wp_register_style(
+            'wait_list',
+            EE_WAIT_LISTS_URL . 'assets/wait_list.css',
+            array(),
+            EE_WAIT_LISTS_VERSION
+        );
+        wp_enqueue_style('wait_list');
+        // load JS
+        wp_register_script(
+            'wait_list',
+            EE_WAIT_LISTS_URL . 'assets/wait_list.js',
+            array('espresso_core'),
+            EE_WAIT_LISTS_VERSION,
+            true
+        );
+        wp_enqueue_script('wait_list');
+    }
+
+
+
+    /**
+     * @param string    $html
+     * @param \EE_Event $event
+     * @return string
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \DomainException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws \EE_Error
+     */
+	public static function add_wait_list_form_for_event( $html = '', \EE_Event $event ) {
+		return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent( $event );
 	}
 
 
 
 	/**************************** ADMIN FUNCTIONALITY ****************************/
+
+
+
+	/**
+	 * process_wait_list_form_for_event
+
+	 */
+	public function process_wait_list_form_for_event() {
+        \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
+        $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
+        if( \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id)) {
+            \EE_Error::add_success('YOU JOINED', __FILE__, __FUNCTION__, __LINE__);
+        } else {
+            \EE_Error::add_error('FAIL', __FILE__, __FUNCTION__, __LINE__);
+        }
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            echo 'AJAX';
+            exit();
+        }
+        \EE_Error::get_notices(false, true);
+        wp_safe_redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
+        exit();
+	}
 
 
 

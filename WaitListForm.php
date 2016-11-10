@@ -2,9 +2,16 @@
 namespace EventEspresso\WaitList;
 
 use EE_Form_Section_Proper;
-use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use EE_Select_Input;
 use EE_Text_Input;
 use EE_Email_Input;
+use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
+use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\InvalidFormSubmissionException;
+use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use EventEspresso\core\services\commands\registration\CreateRegistrationCommand;
+use EventEspresso\core\services\commands\ticket\CreateTicketLineItemCommand;
+use EventEspresso\core\services\commands\transaction\CreateTransactionCommand;
 use LogicException;
 
 defined('ABSPATH') || exit;
@@ -63,6 +70,10 @@ class WaitListForm extends FormHandler
      */
     public function generate()
     {
+	    $tickets = $this->event->tickets();
+	    foreach ( $tickets as $TKT_ID => $ticket ) {
+		    $tickets[ $TKT_ID ] = $ticket->name_and_info();
+	    }
         $this->setForm(
             new EE_Form_Section_Proper(
                 array(
@@ -116,6 +127,16 @@ class WaitListForm extends FormHandler
                                             'required'              => true
                                         )
                                     ),
+                                    'ticket'      => new EE_Select_Input(
+	                                    $tickets,
+                                        array(
+                                            'html_label_text'       => esc_html__('Preferred Option', 'event_espresso'),
+                                            'html_label_class'      => 'small-text grey-text',
+                                            'html_class'            => '',
+                                            'default'               => '',
+                                            'required'              => true
+                                        )
+                                    ),
                                     'lb1' => new \EE_Form_Section_HTML(\EEH_HTML::br()),
                                     'submit' => new \EE_Submit_Input(
                                         array(
@@ -138,16 +159,17 @@ class WaitListForm extends FormHandler
 
 
 
-    /**
-     * handles processing the form submission
-     * returns true or false depending on whether the form was processed successfully or not
-     *
-     * @param array $form_data
-     * @return bool
-     * @throws \LogicException
-     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-     * @throws \EE_Error
-     */
+	/**
+	 * handles processing the form submission
+	 * returns true or false depending on whether the form was processed successfully or not
+	 *
+	 * @param array $form_data
+	 * @return bool
+	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
+	 * @throws \LogicException
+	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
+	 * @throws \EE_Error
+	 */
     public function process($form_data = array())
     {
         // \EEH_Debug_Tools::printr($this, '$this', __FILE__, __LINE__);
@@ -156,19 +178,49 @@ class WaitListForm extends FormHandler
         if (empty($valid_data)) {
             return false;
         }
-        $wait_list_form_inputs = (array)$valid_data["hidden_inputs-{$this->event->ID()}"];
-        if (! empty($wait_list_form_inputs)) {
-            // yay
-            \EEH_Debug_Tools::printr($valid_data, '$valid_data', __FILE__, __LINE__);
-            die();
-            return true;
-        } else {
-            // error
+	    // \EEH_Debug_Tools::printr( $valid_data, '$valid_data', __FILE__, __LINE__ );
+	    $wait_list_form_inputs = (array)$valid_data["hidden_inputs-{$this->event->ID()}"];
+        if (empty($wait_list_form_inputs)) {
+	        throw new InvalidFormSubmissionException($this->formName());
         }
+	    // \EEH_Debug_Tools::printr( $wait_list_form_inputs, '$wait_list_form_inputs', __FILE__, __LINE__ );
+	    try {
+		    /** @var \EE_Ticket $ticket */
+		    $ticket = \EEM_Ticket::instance()->get_one_by_ID(
+			    isset( $wait_list_form_inputs['ticket'] ) ? absint( $wait_list_form_inputs['ticket'] ) : 0
+		    );
+		    if ( ! $ticket instanceof \EE_Ticket ) {
+			    throw new InvalidEntityException( get_class( $ticket ), 'EE_Ticket' );
+		    }
+		    $transaction = $this->registry->BUS->execute(
+			    new CreateTransactionCommand()
+		    );
+		    if ( ! $transaction instanceof \EE_Transaction ) {
+			    throw new InvalidEntityException( get_class( $transaction ), 'EE_Transaction' );
+		    }
+		    $ticket_line_item = $this->registry->BUS->execute(
+			    new CreateTicketLineItemCommand( $transaction, $ticket )
+		    );
+		    if ( ! $ticket_line_item instanceof \EE_Line_Item ) {
+			    throw new InvalidEntityException( get_class( $ticket_line_item ), 'EE_Line_Item' );
+		    }
+		    $registration = $this->registry->BUS->execute(
+			    new CreateRegistrationCommand( $transaction, $ticket_line_item )
+		    );
+		    if ( ! $registration instanceof \EE_Registration ) {
+			    throw new InvalidEntityException( get_class( $registration ), 'EE_Registration' );
+		    }
+		    //ok, we have all of the pieces, now let's do some final tweaking
+		    $transaction->set_status( \EEM_Transaction::incomplete_status_code );
+		    $registration->set_status( \EEM_Registration::status_id_wait_list );
+	    } catch ( \Exception $e ) {
+		    new ExceptionStackTraceDisplay( $e );
+	    }
+
+        return true;
         // $meta = $this->event->get_extra_meta('ee_wait_list_spaces', true );
         // \EEH_Debug_Tools::printr( $meta, '$meta', __FILE__, __LINE__ );
         // die();
-        return false;
     }
 
 

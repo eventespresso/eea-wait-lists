@@ -4,6 +4,7 @@ use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
 
+
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 
@@ -39,7 +40,7 @@ class EED_Wait_Lists extends EED_Module {
 	 * @return    void
 	 */
 	public static function set_hooks() {
-        add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
+		add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
         add_filter(
 			'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
 			array( 'EED_Wait_Lists', 'add_wait_list_form_for_event' ),
@@ -162,16 +163,19 @@ class EED_Wait_Lists extends EED_Module {
 
 	/**
 	 * process_wait_list_form_for_event
-
+	 *
+	 * @throws \DomainException
+	 * @throws \EE_Error
+	 * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
+	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
+	 * @throws \InvalidArgumentException
+	 * @throws \LogicException
+	 * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
 	 */
 	public function process_wait_list_form_for_event() {
-        \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
         $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
-        if( \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id)) {
-            \EE_Error::add_success('YOU JOINED', __FILE__, __FUNCTION__, __LINE__);
-        } else {
-            \EE_Error::add_error('FAIL', __FILE__, __FUNCTION__, __LINE__);
-        }
+        \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         if (defined('DOING_AJAX') && DOING_AJAX) {
             echo 'AJAX';
             exit();

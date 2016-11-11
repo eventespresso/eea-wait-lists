@@ -1,7 +1,12 @@
+#event_wait_list-frm {
+    clear: both;
+    margin: 2em 0 0;
+}
+
 .event_wait_list-hidden-inputs {
     border: 1px solid #eee;
     clear: both;
-    margin: 0 0 1em;
+    margin:0 0 1em;
     padding: 1em 1.5em .5em;
 }
 

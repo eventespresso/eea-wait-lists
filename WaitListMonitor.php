@@ -1,9 +1,16 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use EE_Error;
+use EE_Event;
+use EE_Registration;
+use EE_Registry;
+use EEM_Registration;
+use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\services\collections\Collection;
+use Exception;
 
-defined( 'ABSPATH' ) || exit;
+defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 
 
@@ -37,6 +44,27 @@ class WaitListMonitor {
 
 
     /**
+     * returns true if an event has an active wait list with available spaces
+     *
+     * @param \EE_Event $event
+     * @return bool
+     * @throws \EE_Error
+     */
+    protected function eventHasOpenWaitList(EE_Event $event)
+    {
+        if ($this->wait_list_events->hasObject($event)) {
+            $wait_list_reg_count = absint($event->get_extra_meta('ee_wait_list_registration_count', true));
+            $wait_list_spaces = absint($event->get_extra_meta('ee_wait_list_spaces', true));
+            if ($wait_list_reg_count < $wait_list_spaces) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
      * @param \EE_Event $event
      * @return string
      * @throws \LogicException
@@ -45,39 +73,85 @@ class WaitListMonitor {
      * @throws \DomainException
      * @throws \EE_Error
      */
-	public function getWaitListFormForEvent( \EE_Event $event ) {
-		if ( $event->is_sold_out() && $this->wait_list_events->hasObject($event)){
-            $wait_list_form = new WaitListForm($event, \EE_Registry::instance());
+	public function getWaitListFormForEvent( EE_Event $event ) {
+		if ( $event->is_sold_out() && $this->eventHasOpenWaitList($event)){
+            $wait_list_form = new WaitListForm($event, EE_Registry::instance());
             return $wait_list_form->display();
-            // $html = '<h1 class="important-notice">HAS WAIT LIST</h1>';
 		}
 		return '';
 	}
 
 
 
-    /**
-     * @param int $event_id
-     * @return boolean
-     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \DomainException
-     * @throws \EE_Error
-     */
+	/**
+	 * @param int $event_id
+	 * @return boolean
+	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
+	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
+	 * @throws \LogicException
+	 * @throws \InvalidArgumentException
+	 * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+	 * @throws \DomainException
+	 * @throws \EE_Error
+	 */
 	public function processWaitListFormForEvent( $event_id ) {
 		if ( $this->wait_list_events->has($event_id)){
-            $wait_list_form = new WaitListForm(
-                $this->wait_list_events->get($event_id),
-                \EE_Registry::instance()
-            );
-            \EEH_Debug_Tools::printr($_REQUEST, '$_REQUEST', __FILE__, __LINE__);
-            return $wait_list_form->process($_REQUEST);
+            /** @var EE_Event $event */
+            $event = $this->wait_list_events->get($event_id);
+            try {
+                $wait_list_form = new WaitListForm($event, EE_Registry::instance());
+                $attendee = $wait_list_form->process($_REQUEST);
+                EE_Error::add_success(
+                    apply_filters(
+                        'FHEE_EventEspresso_WaitList_WaitListMonitor__processWaitListFormForEvent__success_msg',
+                        sprintf(
+                            esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s', 'event_espresso'),
+                            $attendee->full_name(),
+                            '<br />',
+                            $event->name()
+                        )
+                    ),
+                    __FILE__, __FUNCTION__, __LINE__
+                );
+            } catch (Exception $e) {
+                EE_Error::add_error(
+                    new ExceptionStackTraceDisplay($e),
+                    __FILE__, __FUNCTION__, __LINE__
+                );
+            }
 		}
 		return false;
 	}
 
+
+
+    /**
+     * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
+     *
+     * @param \EE_Registration $registration
+     * @param                  $old_STS_ID
+     * @param                  $new_STS_ID
+     * @throws \EE_Error
+     */
+    public function registrationStatusUpdate(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
+    {
+        $event = $registration->event();
+        if ($this->wait_list_events->hasObject($event)) {
+            if ($old_STS_ID === EEM_Registration::status_id_wait_list) {
+                $wait_list_reg_count = absint(
+                    $event->get_extra_meta('ee_wait_list_registration_count', true)
+                );
+                $wait_list_reg_count--;
+                $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
+            } elseif ($new_STS_ID === EEM_Registration::status_id_wait_list) {
+                $wait_list_reg_count = absint(
+                    $event->get_extra_meta('ee_wait_list_registration_count', true)
+                );
+                $wait_list_reg_count++;
+                $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
+            }
+        }
+    }
 
 }
 // End of file WaitListMonitor.php

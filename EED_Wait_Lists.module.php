@@ -1,5 +1,5 @@
 <?php
-// use EventEspresso\WaitList\WaitListEventsCollection;
+
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
@@ -36,26 +36,25 @@ class EED_Wait_Lists extends EED_Module {
 	/**
 	 * set_hooks - for hooking into EE Core, other modules, etc
 	 *
-	 * @access    public
-	 * @return    void
+	 * @return void
 	 */
 	public static function set_hooks() {
-		add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
+        EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
         add_filter(
 			'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
 			array( 'EED_Wait_Lists', 'add_wait_list_form_for_event' ),
 			10, 2
 		);
-        EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
-	}
+        add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
+        \EED_Wait_Lists::shared_hooks();
+    }
 
 
 
 	/**
 	 * set_hooks_admin - for hooking into EE Admin Core, other modules, etc
 	 *
-	 * @access    public
-	 * @return    void
+	 * @return void
 	 */
 	public static function set_hooks_admin() {
 		add_filter(
@@ -75,7 +74,26 @@ class EED_Wait_Lists extends EED_Module {
             'wp_ajax_nopriv_process_wait_list_form_for_event',
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
+        \EED_Wait_Lists::shared_hooks();
+	}
+
+
+
+    /**
+     * hooks set by both set_hooks() and set_hooks_admin()
+     *
+     * @return void
+     */
+    protected static function shared_hooks()
+    {
+        add_action(
+            'AHEE__EE_Registration__set_status__after_update',
+            array('EED_Wait_Lists', 'registration_status_update'),
+            10, 3
+        );
     }
+
+
 
 	/**
 	 *    run - initial module setup
@@ -98,7 +116,7 @@ class EED_Wait_Lists extends EED_Module {
 	 * @throws \EE_Error
 	 */
 	public static function getWaitListMonitor() {
-		// if not already generated, create a wait list monitor object
+        // if not already generated, create a wait list monitor object
 		if ( ! self::$wait_list_monitor instanceof WaitListMonitor) {
 			self::$wait_list_monitor = new WaitListMonitor( new WaitListEventsCollection() );
 		}
@@ -152,12 +170,8 @@ class EED_Wait_Lists extends EED_Module {
      * @throws \EE_Error
      */
 	public static function add_wait_list_form_for_event( $html = '', \EE_Event $event ) {
-		return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent( $event );
+        return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent( $event );
 	}
-
-
-
-	/**************************** ADMIN FUNCTIONALITY ****************************/
 
 
 
@@ -187,7 +201,11 @@ class EED_Wait_Lists extends EED_Module {
 
 
 
-	/**
+    /**************************** ADMIN FUNCTIONALITY ****************************/
+
+
+
+    /**
 	 * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
 	 *
 	 * @param array              $page_config current page config.
@@ -269,6 +287,23 @@ class EED_Wait_Lists extends EED_Module {
 			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
 		}
 	}
+
+
+
+    /**
+     * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
+     *
+     * @param \EE_Registration $registration
+     * @param                  $old_STS_ID
+     * @param                  $new_STS_ID
+     * @throws \EE_Error
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     */
+    public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
+    {
+        \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
+    }
 
 }
 // End of file EED_Wait_Lists.module.php

@@ -154,15 +154,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 						esc_html__( 'Wait List Registrations', 'event_espresso' ),
 						esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
 					)
-					. ' : ' . \EEM_Registration::instance()->count(
-						array(
-							array(
-								'STS_ID'       => \EEM_Registration::status_id_wait_list,
-								'Event.EVT_ID' => $this->event->ID()
-							)
-						)
-					)
-					. \EEH_HTML::br( 2 )
+					. ' : ' . $this->waitListRegCount() . \EEH_HTML::br( 2 )
 				)
 			),
 			'wait_list_spaces'
@@ -188,7 +180,6 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		if ( empty( $valid_data ) ) {
 			return false;
 		}
-		// \EEH_Debug_Tools::printr( $valid_data, '$valid_data', __FILE__, __LINE__ );
 		$wait_list_spaces = absint( (int) $valid_data['wait_list_spaces'] );
 		if ( $wait_list_spaces ) {
 			$this->event->update_extra_meta('ee_wait_list_spaces', $wait_list_spaces);
@@ -203,18 +194,28 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 			// spaces before auto promote can't be more than the total number of spaces in the wait list
 			$spaces_b4_auto_promote = min( $wait_list_spaces, $spaces_b4_auto_promote );
 			$this->event->update_extra_meta('ee_wait_list_spaces_before_promote', $spaces_b4_auto_promote);
+			$this->event->update_extra_meta('ee_wait_list_registration_count', $this->waitListRegCount());
 			// mark event as having a waitlist
 			$this->event->set('EVT_allow_overflow', true);
-		} else {
+        } else {
 			$this->event->delete_extra_meta( 'ee_wait_list_spaces' );
 			$this->event->delete_extra_meta( 'ee_wait_list_auto_promote' );
 			$this->event->delete_extra_meta( 'ee_wait_list_spaces_before_promote' );
+			$this->event->delete_extra_meta( 'ee_wait_list_registration_count' );
 			$this->event->set( 'EVT_allow_overflow', false );
 		}
-		// $meta = $this->event->get_extra_meta('ee_wait_list_spaces', true );
-		// \EEH_Debug_Tools::printr( $meta, '$meta', __FILE__, __LINE__ );
-		// die();
 		return false;
+	}
+
+
+
+    /**
+     * @return int
+     * @throws \EE_Error
+     */
+    protected function waitListRegCount()
+    {
+        return absint($this->event->get_extra_meta('ee_wait_list_registration_count', true));
 	}
 
 

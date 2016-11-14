@@ -5,16 +5,15 @@ use EE_Form_Section_Proper;
 use EE_Select_Input;
 use EE_Text_Input;
 use EE_Email_Input;
-use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\registration\CreateRegistrationCommand;
 use EventEspresso\core\services\commands\ticket\CreateTicketLineItemCommand;
 use EventEspresso\core\services\commands\transaction\CreateTransactionCommand;
-use LogicException;
 
-defined('ABSPATH') || exit;
+defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
 
 
@@ -161,10 +160,10 @@ class WaitListForm extends FormHandler
 
 	/**
 	 * handles processing the form submission
-	 * returns true or false depending on whether the form was processed successfully or not
-	 *
-	 * @param array $form_data
-	 * @return bool
+     * returns true or false depending on whether the form was processed successfully or not
+     *
+     * @param array $form_data
+	 * @return \EE_Attendee
 	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
 	 * @throws \LogicException
 	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
@@ -176,7 +175,7 @@ class WaitListForm extends FormHandler
         // process form
         $valid_data = (array)parent::process($form_data);
         if (empty($valid_data)) {
-            return false;
+            throw new InvalidFormSubmissionException($this->formName());
         }
 	    // \EEH_Debug_Tools::printr( $valid_data, '$valid_data', __FILE__, __LINE__ );
 	    $wait_list_form_inputs = (array)$valid_data["hidden_inputs-{$this->event->ID()}"];
@@ -184,43 +183,72 @@ class WaitListForm extends FormHandler
 	        throw new InvalidFormSubmissionException($this->formName());
         }
 	    // \EEH_Debug_Tools::printr( $wait_list_form_inputs, '$wait_list_form_inputs', __FILE__, __LINE__ );
-	    try {
-		    /** @var \EE_Ticket $ticket */
-		    $ticket = \EEM_Ticket::instance()->get_one_by_ID(
-			    isset( $wait_list_form_inputs['ticket'] ) ? absint( $wait_list_form_inputs['ticket'] ) : 0
-		    );
-		    if ( ! $ticket instanceof \EE_Ticket ) {
-			    throw new InvalidEntityException( get_class( $ticket ), 'EE_Ticket' );
-		    }
-		    $transaction = $this->registry->BUS->execute(
-			    new CreateTransactionCommand()
-		    );
-		    if ( ! $transaction instanceof \EE_Transaction ) {
-			    throw new InvalidEntityException( get_class( $transaction ), 'EE_Transaction' );
-		    }
-		    $ticket_line_item = $this->registry->BUS->execute(
-			    new CreateTicketLineItemCommand( $transaction, $ticket )
-		    );
-		    if ( ! $ticket_line_item instanceof \EE_Line_Item ) {
-			    throw new InvalidEntityException( get_class( $ticket_line_item ), 'EE_Line_Item' );
-		    }
-		    $registration = $this->registry->BUS->execute(
-			    new CreateRegistrationCommand( $transaction, $ticket_line_item )
-		    );
-		    if ( ! $registration instanceof \EE_Registration ) {
-			    throw new InvalidEntityException( get_class( $registration ), 'EE_Registration' );
-		    }
-		    //ok, we have all of the pieces, now let's do some final tweaking
-		    $transaction->set_status( \EEM_Transaction::incomplete_status_code );
-		    $registration->set_status( \EEM_Registration::status_id_wait_list );
-	    } catch ( \Exception $e ) {
-		    new ExceptionStackTraceDisplay( $e );
+	    /** @var \EE_Ticket $ticket */
+	    $ticket = \EEM_Ticket::instance()->get_one_by_ID(
+		    isset( $wait_list_form_inputs['ticket'] ) ? absint( $wait_list_form_inputs['ticket'] ) : 0
+	    );
+	    if ( ! $ticket instanceof \EE_Ticket ) {
+		    throw new InvalidEntityException( get_class( $ticket ), 'EE_Ticket' );
 	    }
-
-        return true;
-        // $meta = $this->event->get_extra_meta('ee_wait_list_spaces', true );
-        // \EEH_Debug_Tools::printr( $meta, '$meta', __FILE__, __LINE__ );
-        // die();
+	    /** @var \EE_Transaction $transaction */
+	    $transaction = $this->registry->BUS->execute(
+		    new CreateTransactionCommand()
+	    );
+	    /** @var \EE_Line_Item $ticket_line_item */
+	    $ticket_line_item = $this->registry->BUS->execute(
+		    new CreateTicketLineItemCommand( $transaction, $ticket )
+	    );
+	    /** @var \EE_Registration $registration */
+	    $registration = $this->registry->BUS->execute(
+		    new CreateRegistrationCommand( $transaction, $ticket_line_item )
+	    );
+	    // add relation to registration
+	    $transaction->_add_relation_to( $registration, 'Registration' );
+	    $transaction->update_cache_after_object_save( 'Registration', $registration );
+	    // now gather attendee details
+	    $registrant_name = isset( $wait_list_form_inputs['registrant_name'] )
+		    ? sanitize_text_field( $wait_list_form_inputs['registrant_name'] )
+		    : '';
+	    if ( empty( $registrant_name ) ) {
+		    throw new InvalidFormSubmissionException( $this->formName() );
+	    }
+	    $registrant_name = explode(' ', $registrant_name );
+	    /** @var \EE_Attendee $attendee */
+	    $attendee = $this->registry->BUS->execute(
+		    new CreateAttendeeCommand(
+			    array(
+				    // grab first string from registrant name array
+				    'ATT_fname' => array_shift( $registrant_name ),
+				    // join rest of array back together for rest of name
+				    'ATT_lname' => implode( ' ', $registrant_name ),
+				    'ATT_email' => $wait_list_form_inputs['registrant_email']
+			    ),
+			    $registration
+		    )
+	    );
+	    //ok, we have all of the pieces, now let's do some final tweaking
+	    // add relation to attendee
+	    $registration->_add_relation_to( $attendee, 'Attendee' );
+	    $registration->set_attendee_id( $attendee->ID() );
+	    $registration->update_cache_after_object_save( 'Attendee', $attendee );
+	    // update txn and reg status
+	    $transaction->set_status( \EEM_Transaction::incomplete_status_code );
+	    $registration->set_status( \EEM_Registration::status_id_wait_list );
+	    $transaction->save();
+	    $registration->save();
+        // finally... update the wait list reg count
+        $this->event->update_extra_meta(
+            'ee_wait_list_registration_count',
+            \EEM_Registration::instance()->count(
+                array(
+                    array(
+                        'STS_ID'       => \EEM_Registration::status_id_wait_list,
+                        'Event.EVT_ID' => $this->event->ID()
+                    )
+                )
+            )
+        );
+        return $attendee;
     }
 
 

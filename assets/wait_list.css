@@ -1,13 +1,27 @@
 #event_wait_list-frm {
     clear: both;
-    margin: 2em 0 0;
+    margin: 1.5em 0;
+    position: relative;
 }
 
 .event_wait_list-hidden-inputs {
+    background: #fff;
     border: 1px solid #eee;
+    box-sizing: border-box;
+    box-shadow: 0 8px 3px -2px rgba(0, 0, 0, .5), 2px 5px 15px -3px rgba(0, 0, 0, .25);
     clear: both;
-    margin:0 0 1em;
-    padding: 1em 1.5em .5em;
+    left: 0;
+    margin:0 auto 1em;
+    padding: 20px 20px 10px;
+    position: absolute;
+    bottom:-25px;
+    width: 100%;
+    max-width: 480px;
+    z-index: 999;
+    -webkit-animation-name: modal_drop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: modal_drop;
+    animation-duration: 0.4s
 }
 
 .event_wait_list-hidden-inputs label {
@@ -18,3 +32,57 @@
 .event_wait_list-hidden-inputs input[type="text"] {
     width: 99%;
 }
+
+.ee-wait-list-cancel-dv {
+    text-align: right;
+}
+.ee-wait-list-cancel-lnk {
+    cursor: pointer;
+}
+
+/* Media Query for screens smaller then 768px (iPad portrait)
+---------------------------------------------------------------------------------------------------- */
+
+@media only screen and (max-width: 767px) {
+
+}
+
+@media only screen and (max-width: 600px) and (min-width: 481px) {
+
+}
+
+@media only screen and (max-width: 540px) and (min-width: 480px) {
+
+}
+
+@media only screen and (max-width: 480px) {
+
+}
+
+@media only screen and (max-width: 320px) {
+
+}
+
+/* Animation Effects */
+@-webkit-keyframes modal_drop {
+    from {
+        bottom: 300px;
+        opacity: 0
+    }
+    to {
+        bottom: -25px;
+        opacity: 1
+    }
+}
+
+@keyframes modal_drop {
+    from {
+        bottom: 300px;
+        opacity: 0
+    }
+    to {
+        bottom: -25px;
+        opacity: 1
+    }
+}
+

@@ -95,8 +95,11 @@ class WaitListForm extends FormHandler
                                 'html_style' => 'display:none;',
                                 'subsections'     => array(
                                     'wait_list_form_notice' => new \EE_Form_Section_HTML(
-                                        \EEH_HTML::p(
-                                            \EEH_HTML::br() .
+                                        \EEH_HTML::h2(
+                                            esc_html__('Join Now', 'event_espresso'),
+                                            '', 'ee-wait-list-notice-hdr'
+                                        )
+                                        . \EEH_HTML::p(
                                             esc_html__('If you would like to be added to the waiting list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
                                                 'event_espresso'),
                                             '', 'small-text ee-wait-list-notice-pg'
@@ -145,6 +148,18 @@ class WaitListForm extends FormHandler
                                     ),
                                     'clear_submit' => new \EE_Form_Section_HTML(
                                         \EEH_HTML::div('&nbsp;', '', 'clear')
+                                    ),
+                                    'close_form' => new \EE_Form_Section_HTML(
+                                        \EEH_HTML::div(
+                                            \EEH_HTML::link(
+                                                '',
+                                                esc_html__('cancel', 'event_espresso'),
+                                                '', '',
+                                                'ee-wait-list-cancel-lnk small-text lt-grey-text', '',
+                                                ' data-inputs="event_wait_list-hidden-inputs-' . $this->event->ID() . '"'
+                                            ),
+                                            '', 'ee-wait-list-cancel-dv'
+                                        )
                                     ),
                                 )
                             )

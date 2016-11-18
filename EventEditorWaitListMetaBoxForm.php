@@ -154,7 +154,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 						esc_html__( 'Wait List Registrations', 'event_espresso' ),
 						esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
 					)
-					. ' : ' . $this->waitListRegCount() . \EEH_HTML::br( 2 )
+					. ' : ' . \EED_Wait_Lists::waitListRegCount($this->event) . \EEH_HTML::br( 2 )
 				)
 			),
 			'wait_list_spaces'
@@ -194,7 +194,10 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 			// spaces before auto promote can't be more than the total number of spaces in the wait list
 			$spaces_b4_auto_promote = min( $wait_list_spaces, $spaces_b4_auto_promote );
 			$this->event->update_extra_meta('ee_wait_list_spaces_before_promote', $spaces_b4_auto_promote);
-			$this->event->update_extra_meta('ee_wait_list_registration_count', $this->waitListRegCount());
+			$this->event->update_extra_meta(
+			    'ee_wait_list_registration_count',
+                \EED_Wait_Lists::waitListRegCount($this->event)
+            );
 			// mark event as having a waitlist
 			$this->event->set('EVT_allow_overflow', true);
         } else {
@@ -207,16 +210,6 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		return false;
 	}
 
-
-
-    /**
-     * @return int
-     * @throws \EE_Error
-     */
-    protected function waitListRegCount()
-    {
-        return absint($this->event->get_extra_meta('ee_wait_list_registration_count', true));
-	}
 
 
 

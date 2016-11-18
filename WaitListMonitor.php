@@ -19,7 +19,7 @@ defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
  * tracks which event have active wait lists
  * and determines whether wait list forms should be displayed and processed for an event
  *
-*@package       Event Espresso
+ * @package       Event Espresso
  * @author        Brent Christensen
  * @since         $VID:$
  */
@@ -137,6 +137,7 @@ class WaitListMonitor {
     {
         $event = $registration->event();
         if ($this->wait_list_events->hasObject($event)) {
+            $wait_list_reg_count = null;
             if ($old_STS_ID === EEM_Registration::status_id_wait_list) {
                 $wait_list_reg_count = absint(
                     $event->get_extra_meta('ee_wait_list_registration_count', true)
@@ -150,7 +151,72 @@ class WaitListMonitor {
                 $wait_list_reg_count++;
                 $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
             }
+            // $wait_list_reg_count = $wait_list_reg_count !== null
+            //     ? $wait_list_reg_count
+            //     : absint(
+            //         $event->get_extra_meta('ee_wait_list_registration_count', true)
+            //     );
+            // $wait_list_spaces = absint($event->get_extra_meta('ee_wait_list_spaces', true));
+            // $available_spaces = $wait_list_reg_count < $wait_list_spaces
         }
+    }
+
+
+
+    // protected function calculateWaitListSpaces(\EE_Event $event)
+    // {
+    //         $wait_list_reg_count = \EED_Wait_Lists::waitListRegCount($event);
+    // }
+
+
+
+    /**
+     * @param bool         $sold_out
+     * @param int          $spaces_remaining
+     * @param \EE_Event    $event
+     * @return bool
+     * @throws \EE_Error
+     */
+    public function toggleEventSoldOutStatus($sold_out, $spaces_remaining, \EE_Event $event)
+    {
+        // wait list related event meta:
+        // 'ee_wait_list_spaces'
+        // 'ee_wait_list_auto_promote'
+        // 'ee_wait_list_spaces_before_promote'
+        // 'ee_wait_list_registration_count'
+        if ($this->wait_list_events->hasObject($event)) {
+            $wait_list_reg_count = absint(
+                $event->get_extra_meta('ee_wait_list_registration_count', true)
+            );
+            // are there more spaces available than
+            $sold_out = $spaces_remaining > $wait_list_reg_count;
+        }
+        return $sold_out;
+    }
+
+
+
+    /**
+     * @param int            $spaces_available
+     * @param \EE_Event      $event
+     * @return int
+     * @throws \EE_Error
+     */
+    public function adjustEventSpacesAvailable($spaces_available, \EE_Event $event)
+    {
+        // wait list related event meta:
+        // 'ee_wait_list_spaces'
+        // 'ee_wait_list_auto_promote'
+        // 'ee_wait_list_spaces_before_promote'
+        // 'ee_wait_list_registration_count'
+        if ($this->wait_list_events->hasObject($event)) {
+            $wait_list_reg_count = absint(
+                $event->get_extra_meta('ee_wait_list_registration_count', true)
+            );
+            // consider wait list registrations as taking available spaces
+            $spaces_available -= $wait_list_reg_count;
+        }
+        return $spaces_available;
     }
 
 }

@@ -305,6 +305,20 @@ class EED_Wait_Lists extends EED_Module {
         \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
     }
 
+
+
+    /**
+     * @param \EE_Event $event
+     * @return int
+     * @throws \EE_Error
+     */
+    public static function waitListRegCount(\EE_Event $event)
+    {
+        return absint($event->get_extra_meta('ee_wait_list_registration_count', true));
+    }
+
+
+
 }
 // End of file EED_Wait_Lists.module.php
 // Location: wp-content/plugins/eea-wait-lists/EED_Wait_Lists.module.php

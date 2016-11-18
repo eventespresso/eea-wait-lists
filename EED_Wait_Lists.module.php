@@ -91,6 +91,16 @@ class EED_Wait_Lists extends EED_Module {
             array('EED_Wait_Lists', 'registration_status_update'),
             10, 3
         );
+        add_filter(
+            'FHEE_EE_Event__perform_sold_out_status_check__sold_out',
+            array('EED_Wait_Lists', 'event_sold_out_status'),
+            10, 3
+        );
+        add_filter(
+            'FHEE_EE_Event__total_available_spaces__spaces_available',
+            array('EED_Wait_Lists', 'event_spaces_available'),
+            10, 2
+        );
     }
 
 
@@ -161,35 +171,28 @@ class EED_Wait_Lists extends EED_Module {
      * @param string    $html
      * @param \EE_Event $event
      * @return string
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \DomainException
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
-     * @throws \EE_Error
      */
 	public static function add_wait_list_form_for_event( $html = '', \EE_Event $event ) {
-        return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent( $event );
+        try {
+            return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        return $html;
 	}
 
 
 
 	/**
 	 * process_wait_list_form_for_event
-	 *
-	 * @throws \DomainException
-	 * @throws \EE_Error
-	 * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
-	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-	 * @throws \InvalidArgumentException
-	 * @throws \LogicException
-	 * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
 	 */
 	public function process_wait_list_form_for_event() {
-        $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
-        \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+        try {
+            $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
+            \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
         if (defined('DOING_AJAX') && DOING_AJAX) {
             echo 'AJAX';
             exit();
@@ -198,6 +201,60 @@ class EED_Wait_Lists extends EED_Module {
         wp_safe_redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
         exit();
 	}
+
+
+
+    /**************************** SPLIT FUNCTIONALITY ***************************/
+
+
+
+    /**
+     * @param bool         $sold_out
+     * @param int          $spaces_remaining
+     * @param \EE_Event    $event
+     * @return bool
+     */
+    public static function event_sold_out_status($sold_out, $spaces_remaining, \EE_Event $event)
+    {
+        // if its sold out, then its sold out
+        if ($sold_out) {
+            return $sold_out;
+        }
+        try {
+            return \EED_Wait_Lists::getWaitListMonitor()->toggleEventSoldOutStatus(
+                $sold_out,
+                $spaces_remaining,
+                $event
+            );
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        return $sold_out;
+    }
+
+
+
+    /**
+     * @param int            $spaces_available
+     * @param \EE_Event      $event
+     * @return int
+     */
+    public static function event_spaces_available($spaces_available, \EE_Event $event)
+    {
+        // if there's nothing left, then there's nothing left
+        if ($spaces_available < 1) {
+            return $spaces_available;
+        }
+        try {
+            return \EED_Wait_Lists::getWaitListMonitor()->adjustEventSpacesAvailable(
+                $spaces_available,
+                $event
+            );
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        return $spaces_available;
+    }
 
 
 
@@ -296,13 +353,14 @@ class EED_Wait_Lists extends EED_Module {
      * @param \EE_Registration $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
-     * @throws \EE_Error
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
      */
     public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
-        \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
+        try {
+            \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
     }
 
 

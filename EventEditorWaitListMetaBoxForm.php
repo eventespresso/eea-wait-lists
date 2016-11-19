@@ -136,26 +136,8 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		$this->form(true)->add_subsections(
 			array(
 				'view_wait_list_link' => new \EE_Form_Section_HTML(
-					\EEH_HTML::br()
-					. \EEH_HTML::span(
-						'',
-						'',
-						'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
-					)
-					. \EEH_HTML::link(
-						add_query_arg(
-							array(
-								'route'       => 'default',
-								'_reg_status' => \EEM_Registration::status_id_wait_list,
-								'event_id'    => $this->event->ID(),
-							),
-							REG_ADMIN_URL
-						),
-						esc_html__( 'Wait List Registrations', 'event_espresso' ),
-						esc_html__( 'View registrations on the wait list for this event', 'event_espresso' )
-					)
-					. ' : ' . \EED_Wait_Lists::waitListRegCount($this->event) . \EEH_HTML::br( 2 )
-				)
+                    \EEH_HTML::br() . $this->waitListRegCountDisplay() . \EEH_HTML::br(2)
+                )
 			),
 			'wait_list_spaces'
 		);
@@ -163,6 +145,29 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 	}
 
 
+
+    public function waitListRegCountDisplay()
+    {
+        $html = \EEH_HTML::span(
+            '',
+            '',
+            'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
+        );
+        $html .= ' ' . \EEH_HTML::link(
+            add_query_arg(
+                array(
+                    'route'       => 'default',
+                    '_reg_status' => \EEM_Registration::status_id_wait_list,
+                    'event_id'    => $this->event->ID(),
+                ),
+                REG_ADMIN_URL
+            ),
+            esc_html__('Wait List Registrations', 'event_espresso'),
+            esc_html__('View registrations on the wait list for this event', 'event_espresso')
+        );
+        $html .= ' : ' . \EED_Wait_Lists::waitListRegCount($this->event);
+        return $html;
+    }
 
 	/**
 	 * handles processing the form submission

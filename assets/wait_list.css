@@ -43,6 +43,10 @@
     cursor: pointer;
 }
 
+.ee-icon-color-ee-purple:before {
+    color:#8A549A;
+}
+
 /* Media Query for screens smaller then 768px (iPad portrait)
 ---------------------------------------------------------------------------------------------------- */
 

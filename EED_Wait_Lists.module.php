@@ -32,6 +32,12 @@ class EED_Wait_Lists extends EED_Module {
 	protected static $wait_list_monitor;
 
 
+	/**
+	 * @var EventEditorWaitListMetaBoxForm $wait_list_settings_form
+ */
+	protected static $wait_list_settings_form;
+
+
 
 	/**
 	 * set_hooks - for hooking into EE Core, other modules, etc
@@ -46,7 +52,7 @@ class EED_Wait_Lists extends EED_Module {
 			10, 2
 		);
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
-        \EED_Wait_Lists::shared_hooks();
+        \EED_Wait_Lists::set_shared_hooks();
     }
 
 
@@ -67,6 +73,10 @@ class EED_Wait_Lists extends EED_Module {
 			array( 'EED_Wait_Lists', 'event_update_callbacks' )
 		);
         add_action(
+            'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
+            array('EED_Wait_Lists', 'event_editor_overview_add')
+        );
+        add_action(
             'wp_ajax_process_wait_list_form_for_event',
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
@@ -74,7 +84,7 @@ class EED_Wait_Lists extends EED_Module {
             'wp_ajax_nopriv_process_wait_list_form_for_event',
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
-        \EED_Wait_Lists::shared_hooks();
+        \EED_Wait_Lists::set_shared_hooks();
 	}
 
 
@@ -84,7 +94,7 @@ class EED_Wait_Lists extends EED_Module {
      *
      * @return void
      */
-    protected static function shared_hooks()
+    protected static function set_shared_hooks()
     {
         add_action(
             'AHEE__EE_Registration__set_status__after_update',
@@ -92,9 +102,9 @@ class EED_Wait_Lists extends EED_Module {
             10, 3
         );
         add_filter(
-            'FHEE_EE_Event__perform_sold_out_status_check__sold_out',
-            array('EED_Wait_Lists', 'event_sold_out_status'),
-            10, 3
+            'FHEE_EE_Event__perform_sold_out_status_check__spaces_remaining',
+            array('EED_Wait_Lists', 'event_spaces_available'),
+            10, 2
         );
         add_filter(
             'FHEE_EE_Event__total_available_spaces__spaces_available',
@@ -131,6 +141,25 @@ class EED_Wait_Lists extends EED_Module {
 			self::$wait_list_monitor = new WaitListMonitor( new WaitListEventsCollection() );
 		}
 		return self::$wait_list_monitor;
+	}
+
+
+
+    /**
+     * @return \EventEspresso\WaitList\EventEditorWaitListMetaBoxForm
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \DomainException
+     */
+	public static function getEventEditorWaitListMetaBoxForm() {
+        // if not already generated, create a wait list monitor object
+		if ( ! self::$wait_list_settings_form instanceof EventEditorWaitListMetaBoxForm) {
+			self::$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
+                EED_Wait_Lists::$admin_page->get_event_object(),
+                EE_Registry::instance()
+            );
+		}
+		return self::$wait_list_settings_form;
 	}
 
 
@@ -186,7 +215,7 @@ class EED_Wait_Lists extends EED_Module {
 	/**
 	 * process_wait_list_form_for_event
 	 */
-	public function process_wait_list_form_for_event() {
+	public static function process_wait_list_form_for_event() {
         try {
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
             \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
@@ -209,27 +238,21 @@ class EED_Wait_Lists extends EED_Module {
 
 
     /**
-     * @param bool         $sold_out
-     * @param int          $spaces_remaining
-     * @param \EE_Event    $event
-     * @return bool
+     * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
+     *
+     * @param \EE_Registration $registration
+     * @param                  $old_STS_ID
+     * @param                  $new_STS_ID
      */
-    public static function event_sold_out_status($sold_out, $spaces_remaining, \EE_Event $event)
+    public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
-        // if its sold out, then its sold out
-        if ($sold_out) {
-            return $sold_out;
-        }
+        // \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
         try {
-            return \EED_Wait_Lists::getWaitListMonitor()->toggleEventSoldOutStatus(
-                $sold_out,
-                $spaces_remaining,
-                $event
-            );
+            \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
-        return $sold_out;
+        // \EEH_Debug_Tools::printr(__FUNCTION__, 'END ', __FILE__, __LINE__, 2);
     }
 
 
@@ -241,6 +264,7 @@ class EED_Wait_Lists extends EED_Module {
      */
     public static function event_spaces_available($spaces_available, \EE_Event $event)
     {
+        // \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
         // if there's nothing left, then there's nothing left
         if ($spaces_available < 1) {
             return $spaces_available;
@@ -297,18 +321,32 @@ class EED_Wait_Lists extends EED_Module {
 
 
 
+    /**
+     * callback that adds a link to the Event Editor Publish metabox
+     * to view registrations on the wait list for the event
+     */
+    public static function event_editor_overview_add()
+    {
+        try {
+            echo \EEH_HTML::div(
+                EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->waitListRegCountDisplay(),
+                '', 'misc-pub-section'
+            );
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+    }
+
+
+
 	/**
 	 * callback that adds the main "event_wait_list_meta_box" meta_box
 	 * calls non static method below
 	 */
 	public static function event_wait_list_meta_box() {
 		try {
-			$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
-				EED_Wait_Lists::$admin_page->get_event_object(),
-				EE_Registry::instance()
-			);
-			echo $wait_list_settings_form->display();
-		} catch ( Exception $e ) {
+            echo EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->display();
+        } catch ( Exception $e ) {
 			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
 		}
 	}
@@ -333,7 +371,7 @@ class EED_Wait_Lists extends EED_Module {
 	 * @param \EE_Event $event
 	 * @param array     $form_data
 	 */
-	public static function update_event_wait_list_settings( \EE_Event $event, array $form_data) {
+	public static function update_event_wait_list_settings(EE_Event $event, array $form_data) {
 		try {
 			$wait_list_settings_form = new EventEspresso\WaitList\EventEditorWaitListMetaBoxForm(
 				$event,
@@ -344,24 +382,6 @@ class EED_Wait_Lists extends EED_Module {
 			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
 		}
 	}
-
-
-
-    /**
-     * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
-     *
-     * @param \EE_Registration $registration
-     * @param                  $old_STS_ID
-     * @param                  $new_STS_ID
-     */
-    public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
-    {
-        try {
-            \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
-        } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
-        }
-    }
 
 
 

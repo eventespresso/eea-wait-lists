@@ -151,6 +151,9 @@ class WaitListMonitor {
                 $wait_list_reg_count++;
                 $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
             }
+            if ($wait_list_reg_count !== null) {
+                $event->perform_sold_out_status_check();
+            }
             // $wait_list_reg_count = $wait_list_reg_count !== null
             //     ? $wait_list_reg_count
             //     : absint(
@@ -167,32 +170,6 @@ class WaitListMonitor {
     // {
     //         $wait_list_reg_count = \EED_Wait_Lists::waitListRegCount($event);
     // }
-
-
-
-    /**
-     * @param bool         $sold_out
-     * @param int          $spaces_remaining
-     * @param \EE_Event    $event
-     * @return bool
-     * @throws \EE_Error
-     */
-    public function toggleEventSoldOutStatus($sold_out, $spaces_remaining, \EE_Event $event)
-    {
-        // wait list related event meta:
-        // 'ee_wait_list_spaces'
-        // 'ee_wait_list_auto_promote'
-        // 'ee_wait_list_spaces_before_promote'
-        // 'ee_wait_list_registration_count'
-        if ($this->wait_list_events->hasObject($event)) {
-            $wait_list_reg_count = absint(
-                $event->get_extra_meta('ee_wait_list_registration_count', true)
-            );
-            // are there more spaces available than
-            $sold_out = $spaces_remaining > $wait_list_reg_count;
-        }
-        return $sold_out;
-    }
 
 
 

@@ -7,8 +7,8 @@ jQuery(document).ready(function ($) {
         var BackgroundColor = '#fff';
         var $wait_list_parent = $('#event_wait_list-frm').parent();
         if ($wait_list_parent.length){
-            BackgroundColor = getParentBackgroundColor($wait_list_parent);
-            BackgroundColor = rgb2hex(BackgroundColor);
+            BackgroundColor = eeGetParentBackgroundColor($wait_list_parent);
+            BackgroundColor = eeRgbToHex(BackgroundColor);
             $wait_list_parent.css({'background': BackgroundColor});
             left = $wait_list_parent.innerWidth();
         }

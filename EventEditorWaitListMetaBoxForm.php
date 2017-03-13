@@ -71,7 +71,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							array(
 								'html_label_text' => esc_html__( 'Wait List Spaces', 'event_espresso' ),
 								'html_help_text'  => esc_html__(
-									'number of registrants the wait list accepts before the event is completely sold out.',
+									'Number of additional registrants the wait list accepts before the event is completely sold out. For example, if your reg limit for an event is 100, and this field is set to 20, then the wait list form will be displayed until there are a total of 120 registrants for the event.',
 									'event_espresso'
 								),
 								'other_html_attributes' => ' size="4"',
@@ -87,7 +87,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							array(
 								'html_label_text' => esc_html__( 'Auto Promote Registrants?', 'event_espresso' ),
 								'html_help_text'  => esc_html__(
-									'controls whether or not to automatically promote registrants from the wait list to the RPP “Pending Payment” status (or the default event reg status) based on their position on the wait list. If no, then this will need to be done manually.',
+									'Controls whether or not to automatically promote registrants from the wait list to the RPP “Pending Payment” status (or the default event reg status) based on their position on the wait list. If no, then this will need to be done manually.',
 									'event_espresso'
 								),
 								'default'         => filter_var(
@@ -102,7 +102,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							array(
 								'html_label_text' => esc_html__( 'Spaces Available before Auto Promoting', 'event_espresso' ),
 								'html_help_text'  => esc_html__(
-									'controls the number of spaces that need to be available before automatically promoting registrants from the wait list to another registration status. This allows you to manually control the last few spaces if you so desire. Setting this to zero puts the wait list under fully automatic control, and registrants will be managed completely by the system.',
+									'Controls the number of spaces that need to be available before automatically promoting registrants from the wait list to another registration status. This allows you to manually control the last few spaces if you so desire. Setting this to zero puts the wait list under fully automatic control, and registrants will be managed completely by the system.',
 									'event_espresso'
 								),
 								'other_html_attributes' => ' size="4"',
@@ -146,6 +146,13 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 
 
 
+    /**
+     * returns HTML for displaying Wait List Reg Count
+     * that links to the reg admin list table filtered for that reg status and event
+     *
+     * @return string
+     * @throws \EE_Error
+     */
     public function waitListRegCountDisplay()
     {
         $html = \EEH_HTML::span(
@@ -153,21 +160,12 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
             '',
             'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
         );
-        $html .= ' ' . \EEH_HTML::link(
-            add_query_arg(
-                array(
-                    'route'       => 'default',
-                    '_reg_status' => \EEM_Registration::status_id_wait_list,
-                    'event_id'    => $this->event->ID(),
-                ),
-                REG_ADMIN_URL
-            ),
-            esc_html__('Wait List Registrations', 'event_espresso'),
-            esc_html__('View registrations on the wait list for this event', 'event_espresso')
-        );
+        $html .= ' ' . \EED_Wait_Lists::wait_list_registrations_list_table_link($this->event);
         $html .= ' : ' . \EED_Wait_Lists::waitListRegCount($this->event);
         return $html;
     }
+
+
 
 	/**
 	 * handles processing the form submission
@@ -185,7 +183,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		if ( empty( $valid_data ) ) {
 			return false;
 		}
-		$wait_list_spaces = absint( (int) $valid_data['wait_list_spaces'] );
+		$wait_list_spaces = absint($valid_data['wait_list_spaces']);
 		if ( $wait_list_spaces ) {
 			$this->event->update_extra_meta('ee_wait_list_spaces', $wait_list_spaces);
 			$this->event->update_extra_meta(

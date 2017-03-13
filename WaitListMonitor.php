@@ -30,6 +30,16 @@ class WaitListMonitor {
 	 */
 	private $wait_list_events;
 
+	/**
+	 * @var boolean $perform_sold_out_status_check
+	 */
+	private $perform_sold_out_status_check = true;
+
+	/**
+	 * @var boolean $promote_wait_list_registrants
+	 */
+	private $promote_wait_list_registrants = true;
+
 
 
 	/**
@@ -126,7 +136,8 @@ class WaitListMonitor {
 
 
     /**
-     * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
+     * increment or decrement the wait list reg count for an event
+     * when a registration's status changes to or from RWL
      *
      * @param \EE_Registration $registration
      * @param                  $old_STS_ID
@@ -151,41 +162,31 @@ class WaitListMonitor {
                 $wait_list_reg_count++;
                 $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
             }
-            if ($wait_list_reg_count !== null) {
+            if ($wait_list_reg_count !== null && $this->perform_sold_out_status_check) {
+                // updating the reg status will trigger a sold out status check on the event,
+                // which in turn will trigger WaitListMonitor::promoteWaitListRegistrants()
+                // so let's turn that off while we do this, otherwise this registration
+                // could just get set right back to the status it was previously at,
+                // which can make it impossible to manually move a registration back to the wait list
+                $this->promote_wait_list_registrants = false;
                 $event->perform_sold_out_status_check();
+                $this->promote_wait_list_registrants = true;
             }
-            // $wait_list_reg_count = $wait_list_reg_count !== null
-            //     ? $wait_list_reg_count
-            //     : absint(
-            //         $event->get_extra_meta('ee_wait_list_registration_count', true)
-            //     );
-            // $wait_list_spaces = absint($event->get_extra_meta('ee_wait_list_spaces', true));
-            // $available_spaces = $wait_list_reg_count < $wait_list_spaces
         }
     }
 
 
 
-    // protected function calculateWaitListSpaces(\EE_Event $event)
-    // {
-    //         $wait_list_reg_count = \EED_Wait_Lists::waitListRegCount($event);
-    // }
-
-
-
     /**
-     * @param int            $spaces_available
-     * @param \EE_Event      $event
+     * factors wait list registrations into calculations involving spaces available for events
+     *
+     * @param int       $spaces_available
+     * @param \EE_Event $event
      * @return int
      * @throws \EE_Error
      */
     public function adjustEventSpacesAvailable($spaces_available, \EE_Event $event)
     {
-        // wait list related event meta:
-        // 'ee_wait_list_spaces'
-        // 'ee_wait_list_auto_promote'
-        // 'ee_wait_list_spaces_before_promote'
-        // 'ee_wait_list_registration_count'
         if ($this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = absint(
                 $event->get_extra_meta('ee_wait_list_registration_count', true)
@@ -194,6 +195,125 @@ class WaitListMonitor {
             $spaces_available -= $wait_list_reg_count;
         }
         return $spaces_available;
+    }
+
+
+
+    /**
+     * If "auto promote" is turned on for an event with a wait list,
+     * then registrations will automatically have their statuses changed from RWL
+     * to whatever the event's default reg status is as spaces become available
+     *
+     * @param EE_Event $event
+     * @param bool     $sold_out
+     * @param int      $spaces_remaining
+     * @throws \EE_Error
+     * @throws \RuntimeException
+     */
+    public function promoteWaitListRegistrants(
+        \EE_Event $event,
+        $sold_out = false,
+        $spaces_remaining = 0
+    ) {
+        if ($this->promote_wait_list_registrants && $this->wait_list_events->hasObject($event)) {
+            $wait_list_reg_count = absint(
+                $event->get_extra_meta('ee_wait_list_registration_count', true)
+            );
+            \EEH_Debug_Tools::printr($spaces_remaining, '$spaces_remaining', __FILE__, __LINE__);
+            \EEH_Debug_Tools::printr($wait_list_reg_count, '$wait_list_reg_count', __FILE__, __LINE__);
+            $regs_to_promote = $spaces_remaining + $wait_list_reg_count;
+            if ($regs_to_promote < 1) {
+                return;
+            }
+            if ($this->manuallyPromoteRegistrations($event, $regs_to_promote, $wait_list_reg_count)){
+                return;
+            }
+            $this->autoPromoteRegistrations($event, $regs_to_promote);
+        }
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @param int      $regs_to_promote
+     * @param int      $wait_list_reg_count
+     * @return bool
+     * @throws \EE_Error
+     */
+    private function manuallyPromoteRegistrations(\EE_Event $event, $regs_to_promote, $wait_list_reg_count)
+    {
+        $auto_promote = absint(
+            $event->get_extra_meta('ee_wait_list_auto_promote', true)
+        );
+        if (
+            ! $auto_promote
+            && is_admin()
+            && EE_Registry::instance()->CAP->current_user_can(
+                'ee_edit_registration',
+                'espresso_promote_wait_list_registrants'
+            )
+        ) {
+            EE_Error::add_attention(
+                sprintf(
+                    esc_html__(
+                        'There is %1$d space(s) available for "%3$s" and %2$d registrant(s) on the Wait List for that event. %5$s Please click here to view a list of %4$s and select those you wish to offer a space to by updating their reg status accordingly.'
+                    ),
+                    $regs_to_promote,
+                    $wait_list_reg_count,
+                    $event->name(),
+                    \EED_Wait_Lists::wait_list_registrations_list_table_link($event),
+                    '<br />'
+                )
+            );
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @param int      $regs_to_promote
+     * @throws \EE_Error
+     * @throws \RuntimeException
+     */
+    private function autoPromoteRegistrations(\EE_Event $event, $regs_to_promote = 0)
+    {
+        $spaces_before_promote = absint(
+            $event->get_extra_meta('ee_wait_list_spaces_before_promote', true)
+        );
+        \EEH_Debug_Tools::printr($spaces_before_promote, '$spaces_before_promote', __FILE__, __LINE__);
+        /** @var EE_Registration[] $registrations */
+        $registrations = EEM_Registration::instance()->get_all(
+            array(
+                array(
+                    'EVT_ID' => $event->ID(),
+                    'STS_ID' => EEM_Registration::status_id_wait_list,
+                ),
+                'limit'    => $regs_to_promote,
+                'order_by' => array('REG_ID' => 'ASC'),
+            )
+        );
+        if (empty($registrations)) {
+            return;
+        }
+        // updating the reg status will trigger a sold out status check on the event,
+        // so let's turn that off while we promote these registrations by switching their status,
+        // because that won't affect the event status, as these registrations
+        // were already being counted against the event's sold tickets count
+        $this->perform_sold_out_status_check = false;
+        foreach ($registrations as $registration) {
+            $registration->set_status($event->default_registration_status());
+        }
+        do_action(
+            'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
+            $registrations,
+            $event,
+            $this
+        );
+        $this->perform_sold_out_status_check = true;
     }
 
 }

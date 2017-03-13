@@ -3,7 +3,7 @@
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
-
+use EventEspresso\WaitList\WaitListNotificationsManager;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
@@ -109,6 +109,16 @@ class EED_Wait_Lists extends EED_Module {
         add_filter(
             'FHEE_EE_Event__total_available_spaces__spaces_available',
             array('EED_Wait_Lists', 'event_spaces_available'),
+            10, 2
+        );
+        add_action(
+            'AHEE__EE_Event__perform_sold_out_status_check__end',
+            array('EED_Wait_Lists', 'promote_wait_list_registrants'),
+            10, 3
+        );
+        add_action(
+            'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
+            array('EED_Wait_Lists', 'trigger_wait_list_notifications'),
             10, 2
         );
     }
@@ -246,13 +256,11 @@ class EED_Wait_Lists extends EED_Module {
      */
     public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
-        // \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
         try {
             \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
-        // \EEH_Debug_Tools::printr(__FUNCTION__, 'END ', __FILE__, __LINE__, 2);
     }
 
 
@@ -264,7 +272,6 @@ class EED_Wait_Lists extends EED_Module {
      */
     public static function event_spaces_available($spaces_available, \EE_Event $event)
     {
-        // \EEH_Debug_Tools::printr(__FUNCTION__, __CLASS__, __FILE__, __LINE__, 2);
         // if there's nothing left, then there's nothing left
         if ($spaces_available < 1) {
             return $spaces_available;
@@ -314,8 +321,8 @@ class EED_Wait_Lists extends EED_Module {
 			esc_html__( 'Event Wait List', 'event_espresso' ),
 			array( 'EED_Wait_Lists', 'event_wait_list_meta_box' ),
 			EVENTS_PG_SLUG,
-			'side',
-			'high'
+			'side', // advanced   normal  side
+			'high' // default   high    low
 		);
 	}
 
@@ -358,10 +365,10 @@ class EED_Wait_Lists extends EED_Module {
 	 * @return array
 	 */
 	public static function event_update_callbacks( array $event_update_callbacks) {
-		$event_update_callbacks = array_merge(
-			$event_update_callbacks,
-			array( array( 'EED_Wait_Lists', 'update_event_wait_list_settings' ) )
-		);
+        $event_update_callbacks = array_merge(
+            $event_update_callbacks,
+            array(array('EED_Wait_Lists', 'update_event_wait_list_settings'))
+        );
 		return $event_update_callbacks;
 	}
 
@@ -373,7 +380,7 @@ class EED_Wait_Lists extends EED_Module {
 	 */
 	public static function update_event_wait_list_settings(EE_Event $event, array $form_data) {
 		try {
-			$wait_list_settings_form = new EventEspresso\WaitList\EventEditorWaitListMetaBoxForm(
+			$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
 				$event,
 				EE_Registry::instance()
 			);
@@ -395,6 +402,63 @@ class EED_Wait_Lists extends EED_Module {
         return absint($event->get_extra_meta('ee_wait_list_registration_count', true));
     }
 
+
+
+    /**
+     * @param EE_Event    $event
+     * @param bool        $sold_out
+     * @param int         $spaces_remaining
+     */
+    public static function promote_wait_list_registrants(
+        \EE_Event $event,
+        $sold_out = false,
+        $spaces_remaining = 0
+    ) {
+        try {
+            EED_Wait_Lists::getWaitListMonitor()->promoteWaitListRegistrants(
+                $event,
+                $sold_out,
+                $spaces_remaining
+            );
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+    }
+
+
+
+    /**
+     * @param EE_Registration[] $registrations
+     * @param \EE_Event $event
+     */
+    public static function trigger_wait_list_notifications(array $registrations, \EE_Event $event)
+    {
+        $wait_list_notifications_manager = new WaitListNotificationsManager($registrations, $event);
+        $wait_list_notifications_manager->triggerNotifications();
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return string
+     * @throws \EE_Error
+     */
+    public static function wait_list_registrations_list_table_link(\EE_Event $event)
+    {
+        return \EEH_HTML::link(
+            add_query_arg(
+                array(
+                    'route'       => 'default',
+                    '_reg_status' => \EEM_Registration::status_id_wait_list,
+                    'event_id'    => $event->ID(),
+                ),
+                REG_ADMIN_URL
+            ),
+            esc_html__('Wait List Registrations', 'event_espresso'),
+            esc_html__('View registrations on the wait list for this event', 'event_espresso')
+        );
+    }
 
 
 }

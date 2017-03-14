@@ -220,8 +220,6 @@ class WaitListMonitor {
             $wait_list_reg_count = absint(
                 $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
             );
-            \EEH_Debug_Tools::printr($spaces_remaining, '$spaces_remaining', __FILE__, __LINE__);
-            \EEH_Debug_Tools::printr($wait_list_reg_count, '$wait_list_reg_count', __FILE__, __LINE__);
             $regs_to_promote = $spaces_remaining + $wait_list_reg_count;
             if ($regs_to_promote < 1) {
                 return;
@@ -282,10 +280,10 @@ class WaitListMonitor {
      */
     private function autoPromoteRegistrations(\EE_Event $event, $regs_to_promote = 0)
     {
-        $spaces_before_promote = absint(
+        $manual_control_spaces = absint(
             $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
-        \EEH_Debug_Tools::printr($spaces_before_promote, '$spaces_before_promote', __FILE__, __LINE__);
+        $regs_to_promote -= $manual_control_spaces;
         /** @var EE_Registration[] $registrations */
         $registrations = EEM_Registration::instance()->get_all(
             array(

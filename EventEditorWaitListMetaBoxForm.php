@@ -186,32 +186,26 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 			return false;
 		}
 		$wait_list_spaces = absint($valid_data['wait_list_spaces']);
-		if ( $wait_list_spaces ) {
-			$this->event->update_extra_meta(WaitList::SPACES_META_KEY, $wait_list_spaces);
-			$this->event->update_extra_meta(
-				WaitList::AUTO_PROMOTE_META_KEY,
-				filter_var(
-					$valid_data['auto_promote_registrants'],
-					FILTER_VALIDATE_BOOLEAN
-				)
-			);
-			$manual_control_spaces = absint($valid_data['manual_control_spaces']);
-			// manual control spaces can't be more than the total number of spaces in the wait list
-            $manual_control_spaces = min( $wait_list_spaces, $manual_control_spaces );
-			$this->event->update_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, $manual_control_spaces);
-			$this->event->update_extra_meta(
-			    WaitList::REG_COUNT_META_KEY,
-                \EED_Wait_Lists::waitListRegCount($this->event)
-            );
-			// mark event as having a waitlist
-			$this->event->set('EVT_allow_overflow', true);
-        } else {
-			$this->event->delete_extra_meta( WaitList::SPACES_META_KEY );
-			$this->event->delete_extra_meta( WaitList::AUTO_PROMOTE_META_KEY );
-			$this->event->delete_extra_meta( WaitList::MANUAL_CONTROL_SPACES_META_KEY );
-			$this->event->delete_extra_meta( WaitList::REG_COUNT_META_KEY );
-			$this->event->set( 'EVT_allow_overflow', false );
-		}
+        $this->event->update_extra_meta(WaitList::SPACES_META_KEY, $wait_list_spaces);
+        $this->event->update_extra_meta(
+            WaitList::AUTO_PROMOTE_META_KEY,
+            filter_var(
+                $valid_data['auto_promote_registrants'],
+                FILTER_VALIDATE_BOOLEAN
+            )
+        );
+        $manual_control_spaces = absint($valid_data['manual_control_spaces']);
+        // manual control spaces can't be more than the total number of spaces in the wait list
+        $manual_control_spaces = $wait_list_spaces > 0 ?
+            min( $wait_list_spaces, $manual_control_spaces )
+            : $manual_control_spaces;
+        $this->event->update_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, $manual_control_spaces);
+        $this->event->update_extra_meta(
+            WaitList::REG_COUNT_META_KEY,
+            WaitList::waitListRegCount($this->event)
+        );
+        // mark event as having a waitlist if number of spaces available is positive
+        $this->event->set('EVT_allow_overflow', $wait_list_spaces > 0);
 		return false;
 	}
 

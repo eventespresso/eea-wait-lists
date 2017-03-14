@@ -188,7 +188,6 @@ class WaitListForm extends FormHandler
      */
     public function process($form_data = array())
     {
-        // \EEH_Debug_Tools::printr($this, '$this', __FILE__, __LINE__);
         // process form
         $valid_data = (array)parent::process($form_data);
         if (empty($valid_data)) {
@@ -256,14 +255,7 @@ class WaitListForm extends FormHandler
         // finally... update the wait list reg count
         $this->event->update_extra_meta(
             WaitList::REG_COUNT_META_KEY,
-            \EEM_Registration::instance()->count(
-                array(
-                    array(
-                        'STS_ID'       => \EEM_Registration::status_id_wait_list,
-                        'Event.EVT_ID' => $this->event->ID()
-                    )
-                )
-            )
+            WaitList::waitListRegCount($this->event)
         );
         return $attendee;
     }

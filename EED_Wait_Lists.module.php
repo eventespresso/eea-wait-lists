@@ -1,6 +1,7 @@
 <?php
 
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
+use EventEspresso\WaitList\WaitList;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
 use EventEspresso\WaitList\WaitListNotificationsManager;
@@ -399,7 +400,7 @@ class EED_Wait_Lists extends EED_Module {
      */
     public static function waitListRegCount(\EE_Event $event)
     {
-        return absint($event->get_extra_meta('ee_wait_list_registration_count', true));
+        return absint($event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true));
     }
 
 

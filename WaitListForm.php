@@ -12,6 +12,7 @@ use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\registration\CreateRegistrationCommand;
 use EventEspresso\core\services\commands\ticket\CreateTicketLineItemCommand;
 use EventEspresso\core\services\commands\transaction\CreateTransactionCommand;
+use EventEspresso\WaitList\WaitList;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
 
@@ -173,17 +174,18 @@ class WaitListForm extends FormHandler
 
 
 
-	/**
-	 * handles processing the form submission
+    /**
+     * handles processing the form submission
      * returns true or false depending on whether the form was processed successfully or not
      *
      * @param array $form_data
-	 * @return \EE_Attendee
-	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
-	 * @throws \LogicException
-	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-	 * @throws \EE_Error
-	 */
+     * @return \EE_Attendee
+     * @throws \RuntimeException
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws \LogicException
+     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
+     * @throws \EE_Error
+     */
     public function process($form_data = array())
     {
         // \EEH_Debug_Tools::printr($this, '$this', __FILE__, __LINE__);
@@ -253,7 +255,7 @@ class WaitListForm extends FormHandler
 	    $registration->save();
         // finally... update the wait list reg count
         $this->event->update_extra_meta(
-            'ee_wait_list_registration_count',
+            WaitList::REG_COUNT_META_KEY,
             \EEM_Registration::instance()->count(
                 array(
                     array(

@@ -87,7 +87,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							array(
 								'html_label_text' => esc_html__( 'Auto Promote Registrants?', 'event_espresso' ),
 								'html_help_text'  => esc_html__(
-									'Controls whether or not to automatically promote registrants from the wait list to the RPP “Pending Payment” status (or the default event reg status) based on their position on the wait list. If no, then this will need to be done manually.',
+									'Controls whether or not to automatically promote registrants from the wait list to the "Pending Payment" status (or the default event reg status) based on their position on the wait list. If no, then this will need to be done manually.',
 									'event_espresso'
 								),
 								'default'         => filter_var(

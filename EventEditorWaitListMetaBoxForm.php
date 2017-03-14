@@ -99,11 +99,12 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 							)
 						),
 						'lb2' => new \EE_Form_Section_HTML( \EEH_HTML::br() ),
-						'spaces_before_auto_promote' => new EE_Text_Input(
+						'manual_control_spaces' => new EE_Text_Input(
 							array(
-								'html_label_text' => esc_html__( 'Spaces Available before Auto Promoting', 'event_espresso' ),
+								'html_label_text' => esc_html__( 'Manually Controlled Spaces',
+                                    'event_espresso' ),
 								'html_help_text'  => esc_html__(
-									'Controls the number of spaces that need to be available before automatically promoting registrants from the wait list to another registration status. This allows you to manually control the last few spaces if you so desire. Setting this to zero puts the wait list under fully automatic control, and registrants will be managed completely by the system.',
+									'Controls the number of spaces that are not automatically promoted from the wait list to another registration status. This allows you to manually control a portion of the wait list spaces if you so desire. Setting this to zero puts the wait list fully under automatic control, and registrants will be managed completely by the system.',
 									'event_espresso'
 								),
 								'other_html_attributes' => ' size="4"',
@@ -194,7 +195,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 					FILTER_VALIDATE_BOOLEAN
 				)
 			);
-			$spaces_b4_auto_promote = absint($valid_data['spaces_before_auto_promote']);
+			$spaces_b4_auto_promote = absint($valid_data['manual_control_spaces']);
 			// spaces before auto promote can't be more than the total number of spaces in the wait list
 			$spaces_b4_auto_promote = min( $wait_list_spaces, $spaces_b4_auto_promote );
 			$this->event->update_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, $spaces_b4_auto_promote);

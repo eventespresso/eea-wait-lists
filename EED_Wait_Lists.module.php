@@ -1,12 +1,11 @@
 <?php
-
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitList;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
 use EventEspresso\WaitList\WaitListNotificationsManager;
 
-defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
+defined('EVENT_ESPRESSO_VERSION') || exit;
 
 
 
@@ -18,61 +17,64 @@ defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
  * @author        Brent Christensen
  * @since         1.0.0
  */
-class EED_Wait_Lists extends EED_Module {
+class EED_Wait_Lists extends EED_Module
+{
 
 
-	/**
-	 * @var \Events_Admin_Page $admin_page
-	 */
-	protected static $admin_page;
+    /**
+     * @var \Events_Admin_Page $admin_page
+     */
+    protected static $admin_page;
 
 
-	/**
-	 * @var WaitListMonitor $wait_list_monitor
-	 */
-	protected static $wait_list_monitor;
+    /**
+     * @var WaitListMonitor $wait_list_monitor
+     */
+    protected static $wait_list_monitor;
 
 
-	/**
-	 * @var EventEditorWaitListMetaBoxForm $wait_list_settings_form
- */
-	protected static $wait_list_settings_form;
+    /**
+     * @var EventEditorWaitListMetaBoxForm $wait_list_settings_form
+     */
+    protected static $wait_list_settings_form;
 
 
 
-	/**
-	 * set_hooks - for hooking into EE Core, other modules, etc
-	 *
-	 * @return void
-	 */
-	public static function set_hooks() {
+    /**
+     * set_hooks - for hooking into EE Core, other modules, etc
+     *
+     * @return void
+     */
+    public static function set_hooks()
+    {
         EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
         add_filter(
-			'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
-			array( 'EED_Wait_Lists', 'add_wait_list_form_for_event' ),
-			10, 2
-		);
+            'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
+            array('EED_Wait_Lists', 'add_wait_list_form_for_event'),
+            10, 2
+        );
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
         \EED_Wait_Lists::set_shared_hooks();
     }
 
 
 
-	/**
-	 * set_hooks_admin - for hooking into EE Admin Core, other modules, etc
-	 *
-	 * @return void
-	 */
-	public static function set_hooks_admin() {
-		add_filter(
-			'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
-			array( 'EED_Wait_Lists', 'setup_page_config' ),
-			1, 2
-		);
-		add_filter(
-			'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
-			array( 'EED_Wait_Lists', 'event_update_callbacks' )
-		);
+    /**
+     * set_hooks_admin - for hooking into EE Admin Core, other modules, etc
+     *
+     * @return void
+     */
+    public static function set_hooks_admin()
+    {
+        add_filter(
+            'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
+            array('EED_Wait_Lists', 'setup_page_config'),
+            1, 2
+        );
+        add_filter(
+            'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
+            array('EED_Wait_Lists', 'event_update_callbacks')
+        );
         add_action(
             'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
             array('EED_Wait_Lists', 'event_editor_overview_add')
@@ -86,7 +88,7 @@ class EED_Wait_Lists extends EED_Module {
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
         \EED_Wait_Lists::set_shared_hooks();
-	}
+    }
 
 
 
@@ -126,33 +128,35 @@ class EED_Wait_Lists extends EED_Module {
 
 
 
-	/**
-	 *    run - initial module setup
-	 *    this method is primarily used for activating resources in the EE_Front_Controller thru the use of filters
-	 *
-	 * @access    public
-	 * @var            WP $WP
-	 * @return    void
-	 */
-	public function run( $WP ) {
-		// TODO: Implement run() method.
-	}
+    /**
+     *    run - initial module setup
+     *    this method is primarily used for activating resources in the EE_Front_Controller thru the use of filters
+     *
+     * @access    public
+     * @var            WP $WP
+     * @return    void
+     */
+    public function run($WP)
+    {
+        // TODO: Implement run() method.
+    }
 
 
 
-	/**
-	 * @return \EventEspresso\WaitList\WaitListMonitor
-	 * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
-	 * @throws \EE_Error
-	 */
-	public static function getWaitListMonitor() {
+    /**
+     * @return \EventEspresso\WaitList\WaitListMonitor
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws \EE_Error
+     */
+    public static function getWaitListMonitor()
+    {
         // if not already generated, create a wait list monitor object
-		if ( ! self::$wait_list_monitor instanceof WaitListMonitor) {
-			self::$wait_list_monitor = new WaitListMonitor( new WaitListEventsCollection() );
-		}
-		return self::$wait_list_monitor;
-	}
+        if (! self::$wait_list_monitor instanceof WaitListMonitor) {
+            self::$wait_list_monitor = new WaitListMonitor(new WaitListEventsCollection());
+        }
+        return self::$wait_list_monitor;
+    }
 
 
 
@@ -162,23 +166,21 @@ class EED_Wait_Lists extends EED_Module {
      * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
      * @throws \DomainException
      */
-	public static function getEventEditorWaitListMetaBoxForm() {
+    public static function getEventEditorWaitListMetaBoxForm()
+    {
         // if not already generated, create a wait list monitor object
-		if ( ! self::$wait_list_settings_form instanceof EventEditorWaitListMetaBoxForm) {
-			self::$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
+        if (! self::$wait_list_settings_form instanceof EventEditorWaitListMetaBoxForm) {
+            self::$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
                 EED_Wait_Lists::$admin_page->get_event_object(),
                 EE_Registry::instance()
             );
-		}
-		return self::$wait_list_settings_form;
-	}
+        }
+        return self::$wait_list_settings_form;
+    }
 
 
 
-	/**************************** FRONTEND FUNCTIONALITY ***************************/
-
-
-
+    /**************************** FRONTEND FUNCTIONALITY ***************************/
     /**
      * enqueue_styles_and_scripts
      *
@@ -212,21 +214,23 @@ class EED_Wait_Lists extends EED_Module {
      * @param \EE_Event $event
      * @return string
      */
-	public static function add_wait_list_form_for_event( $html = '', \EE_Event $event ) {
+    public static function add_wait_list_form_for_event($html = '', \EE_Event $event)
+    {
         try {
             return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
         return $html;
-	}
+    }
 
 
 
-	/**
-	 * process_wait_list_form_for_event
-	 */
-	public static function process_wait_list_form_for_event() {
+    /**
+     * process_wait_list_form_for_event
+     */
+    public static function process_wait_list_form_for_event()
+    {
         try {
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
             \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
@@ -240,14 +244,11 @@ class EED_Wait_Lists extends EED_Module {
         \EE_Error::get_notices(false, true);
         wp_safe_redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
         exit();
-	}
+    }
 
 
 
     /**************************** SPLIT FUNCTIONALITY ***************************/
-
-
-
     /**
      * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
      *
@@ -267,8 +268,8 @@ class EED_Wait_Lists extends EED_Module {
 
 
     /**
-     * @param int            $spaces_available
-     * @param \EE_Event      $event
+     * @param int       $spaces_available
+     * @param \EE_Event $event
      * @return int
      */
     public static function event_spaces_available($spaces_available, \EE_Event $event)
@@ -291,41 +292,40 @@ class EED_Wait_Lists extends EED_Module {
 
 
     /**************************** ADMIN FUNCTIONALITY ****************************/
+    /**
+     * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
+     *
+     * @param array              $page_config current page config.
+     * @param \Events_Admin_Page $admin_page
+     * @return array
+     * @since  1.0.0
+     */
+    public static function setup_page_config(array $page_config, \Events_Admin_Page $admin_page)
+    {
+        EED_Wait_Lists::$admin_page = $admin_page;
+        $page_config['edit']['metaboxes'] = array_merge(
+            $page_config['edit']['metaboxes'],
+            array(array('EED_Wait_Lists', 'add_event_wait_list_meta_box'))
+        );
+        return $page_config;
+    }
 
 
 
     /**
-	 * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
-	 *
-	 * @param array              $page_config current page config.
-	 * @param \Events_Admin_Page $admin_page
-	 * @return array
-	 * @since  1.0.0
-	 */
-	public static function setup_page_config( array $page_config, \Events_Admin_Page $admin_page ) {
-		EED_Wait_Lists::$admin_page = $admin_page;
-		$page_config['edit']['metaboxes'] = array_merge(
-			$page_config['edit']['metaboxes'],
-			array( array( 'EED_Wait_Lists', 'add_event_wait_list_meta_box' ) )
-		);
-		return $page_config;
-	}
-
-
-
-	/**
-	 * @return void
-	 */
-	public static function add_event_wait_list_meta_box() {
-		add_meta_box(
-			'event-wait-list-mbox',
-			esc_html__( 'Event Wait List', 'event_espresso' ),
-			array( 'EED_Wait_Lists', 'event_wait_list_meta_box' ),
-			EVENTS_PG_SLUG,
-			'side', // advanced   normal  side
-			'high' // default   high    low
-		);
-	}
+     * @return void
+     */
+    public static function add_event_wait_list_meta_box()
+    {
+        add_meta_box(
+            'event-wait-list-mbox',
+            esc_html__('Event Wait List', 'event_espresso'),
+            array('EED_Wait_Lists', 'event_wait_list_meta_box'),
+            EVENTS_PG_SLUG,
+            'side', // advanced   normal  side
+            'high' // default   high    low
+        );
+    }
 
 
 
@@ -347,49 +347,52 @@ class EED_Wait_Lists extends EED_Module {
 
 
 
-	/**
-	 * callback that adds the main "event_wait_list_meta_box" meta_box
-	 * calls non static method below
-	 */
-	public static function event_wait_list_meta_box() {
-		try {
+    /**
+     * callback that adds the main "event_wait_list_meta_box" meta_box
+     * calls non static method below
+     */
+    public static function event_wait_list_meta_box()
+    {
+        try {
             echo EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->display();
-        } catch ( Exception $e ) {
-			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
-		}
-	}
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+    }
 
 
 
-	/**
-	 * @param array $event_update_callbacks
-	 * @return array
-	 */
-	public static function event_update_callbacks( array $event_update_callbacks) {
+    /**
+     * @param array $event_update_callbacks
+     * @return array
+     */
+    public static function event_update_callbacks(array $event_update_callbacks)
+    {
         $event_update_callbacks = array_merge(
             $event_update_callbacks,
             array(array('EED_Wait_Lists', 'update_event_wait_list_settings'))
         );
-		return $event_update_callbacks;
-	}
+        return $event_update_callbacks;
+    }
 
 
 
-	/**
-	 * @param \EE_Event $event
-	 * @param array     $form_data
-	 */
-	public static function update_event_wait_list_settings(EE_Event $event, array $form_data) {
-		try {
-			$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
-				$event,
-				EE_Registry::instance()
-			);
-			$wait_list_settings_form->process($form_data);
-		} catch ( Exception $e ) {
-			EE_Error::add_error( $e->getMessage(), __FILE__, __FUNCTION__, __LINE__ );
-		}
-	}
+    /**
+     * @param \EE_Event $event
+     * @param array     $form_data
+     */
+    public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
+    {
+        try {
+            $wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
+                $event,
+                EE_Registry::instance()
+            );
+            $wait_list_settings_form->process($form_data);
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+    }
 
 
 
@@ -406,9 +409,9 @@ class EED_Wait_Lists extends EED_Module {
 
 
     /**
-     * @param EE_Event    $event
-     * @param bool        $sold_out
-     * @param int         $spaces_remaining
+     * @param EE_Event $event
+     * @param bool     $sold_out
+     * @param int      $spaces_remaining
      */
     public static function promote_wait_list_registrants(
         \EE_Event $event,
@@ -430,7 +433,7 @@ class EED_Wait_Lists extends EED_Module {
 
     /**
      * @param EE_Registration[] $registrations
-     * @param \EE_Event $event
+     * @param \EE_Event         $event
      */
     public static function trigger_wait_list_notifications(array $registrations, \EE_Event $event)
     {

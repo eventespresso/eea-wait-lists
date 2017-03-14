@@ -52,8 +52,8 @@ class WaitList
             array(
                 array(
                     'STS_ID'       => \EEM_Registration::status_id_wait_list,
-                    'Event.EVT_ID' => $event->ID()
-                )
+                    'Event.EVT_ID' => $event->ID(),
+                ),
             )
         );
     }

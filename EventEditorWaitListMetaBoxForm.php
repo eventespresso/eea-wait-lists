@@ -5,6 +5,7 @@ use EE_Form_Section_Proper;
 use EE_Text_Input;
 use EE_Yes_No_Input;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use EventEspresso\WaitList\WaitList;
 use LogicException;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
@@ -77,7 +78,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 								'other_html_attributes' => ' size="4"',
 								'html_class'      => 'ee-numeric',
 								'default'         => absint(
-									$this->event->get_extra_meta( 'ee_wait_list_spaces', true )
+									$this->event->get_extra_meta( WaitList::SPACES_META_KEY, true )
 								),
 								'required'        => false
 							)
@@ -91,7 +92,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 									'event_espresso'
 								),
 								'default'         => filter_var(
-									$this->event->get_extra_meta( 'ee_wait_list_auto_promote', true ),
+									$this->event->get_extra_meta( WaitList::AUTO_PROMOTE_META_KEY, true ),
 									FILTER_VALIDATE_BOOLEAN
 								),
 								'required'        => false
@@ -108,7 +109,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 								'other_html_attributes' => ' size="4"',
 								'html_class'            => 'ee-numeric',
 								'default'         => absint(
-									$this->event->get_extra_meta( 'ee_wait_list_spaces_before_promote', true )
+									$this->event->get_extra_meta( WaitList::MANUAL_CONTROL_SPACES_META_KEY, true )
 								),
 								'required'        => false
 							)
@@ -185,9 +186,9 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 		}
 		$wait_list_spaces = absint($valid_data['wait_list_spaces']);
 		if ( $wait_list_spaces ) {
-			$this->event->update_extra_meta('ee_wait_list_spaces', $wait_list_spaces);
+			$this->event->update_extra_meta(WaitList::SPACES_META_KEY, $wait_list_spaces);
 			$this->event->update_extra_meta(
-				'ee_wait_list_auto_promote',
+				WaitList::AUTO_PROMOTE_META_KEY,
 				filter_var(
 					$valid_data['auto_promote_registrants'],
 					FILTER_VALIDATE_BOOLEAN
@@ -196,18 +197,18 @@ class EventEditorWaitListMetaBoxForm extends FormHandler  {
 			$spaces_b4_auto_promote = absint($valid_data['spaces_before_auto_promote']);
 			// spaces before auto promote can't be more than the total number of spaces in the wait list
 			$spaces_b4_auto_promote = min( $wait_list_spaces, $spaces_b4_auto_promote );
-			$this->event->update_extra_meta('ee_wait_list_spaces_before_promote', $spaces_b4_auto_promote);
+			$this->event->update_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, $spaces_b4_auto_promote);
 			$this->event->update_extra_meta(
-			    'ee_wait_list_registration_count',
+			    WaitList::REG_COUNT_META_KEY,
                 \EED_Wait_Lists::waitListRegCount($this->event)
             );
 			// mark event as having a waitlist
 			$this->event->set('EVT_allow_overflow', true);
         } else {
-			$this->event->delete_extra_meta( 'ee_wait_list_spaces' );
-			$this->event->delete_extra_meta( 'ee_wait_list_auto_promote' );
-			$this->event->delete_extra_meta( 'ee_wait_list_spaces_before_promote' );
-			$this->event->delete_extra_meta( 'ee_wait_list_registration_count' );
+			$this->event->delete_extra_meta( WaitList::SPACES_META_KEY );
+			$this->event->delete_extra_meta( WaitList::AUTO_PROMOTE_META_KEY );
+			$this->event->delete_extra_meta( WaitList::MANUAL_CONTROL_SPACES_META_KEY );
+			$this->event->delete_extra_meta( WaitList::REG_COUNT_META_KEY );
 			$this->event->set( 'EVT_allow_overflow', false );
 		}
 		return false;

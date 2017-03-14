@@ -1,6 +1,8 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use EE_Event;
+
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
 
@@ -36,6 +38,25 @@ class WaitList
      * Meta Key used for tracking number of registrants signed up for the wait list
      */
     const REG_COUNT_META_KEY = 'ee_wait_list_registration_count';
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return int
+     * @throws \EE_Error
+     */
+    public static function waitListRegCount(EE_Event $event)
+    {
+        return \EEM_Registration::instance()->count(
+            array(
+                array(
+                    'STS_ID'       => \EEM_Registration::status_id_wait_list,
+                    'Event.EVT_ID' => $event->ID()
+                )
+            )
+        );
+    }
 
 }
 // End of file WaitList.php

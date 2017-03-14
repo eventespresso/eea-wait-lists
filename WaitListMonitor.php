@@ -11,7 +11,7 @@ use EventEspresso\core\services\collections\Collection;
 use EventEspresso\WaitList\WaitList;
 use Exception;
 
-defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
+defined('EVENT_ESPRESSO_VERSION') || exit;
 
 
 
@@ -24,33 +24,35 @@ defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
  * @author        Brent Christensen
  * @since         $VID:$
  */
-class WaitListMonitor {
+class WaitListMonitor
+{
 
-	/**
-	 * @var Collection $wait_list_events
-	 */
-	private $wait_list_events;
+    /**
+     * @var Collection $wait_list_events
+     */
+    private $wait_list_events;
 
-	/**
-	 * @var boolean $perform_sold_out_status_check
-	 */
-	private $perform_sold_out_status_check = true;
+    /**
+     * @var boolean $perform_sold_out_status_check
+     */
+    private $perform_sold_out_status_check = true;
 
-	/**
-	 * @var boolean $promote_wait_list_registrants
-	 */
-	private $promote_wait_list_registrants = true;
+    /**
+     * @var boolean $promote_wait_list_registrants
+     */
+    private $promote_wait_list_registrants = true;
 
 
 
-	/**
-	 * WaitListMonitor constructor.
-	 *
-	 * @param Collection $wait_list_events
-	 */
-	public function __construct( Collection $wait_list_events ) {
-		$this->wait_list_events = $wait_list_events;
-	}
+    /**
+     * WaitListMonitor constructor.
+     *
+     * @param Collection $wait_list_events
+     */
+    public function __construct(Collection $wait_list_events)
+    {
+        $this->wait_list_events = $wait_list_events;
+    }
 
 
 
@@ -84,29 +86,31 @@ class WaitListMonitor {
      * @throws \DomainException
      * @throws \EE_Error
      */
-	public function getWaitListFormForEvent( EE_Event $event ) {
-		if ( $event->is_sold_out() && $this->eventHasOpenWaitList($event)){
+    public function getWaitListFormForEvent(EE_Event $event)
+    {
+        if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
             $wait_list_form = new WaitListForm($event, EE_Registry::instance());
             return $wait_list_form->display();
-		}
-		return '';
-	}
+        }
+        return '';
+    }
 
 
 
-	/**
-	 * @param int $event_id
-	 * @return boolean
-	 * @throws \EventEspresso\core\exceptions\InvalidEntityException
-	 * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-	 * @throws \LogicException
-	 * @throws \InvalidArgumentException
-	 * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-	 * @throws \DomainException
-	 * @throws \EE_Error
-	 */
-	public function processWaitListFormForEvent( $event_id ) {
-		if ( $this->wait_list_events->has($event_id)){
+    /**
+     * @param int $event_id
+     * @return boolean
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \DomainException
+     * @throws \EE_Error
+     */
+    public function processWaitListFormForEvent($event_id)
+    {
+        if ($this->wait_list_events->has($event_id)) {
             /** @var EE_Event $event */
             $event = $this->wait_list_events->get($event_id);
             try {
@@ -116,7 +120,8 @@ class WaitListMonitor {
                     apply_filters(
                         'FHEE_EventEspresso_WaitList_WaitListMonitor__processWaitListFormForEvent__success_msg',
                         sprintf(
-                            esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s', 'event_espresso'),
+                            esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s',
+                                'event_espresso'),
                             $attendee->full_name(),
                             '<br />',
                             $event->name()
@@ -130,9 +135,9 @@ class WaitListMonitor {
                     __FILE__, __FUNCTION__, __LINE__
                 );
             }
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
 
 
@@ -224,7 +229,7 @@ class WaitListMonitor {
             if ($regs_to_promote < 1) {
                 return;
             }
-            if ($this->manuallyPromoteRegistrations($event, $regs_to_promote, $wait_list_reg_count)){
+            if ($this->manuallyPromoteRegistrations($event, $regs_to_promote, $wait_list_reg_count)) {
                 return;
             }
             $this->autoPromoteRegistrations($event, $regs_to_promote);

@@ -8,6 +8,7 @@ use EE_Registry;
 use EEM_Registration;
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\services\collections\Collection;
+use EventEspresso\WaitList\WaitList;
 use Exception;
 
 defined( 'EVENT_ESPRESSO_VERSION' ) || exit;
@@ -63,8 +64,8 @@ class WaitListMonitor {
     protected function eventHasOpenWaitList(EE_Event $event)
     {
         if ($this->wait_list_events->hasObject($event)) {
-            $wait_list_reg_count = absint($event->get_extra_meta('ee_wait_list_registration_count', true));
-            $wait_list_spaces = absint($event->get_extra_meta('ee_wait_list_spaces', true));
+            $wait_list_reg_count = absint($event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true));
+            $wait_list_spaces = absint($event->get_extra_meta(WaitList::SPACES_META_KEY, true));
             if ($wait_list_reg_count < $wait_list_spaces) {
                 return true;
             }
@@ -151,16 +152,16 @@ class WaitListMonitor {
             $wait_list_reg_count = null;
             if ($old_STS_ID === EEM_Registration::status_id_wait_list) {
                 $wait_list_reg_count = absint(
-                    $event->get_extra_meta('ee_wait_list_registration_count', true)
+                    $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
                 );
                 $wait_list_reg_count--;
-                $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
+                $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
             } elseif ($new_STS_ID === EEM_Registration::status_id_wait_list) {
                 $wait_list_reg_count = absint(
-                    $event->get_extra_meta('ee_wait_list_registration_count', true)
+                    $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
                 );
                 $wait_list_reg_count++;
-                $event->update_extra_meta('ee_wait_list_registration_count', $wait_list_reg_count);
+                $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
             }
             if ($wait_list_reg_count !== null && $this->perform_sold_out_status_check) {
                 // updating the reg status will trigger a sold out status check on the event,
@@ -189,7 +190,7 @@ class WaitListMonitor {
     {
         if ($this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = absint(
-                $event->get_extra_meta('ee_wait_list_registration_count', true)
+                $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
             );
             // consider wait list registrations as taking available spaces
             $spaces_available -= $wait_list_reg_count;
@@ -217,7 +218,7 @@ class WaitListMonitor {
     ) {
         if ($this->promote_wait_list_registrants && $this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = absint(
-                $event->get_extra_meta('ee_wait_list_registration_count', true)
+                $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
             );
             \EEH_Debug_Tools::printr($spaces_remaining, '$spaces_remaining', __FILE__, __LINE__);
             \EEH_Debug_Tools::printr($wait_list_reg_count, '$wait_list_reg_count', __FILE__, __LINE__);
@@ -244,7 +245,7 @@ class WaitListMonitor {
     private function manuallyPromoteRegistrations(\EE_Event $event, $regs_to_promote, $wait_list_reg_count)
     {
         $auto_promote = absint(
-            $event->get_extra_meta('ee_wait_list_auto_promote', true)
+            $event->get_extra_meta(WaitList::AUTO_PROMOTE_META_KEY, true)
         );
         if (
             ! $auto_promote
@@ -282,7 +283,7 @@ class WaitListMonitor {
     private function autoPromoteRegistrations(\EE_Event $event, $regs_to_promote = 0)
     {
         $spaces_before_promote = absint(
-            $event->get_extra_meta('ee_wait_list_spaces_before_promote', true)
+            $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
         \EEH_Debug_Tools::printr($spaces_before_promote, '$spaces_before_promote', __FILE__, __LINE__);
         /** @var EE_Registration[] $registrations */

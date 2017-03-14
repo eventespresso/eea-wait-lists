@@ -36,7 +36,7 @@ class WaitListNotificationsManager
      * WaitListNotificationsManager constructor
      *
      * @param EE_Registration[] $registrations
-     * @param EE_Event $event
+     * @param EE_Event          $event
      */
     public function __construct(array $registrations, EE_Event $event)
     {

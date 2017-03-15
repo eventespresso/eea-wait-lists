@@ -2,6 +2,7 @@
 namespace EventEspresso\WaitList;
 
 use EE_Event;
+use EEM_Registration;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -48,11 +49,11 @@ class WaitList
      */
     public static function waitListRegCount(EE_Event $event)
     {
-        return \EEM_Registration::instance()->count(
+        return EEM_Registration::instance()->count(
             array(
                 array(
-                    'STS_ID'       => \EEM_Registration::status_id_wait_list,
-                    'Event.EVT_ID' => $event->ID(),
+                    'STS_ID' => EEM_Registration::status_id_wait_list,
+                    'EVT_ID' => $event->ID(),
                 ),
             )
         );

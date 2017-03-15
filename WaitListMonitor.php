@@ -289,6 +289,9 @@ class WaitListMonitor
             $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
         $regs_to_promote -= $manual_control_spaces;
+        if($regs_to_promote < 1) {
+            return;
+        }
         /** @var EE_Registration[] $registrations */
         $registrations = EEM_Registration::instance()->get_all(
             array(

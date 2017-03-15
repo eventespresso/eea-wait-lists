@@ -75,7 +75,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                             array(
                                 'html_label_text'       => esc_html__('Wait List Spaces', 'event_espresso'),
                                 'html_help_text'        => esc_html__(
-                                    'Number of additional registrants the wait list accepts before the event is completely sold out. For example, if your reg limit for an event is 100, and this field is set to 20, then the wait list form will be displayed until there are a total of 120 registrants for the event.',
+                                    'Number of additional registrants the wait list accepts before the event is completely sold out. For example, if your reg limit for an event is 100, and this field is set to 20, then the wait list form will be displayed until there are a total of 120 registrants for the event. IMPORTANT! Setting this field to zero will turn off the Wait List and prevent any further processing for any registrants that may already be signed up.',
                                     'event_espresso'
                                 ),
                                 'other_html_attributes' => ' size="4"',

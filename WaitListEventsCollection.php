@@ -1,6 +1,11 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use EE_Error;
+use EE_Event;
+use EEM_Event;
+use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\collections\Collection;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -21,14 +26,14 @@ class WaitListEventsCollection extends Collection
     /**
      * ProgressStepCollection constructor.
      *
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-     * @throws \EE_Error
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws InvalidInterfaceException
+     * @throws EE_Error
+     * @throws InvalidEntityException
      */
     public function __construct()
     {
         parent::__construct('\EE_Event');
-        $wait_list_events = \EEM_Event::instance()->get_all(
+        $wait_list_events = EEM_Event::instance()->get_all(
             array(
                 array(
                     'EVT_allow_overflow' => true,
@@ -37,7 +42,7 @@ class WaitListEventsCollection extends Collection
         );
         if (! empty($wait_list_events) && is_array($wait_list_events)) {
             foreach ($wait_list_events as $wait_list_event) {
-                if ($wait_list_event instanceof \EE_Event) {
+                if ($wait_list_event instanceof EE_Event) {
                     $this->add($wait_list_event, $wait_list_event->ID());
                 }
             }

@@ -38,7 +38,7 @@
  */
 // define versions and this file
 define('EE_WAIT_LISTS_CORE_VERSION_REQUIRED', '4.9.18.rc.001');
-define('EE_WAIT_LISTS_VERSION', '1.0.0.dev.000');
+define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.000');
 define('EE_WAIT_LISTS_PLUGIN_FILE', __FILE__);
 /**
  *    captures plugin activation errors for debugging

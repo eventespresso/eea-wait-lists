@@ -117,7 +117,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                                 'html_label_text'       => esc_html__('Manually Controlled Spaces',
                                     'event_espresso'),
                                 'html_help_text'        => esc_html__(
-                                    'Controls the number of spaces that are not automatically promoted from the wait list to another registration status. This allows you to manually control a portion of the wait list spaces if you so desire. Setting this to zero puts the wait list fully under automatic control, and registrants will be managed completely by the system.',
+                                    'Controls the number of spaces that are NOT automatically promoted from the wait list to another registration status. This allows you to manually control a portion of the wait list spaces if you so desire. So for example, if the Wait List had a total of 10 spaces, and you set this to 5, then 5 of those spaces would need to be selected and managed by you, and the rest would be under automatic control. Setting this to zero puts the wait list fully under automatic control, and all registrants will be managed completely by the system.',
                                     'event_espresso'
                                 ),
                                 'other_html_attributes' => ' size="4"',

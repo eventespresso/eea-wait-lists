@@ -54,7 +54,7 @@ class EED_Wait_Lists extends EED_Module
             10, 2
         );
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
-        \EED_Wait_Lists::set_shared_hooks();
+        EED_Wait_Lists::set_shared_hooks();
     }
 
 
@@ -87,7 +87,7 @@ class EED_Wait_Lists extends EED_Module
             'wp_ajax_nopriv_process_wait_list_form_for_event',
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
-        \EED_Wait_Lists::set_shared_hooks();
+        EED_Wait_Lists::set_shared_hooks();
     }
 
 
@@ -217,7 +217,7 @@ class EED_Wait_Lists extends EED_Module
     public static function add_wait_list_form_for_event($html = '', \EE_Event $event)
     {
         try {
-            return $html . \EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
+            return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
@@ -233,10 +233,11 @@ class EED_Wait_Lists extends EED_Module
     {
         try {
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
-            \EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+            EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
+        // todo submit form via AJAX and process return here
         if (defined('DOING_AJAX') && DOING_AJAX) {
             echo 'AJAX';
             exit();
@@ -259,7 +260,7 @@ class EED_Wait_Lists extends EED_Module
     public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
         try {
-            \EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
+            EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
@@ -279,7 +280,7 @@ class EED_Wait_Lists extends EED_Module
             return $spaces_available;
         }
         try {
-            return \EED_Wait_Lists::getWaitListMonitor()->adjustEventSpacesAvailable(
+            return EED_Wait_Lists::getWaitListMonitor()->adjustEventSpacesAvailable(
                 $spaces_available,
                 $event
             );

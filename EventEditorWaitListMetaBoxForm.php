@@ -1,11 +1,21 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use DomainException;
+use EE_Div_Per_Section_Layout;
+use EE_Error;
+use EE_Event;
+use EE_Form_Section_HTML;
 use EE_Form_Section_Proper;
+use EE_Registry;
 use EE_Text_Input;
 use EE_Yes_No_Input;
+use EED_Wait_Lists;
+use EEH_HTML;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
-use EventEspresso\WaitList\WaitList;
+use InvalidArgumentException;
 use LogicException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -26,7 +36,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
 
 
     /**
-     * @var \EE_Event $event
+     * @var EE_Event $event
      */
     protected $event;
 
@@ -35,13 +45,13 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
     /**
      * Form constructor.
      *
-     * @param \EE_Event    $event
-     * @param \EE_Registry $registry
-     * @throws \DomainException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \InvalidArgumentException
+     * @param EE_Event    $event
+     * @param EE_Registry $registry
+     * @throws DomainException
+     * @throws InvalidDataTypeException
+     * @throws InvalidArgumentException
      */
-    public function __construct(\EE_Event $event, \EE_Registry $registry)
+    public function __construct(EE_Event $event, EE_Registry $registry)
     {
         $this->event = $event;
         parent::__construct(
@@ -60,7 +70,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
      * creates and returns the actual form
      *
      * @return void
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public function generate()
     {
@@ -69,7 +79,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                 array(
                     'name'            => 'event_wait_list_settings',
                     'html_id'         => 'event_wait_list_settings',
-                    'layout_strategy' => new \EE_Div_Per_Section_Layout(),
+                    'layout_strategy' => new EE_Div_Per_Section_Layout(),
                     'subsections'     => array(
                         'wait_list_spaces'         => new EE_Text_Input(
                             array(
@@ -86,7 +96,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                                 'required'              => false,
                             )
                         ),
-                        'lb1'                      => new \EE_Form_Section_HTML(\EEH_HTML::br()),
+                        'lb1'                      => new EE_Form_Section_HTML(EEH_HTML::br()),
                         'auto_promote_registrants' => new EE_Yes_No_Input(
                             array(
                                 'html_label_text' => esc_html__('Auto Promote Registrants?', 'event_espresso'),
@@ -101,7 +111,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                                 'required'        => false,
                             )
                         ),
-                        'lb2'                      => new \EE_Form_Section_HTML(\EEH_HTML::br()),
+                        'lb2'                      => new EE_Form_Section_HTML(EEH_HTML::br()),
                         'manual_control_spaces'    => new EE_Text_Input(
                             array(
                                 'html_label_text'       => esc_html__('Manually Controlled Spaces',
@@ -118,7 +128,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                                 'required'              => false,
                             )
                         ),
-                        'lb3'                      => new \EE_Form_Section_HTML(\EEH_HTML::br()),
+                        'lb3'                      => new EE_Form_Section_HTML(EEH_HTML::br()),
                     ),
                 )
             )
@@ -133,15 +143,15 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
      *
      * @return string
      * @throws LogicException
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public function display()
     {
         // inject some additional subsections with HTML that's for display only
         $this->form(true)->add_subsections(
             array(
-                'view_wait_list_link' => new \EE_Form_Section_HTML(
-                    \EEH_HTML::br() . $this->waitListRegCountDisplay() . \EEH_HTML::br(2)
+                'view_wait_list_link' => new EE_Form_Section_HTML(
+                    EEH_HTML::br() . $this->waitListRegCountDisplay() . EEH_HTML::br(2)
                 ),
             ),
             'wait_list_spaces'
@@ -156,17 +166,17 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
      * that links to the reg admin list table filtered for that reg status and event
      *
      * @return string
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public function waitListRegCountDisplay()
     {
-        $html = \EEH_HTML::span(
+        $html = EEH_HTML::span(
             '',
             '',
             'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
         );
-        $html .= ' ' . \EED_Wait_Lists::wait_list_registrations_list_table_link($this->event);
-        $html .= ' : ' . \EED_Wait_Lists::waitListRegCount($this->event);
+        $html .= ' ' . EED_Wait_Lists::wait_list_registrations_list_table_link($this->event);
+        $html .= ' : ' . EED_Wait_Lists::waitListRegCount($this->event);
         return $html;
     }
 
@@ -178,9 +188,9 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
      *
      * @param array $form_data
      * @return bool
-     * @throws \LogicException
-     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-     * @throws \EE_Error
+     * @throws LogicException
+     * @throws InvalidFormSubmissionException
+     * @throws EE_Error
      */
     public function process($form_data = array())
     {

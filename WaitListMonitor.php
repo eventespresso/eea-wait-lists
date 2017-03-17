@@ -1,15 +1,23 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use DomainException;
 use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EE_Registry;
+use EED_Wait_Lists;
 use EEM_Registration;
+use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\services\collections\Collection;
-use EventEspresso\WaitList\WaitList;
 use Exception;
+use InvalidArgumentException;
+use LogicException;
+use RuntimeException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -59,9 +67,9 @@ class WaitListMonitor
     /**
      * returns true if an event has an active wait list with available spaces
      *
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @return bool
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     protected function eventHasOpenWaitList(EE_Event $event)
     {
@@ -78,13 +86,13 @@ class WaitListMonitor
 
 
     /**
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @return string
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \DomainException
-     * @throws \EE_Error
+     * @throws LogicException
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws DomainException
+     * @throws EE_Error
      */
     public function getWaitListFormForEvent(EE_Event $event)
     {
@@ -100,13 +108,13 @@ class WaitListMonitor
     /**
      * @param int $event_id
      * @return boolean
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
-     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \DomainException
-     * @throws \EE_Error
+     * @throws InvalidEntityException
+     * @throws InvalidFormSubmissionException
+     * @throws LogicException
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws DomainException
+     * @throws EE_Error
      */
     public function processWaitListFormForEvent($event_id)
     {
@@ -145,10 +153,11 @@ class WaitListMonitor
      * increment or decrement the wait list reg count for an event
      * when a registration's status changes to or from RWL
      *
-     * @param \EE_Registration $registration
+     * @param EE_Registration  $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
-     * @throws \EE_Error
+     * @throws EE_Error
+     * @throws EntityNotFoundException
      */
     public function registrationStatusUpdate(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
@@ -186,12 +195,12 @@ class WaitListMonitor
     /**
      * factors wait list registrations into calculations involving spaces available for events
      *
-     * @param int       $spaces_available
-     * @param \EE_Event $event
+     * @param int      $spaces_available
+     * @param EE_Event $event
      * @return int
-     * @throws \EE_Error
+     * @throws EE_Error
      */
-    public function adjustEventSpacesAvailable($spaces_available, \EE_Event $event)
+    public function adjustEventSpacesAvailable($spaces_available, EE_Event $event)
     {
         if ($this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = absint(
@@ -213,11 +222,11 @@ class WaitListMonitor
      * @param EE_Event $event
      * @param bool     $sold_out
      * @param int      $spaces_remaining
-     * @throws \EE_Error
-     * @throws \RuntimeException
+     * @throws EE_Error
+     * @throws RuntimeException
      */
     public function promoteWaitListRegistrants(
-        \EE_Event $event,
+        EE_Event $event,
         $sold_out = false,
         $spaces_remaining = 0
     ) {
@@ -243,9 +252,9 @@ class WaitListMonitor
      * @param int      $regs_to_promote
      * @param int      $wait_list_reg_count
      * @return bool
-     * @throws \EE_Error
+     * @throws EE_Error
      */
-    private function manuallyPromoteRegistrations(\EE_Event $event, $regs_to_promote, $wait_list_reg_count)
+    private function manuallyPromoteRegistrations(EE_Event $event, $regs_to_promote, $wait_list_reg_count)
     {
         $auto_promote = absint(
             $event->get_extra_meta(WaitList::AUTO_PROMOTE_META_KEY, true)
@@ -266,7 +275,7 @@ class WaitListMonitor
                     $regs_to_promote,
                     $wait_list_reg_count,
                     $event->name(),
-                    \EED_Wait_Lists::wait_list_registrations_list_table_link($event),
+                    EED_Wait_Lists::wait_list_registrations_list_table_link($event),
                     '<br />'
                 )
             );
@@ -280,16 +289,16 @@ class WaitListMonitor
     /**
      * @param EE_Event $event
      * @param int      $regs_to_promote
-     * @throws \EE_Error
-     * @throws \RuntimeException
+     * @throws EE_Error
+     * @throws RuntimeException
      */
-    private function autoPromoteRegistrations(\EE_Event $event, $regs_to_promote = 0)
+    private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0)
     {
         $manual_control_spaces = absint(
             $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
         $regs_to_promote -= $manual_control_spaces;
-        if($regs_to_promote < 1) {
+        if ($regs_to_promote < 1) {
             return;
         }
         /** @var EE_Registration[] $registrations */
@@ -325,4 +334,4 @@ class WaitListMonitor
 
 }
 // End of file WaitListMonitor.php
-// Location: EventEspresso\WaitList/WaitListMonitor.php
+// Location: EventEspresso/WaitList/WaitListMonitor.php

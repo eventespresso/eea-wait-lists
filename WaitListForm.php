@@ -5,6 +5,7 @@ use EE_Form_Section_Proper;
 use EE_Select_Input;
 use EE_Text_Input;
 use EE_Email_Input;
+use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
@@ -221,7 +222,13 @@ class WaitListForm extends FormHandler
         );
         /** @var \EE_Registration $registration */
         $registration = $this->registry->BUS->execute(
-            new CreateRegistrationCommand($transaction, $ticket_line_item)
+            new CreateRegistrationCommand(
+                $transaction,
+                $ticket_line_item,
+                1,
+                1,
+                EEM_Registration::status_id_wait_list
+            )
         );
         // add relation to registration
         $transaction->_add_relation_to($registration, 'Registration');
@@ -254,7 +261,6 @@ class WaitListForm extends FormHandler
         $registration->update_cache_after_object_save('Attendee', $attendee);
         // update txn and reg status
         $transaction->set_status(\EEM_Transaction::incomplete_status_code);
-        $registration->set_status(\EEM_Registration::status_id_wait_list);
         $transaction->save();
         $registration->save();
         // finally... update the wait list reg count

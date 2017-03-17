@@ -131,7 +131,7 @@ class EED_Wait_Lists extends EED_Module
             10, 2
         );
         add_action(
-            'FHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
+            'AHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
             array('EED_Wait_Lists', 'load_and_instantiate_reg_steps')
         );
 
@@ -497,16 +497,14 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param EE_Checkout $checkout
-     * @return EE_Checkout
      */
     public static function load_and_instantiate_reg_steps(EE_Checkout $checkout)
     {
         try {
-            return EED_Wait_Lists::getWaitListCheckoutMonitor()->loadAndInstantiateRegSteps($checkout);
+            EED_Wait_Lists::getWaitListCheckoutMonitor()->loadAndInstantiateRegSteps($checkout);
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
-        return $checkout;
     }
 
 }

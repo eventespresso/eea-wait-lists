@@ -33,7 +33,7 @@ class WaitListEventsCollection extends Collection
     public function __construct()
     {
         parent::__construct('\EE_Event');
-        $wait_list_events = EEM_Event::instance()->get_all(
+        $wait_list_events = EEM_Event::instance()->get_active_and_upcoming_events(
             array(
                 array(
                     'EVT_allow_overflow' => true,

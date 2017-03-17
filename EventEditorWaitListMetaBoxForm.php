@@ -210,8 +210,8 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
         );
         $manual_control_spaces = absint($valid_data['manual_control_spaces']);
         // manual control spaces can't be more than the total number of spaces in the wait list
-        $manual_control_spaces = $wait_list_spaces > 0 ?
-            min($wait_list_spaces, $manual_control_spaces)
+        $manual_control_spaces = $wait_list_spaces > 0
+            ? min($wait_list_spaces, $manual_control_spaces)
             : $manual_control_spaces;
         $this->event->update_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, $manual_control_spaces);
         $this->event->update_extra_meta(

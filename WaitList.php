@@ -38,7 +38,23 @@ class WaitList
     /**
      * Meta Key used for tracking number of registrants signed up for the wait list
      */
-    const REG_COUNT_META_KEY = 'ee_wait_list_registration_count';
+    const REG_COUNT_META_KEY = 'ee_wait_list_reg_count';
+
+    /**
+     * Meta Key used for tracking when a registrant first signed up for the wait list
+     * which is then also used as a flag to identify all registrants that have been on a wait list
+     */
+    const REG_SIGNED_UP_META_KEY = 'ee_wait_list_reg_signed_up';
+
+    /**
+     * Meta Key used for tracking when a registrant was moved from wait list to another reg status
+     */
+    const REG_PROMOTED_META_KEY = 'ee_wait_list_reg_promoted';
+
+    /**
+     * Meta Key used for tracking when a registrant was moved from another reg status BACK to the  wait list
+     */
+    const REG_DEMOTED_META_KEY = 'ee_wait_list_reg_demoted';
 
 
 

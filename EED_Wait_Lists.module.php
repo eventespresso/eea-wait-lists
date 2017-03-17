@@ -1,6 +1,9 @@
 <?php
+use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitList;
+use EventEspresso\WaitList\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
 use EventEspresso\WaitList\WaitListNotificationsManager;
@@ -26,12 +29,15 @@ class EED_Wait_Lists extends EED_Module
      */
     protected static $admin_page;
 
-
     /**
      * @var WaitListMonitor $wait_list_monitor
      */
     protected static $wait_list_monitor;
 
+    /**
+     * @var WaitListCheckoutMonitor $wait_list_checkout_monitor
+     */
+    protected static $wait_list_checkout_monitor;
 
     /**
      * @var EventEditorWaitListMetaBoxForm $wait_list_settings_form
@@ -124,6 +130,11 @@ class EED_Wait_Lists extends EED_Module
             array('EED_Wait_Lists', 'trigger_wait_list_notifications'),
             10, 2
         );
+        add_action(
+            'FHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
+            array('EED_Wait_Lists', 'load_and_instantiate_reg_steps')
+        );
+
     }
 
 
@@ -144,10 +155,10 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @return \EventEspresso\WaitList\WaitListMonitor
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
-     * @throws \EE_Error
+     * @return WaitListMonitor
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
      */
     public static function getWaitListMonitor()
     {
@@ -156,6 +167,23 @@ class EED_Wait_Lists extends EED_Module
             self::$wait_list_monitor = new WaitListMonitor(new WaitListEventsCollection());
         }
         return self::$wait_list_monitor;
+    }
+
+
+
+    /**
+     * @return WaitListCheckoutMonitor
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
+     */
+    public static function getWaitListCheckoutMonitor()
+    {
+        // if not already generated, create a wait list monitor object
+        if (! self::$wait_list_checkout_monitor instanceof WaitListCheckoutMonitor) {
+            self::$wait_list_checkout_monitor = new WaitListCheckoutMonitor(new WaitListEventsCollection());
+        }
+        return self::$wait_list_checkout_monitor;
     }
 
 
@@ -242,7 +270,7 @@ class EED_Wait_Lists extends EED_Module
             echo 'AJAX';
             exit();
         }
-        \EE_Error::get_notices(false, true);
+        EE_Error::get_notices(false, true);
         wp_safe_redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
         exit();
     }
@@ -400,7 +428,7 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param \EE_Event $event
      * @return int
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public static function waitListRegCount(\EE_Event $event)
     {
@@ -447,7 +475,7 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param EE_Event $event
      * @return string
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public static function wait_list_registrations_list_table_link(\EE_Event $event)
     {
@@ -465,6 +493,21 @@ class EED_Wait_Lists extends EED_Module
         );
     }
 
+
+
+    /**
+     * @param EE_Checkout $checkout
+     * @return EE_Checkout
+     */
+    public static function load_and_instantiate_reg_steps(EE_Checkout $checkout)
+    {
+        try {
+            return EED_Wait_Lists::getWaitListCheckoutMonitor()->loadAndInstantiateRegSteps($checkout);
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        return $checkout;
+    }
 
 }
 // End of file EED_Wait_Lists.module.php

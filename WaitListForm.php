@@ -13,7 +13,6 @@ use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\registration\CreateRegistrationCommand;
 use EventEspresso\core\services\commands\ticket\CreateTicketLineItemCommand;
 use EventEspresso\core\services\commands\transaction\CreateTransactionCommand;
-use EventEspresso\WaitList\WaitList;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -262,6 +261,11 @@ class WaitListForm extends FormHandler
         // update txn and reg status
         $transaction->set_status(\EEM_Transaction::incomplete_status_code);
         $transaction->save();
+        $registration->add_extra_meta(
+            WaitList::REG_SIGNED_UP_META_KEY,
+            current_time('mysql', true),
+            true
+        );
         $registration->save();
         // finally... update the wait list reg count
         $this->event->update_extra_meta(

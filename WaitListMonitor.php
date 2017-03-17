@@ -170,12 +170,20 @@ class WaitListMonitor
                 );
                 $wait_list_reg_count--;
                 $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
+                $registration->add_extra_meta(
+                    WaitList::REG_DEMOTED_META_KEY,
+                    current_time('mysql', true)
+                );
             } elseif ($new_STS_ID === EEM_Registration::status_id_wait_list) {
                 $wait_list_reg_count = absint(
                     $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
                 );
                 $wait_list_reg_count++;
                 $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
+                $registration->add_extra_meta(
+                    WaitList::REG_PROMOTED_META_KEY,
+                    current_time('mysql', true)
+                );
             }
             if ($wait_list_reg_count !== null && $this->perform_sold_out_status_check) {
                 // updating the reg status will trigger a sold out status check on the event,

@@ -56,6 +56,11 @@ class WaitList
      */
     const REG_DEMOTED_META_KEY = 'ee_wait_list_reg_demoted';
 
+    /**
+     * value to be used for the LOG_type field in the esp_log table
+     */
+    const LOG_TYPE = 'wait_list';
+
 
 
     /**

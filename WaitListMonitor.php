@@ -330,6 +330,26 @@ class WaitListMonitor
         $this->perform_sold_out_status_check = false;
         foreach ($registrations as $registration) {
             $registration->set_status($event->default_registration_status());
+            $message = sprintf(
+                esc_html__(
+                    'The registration status for "%1$s" %2$s(ID:%3$d)%4$s has been successfully updated to "%5$s". They were previously on the Wait List for "%6$s".'
+                ),
+                $registration->attendee()->full_name(),
+                '<span class="lt-grey-text">',
+                $registration->ID(),
+                '</span>',
+                $registration->pretty_status(),
+                $event->name()
+            );
+            \EEM_Change_Log::instance()->log(WaitList::LOG_TYPE, $message, $event);
+            if (
+                EE_Registry::instance()->CAP->current_user_can(
+                    'ee_edit_registration',
+                    'espresso_view_wait_list_update_notice'
+                )
+            ) {
+                EE_Error::add_success($message);
+            }
         }
         do_action(
             'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',

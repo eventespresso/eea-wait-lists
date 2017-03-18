@@ -134,7 +134,16 @@ class EED_Wait_Lists extends EED_Module
             'AHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
             array('EED_Wait_Lists', 'load_and_instantiate_reg_steps')
         );
-
+        add_filter(
+            'FHEE__EE_SPCO_Reg_Step_Payment_Options__find_registrations_that_lost_their_space__allow_reg_payment',
+            array('EED_Wait_Lists', 'allow_reg_payment'),
+            10, 3
+        );
+        add_filter(
+            'FHEE__EE_Enum_Text_Field___allowed_enum_options',
+            array('EED_Wait_Lists', 'allowed_enum_values'),
+            10, 3
+        );
     }
 
 
@@ -506,6 +515,39 @@ class EED_Wait_Lists extends EED_Module
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
     }
+
+
+
+    /**
+     * @param bool            $allow_payment
+     * @param EE_Registration $registration
+     * @param bool            $revisit
+     * @return bool
+     */
+    public static function allow_reg_payment($allow_payment = false, EE_Registration $registration, $revisit = false)
+    {
+        if($revisit) {
+            return $allow_payment;
+        }
+        try {
+            return EED_Wait_Lists::getWaitListCheckoutMonitor()->allowRegPayment(
+                $allow_payment,
+                $registration
+            );
+        } catch (Exception $e) {
+            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        return $allow_payment;
+    }
+
+
+
+    public static function allowed_enum_values(array $allowed_enum_values)
+    {
+        $allowed_enum_values[WaitList::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
+        return $allowed_enum_values;
+    }
+
 
 }
 // End of file EED_Wait_Lists.module.php

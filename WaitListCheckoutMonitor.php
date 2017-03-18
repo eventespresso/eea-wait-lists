@@ -3,6 +3,7 @@ namespace EventEspresso\WaitList;
 
 use EE_Checkout;
 use EE_Error;
+use EE_Registration;
 use EEM_Registration;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -35,7 +36,7 @@ class WaitListCheckoutMonitor
         }
         // not a revisit but there's a reg_url_link ?
         $registration = EEM_Registration::instance()->get_registration_for_reg_url_link($checkout->reg_url_link);
-        if (! $registration instanceof \EE_Registration) {
+        if (! $registration instanceof EE_Registration) {
             return;
         }
         // ok, but were they ever on a wait list ?
@@ -87,6 +88,22 @@ class WaitListCheckoutMonitor
     public function defaultFormAction()
     {
         return 'process_reg_step';
+    }
+
+
+
+    /**
+     * @param bool            $allow_payment
+     * @param EE_Registration $registration
+     * @return bool
+     * @throws EE_Error
+     */
+    public function allowRegPayment($allow_payment = false, EE_Registration $registration)
+    {
+        if ($registration->get_extra_meta(WaitList::REG_SIGNED_UP_META_KEY, true) !== null) {
+            return true;
+        }
+        return $allow_payment;
     }
 
 }

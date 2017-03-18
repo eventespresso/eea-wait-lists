@@ -48,6 +48,10 @@ class WaitListCheckoutMonitor
                 'FHEE__EED_Single_Page_Checkout___final_verifications__checkout',
                 array($this, 'initializeTxnRegStepsArray')
             );
+            add_filter(
+                'FHEE__EE_SPCO_Reg_Step__reg_step_hidden_inputs__default_form_action',
+                array($this, 'defaultFormAction')
+            );
         }
     }
 
@@ -62,10 +66,27 @@ class WaitListCheckoutMonitor
      */
     public function initializeTxnRegStepsArray(EE_Checkout $checkout)
     {
-        $checkout->transaction->set_reg_steps(
-            $checkout->initialize_txn_reg_steps_array()
-        );
+        if (empty($checkout->transaction->reg_steps())) {
+            $registrations = $checkout->transaction->registrations();
+            $checkout->total_ticket_count = count($registrations);
+            $checkout->transaction->set_reg_steps(
+                $checkout->initialize_txn_reg_steps_array()
+            );
+            $checkout->transaction->save();
+        }
+        $checkout->revisit = false;
+        $checkout->primary_revisit = false;
         return $checkout;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function defaultFormAction()
+    {
+        return 'process_reg_step';
     }
 
 }

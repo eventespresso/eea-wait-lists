@@ -1,11 +1,28 @@
 <?php
 namespace EventEspresso\WaitList;
 
+use DomainException;
+use EE_Attendee;
+use EE_Div_Per_Section_Layout;
+use EE_Error;
+use EE_Event;
+use EE_Form_Section_HTML;
 use EE_Form_Section_Proper;
+use EE_Integer_Input;
+use EE_Line_Item;
+use EE_Registration;
+use EE_Registry;
 use EE_Select_Input;
+use EE_Submit_Input;
 use EE_Text_Input;
 use EE_Email_Input;
+use EE_Ticket;
+use EE_Transaction;
+use EEH_HTML;
 use EEM_Registration;
+use EEM_Ticket;
+use EEM_Transaction;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
@@ -13,6 +30,9 @@ use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\registration\CreateRegistrationCommand;
 use EventEspresso\core\services\commands\ticket\CreateTicketLineItemCommand;
 use EventEspresso\core\services\commands\transaction\CreateTransactionCommand;
+use InvalidArgumentException;
+use LogicException;
+use RuntimeException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -31,7 +51,7 @@ class WaitListForm extends FormHandler
 
 
     /**
-     * @var \EE_Event $event
+     * @var EE_Event $event
      */
     protected $event;
 
@@ -40,14 +60,14 @@ class WaitListForm extends FormHandler
     /**
      * Form constructor.
      *
-     * @param \EE_Event    $event
-     * @param \EE_Registry $registry
-     * @throws \DomainException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \InvalidArgumentException
-     * @throws \EE_Error
+     * @param EE_Event    $event
+     * @param EE_Registry $registry
+     * @throws DomainException
+     * @throws InvalidDataTypeException
+     * @throws InvalidArgumentException
+     * @throws EE_Error
      */
-    public function __construct(\EE_Event $event, \EE_Registry $registry)
+    public function __construct(EE_Event $event, EE_Registry $registry)
     {
         $this->event = $event;
         parent::__construct(
@@ -66,7 +86,7 @@ class WaitListForm extends FormHandler
      * creates and returns the actual form
      *
      * @return void
-     * @throws \EE_Error
+     * @throws EE_Error
      */
     public function generate()
     {
@@ -79,9 +99,9 @@ class WaitListForm extends FormHandler
                 array(
                     'name'            => 'event_wait_list',
                     'html_id'         => 'event_wait_list',
-                    'layout_strategy' => new \EE_Div_Per_Section_Layout(),
+                    'layout_strategy' => new EE_Div_Per_Section_Layout(),
                     'subsections'     => array(
-                        'join_wait_list_btn'                  => new \EE_Submit_Input(
+                        'join_wait_list_btn'                  => new EE_Submit_Input(
                             array(
                                 'html_class'            => 'ee-join-wait-list-btn float-right',
                                 'other_html_attributes' => ' data-inputs="event_wait_list-hidden-inputs-'
@@ -89,18 +109,18 @@ class WaitListForm extends FormHandler
                                 'default'               => esc_html__('Sign Up For The Wait List', 'event_espresso'),
                             )
                         ),
-                        'hidden_inputs-' . $this->event->ID() => new \EE_Form_Section_Proper(
+                        'hidden_inputs-' . $this->event->ID() => new EE_Form_Section_Proper(
                             array(
-                                'layout_strategy' => new \EE_Div_Per_Section_Layout(),
+                                'layout_strategy' => new EE_Div_Per_Section_Layout(),
                                 'html_class'      => 'event_wait_list-hidden-inputs',
                                 'html_style'      => 'display:none;',
                                 'subsections'     => array(
-                                    'wait_list_form_notice' => new \EE_Form_Section_HTML(
-                                        \EEH_HTML::h2(
+                                    'wait_list_form_notice' => new EE_Form_Section_HTML(
+                                        EEH_HTML::h2(
                                             esc_html__('Join Now', 'event_espresso'),
                                             '', 'ee-wait-list-notice-hdr'
                                         )
-                                        . \EEH_HTML::p(
+                                        . EEH_HTML::p(
                                             esc_html__('If you would like to be added to the waiting list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
                                                 'event_espresso'),
                                             '', 'small-text ee-wait-list-notice-pg'
@@ -142,19 +162,30 @@ class WaitListForm extends FormHandler
                                             'required'         => true,
                                         )
                                     ),
-                                    'lb1'                   => new \EE_Form_Section_HTML(\EEH_HTML::br()),
-                                    'submit'                => new \EE_Submit_Input(
+                                    'quantity'                => new EE_Integer_Input(
+                                        array(
+                                            'html_label_text'  => esc_html__('Number of Tickets', 'event_espresso'),
+                                            'html_label_class' => 'small-text grey-text',
+                                            'html_style'       => 'max-width:120px;',
+                                            'default'          => 1,
+                                            'required'         => true,
+                                            'min_value'        => 1,
+                                            'max_value'        => $this->event->additional_limit(),
+                                        )
+                                    ),
+                                    'lb1'                   => new EE_Form_Section_HTML(EEH_HTML::br()),
+                                    'submit'                => new EE_Submit_Input(
                                         array(
                                             'html_class' => 'ee-submit-wait-list-btn float-right',
                                             'default'    => esc_html__('Join The Wait List', 'event_espresso'),
                                         )
                                     ),
-                                    'clear_submit'          => new \EE_Form_Section_HTML(
-                                        \EEH_HTML::div('&nbsp;', '', 'clear')
+                                    'clear_submit'          => new EE_Form_Section_HTML(
+                                        EEH_HTML::div('&nbsp;', '', 'clear')
                                     ),
-                                    'close_form'            => new \EE_Form_Section_HTML(
-                                        \EEH_HTML::div(
-                                            \EEH_HTML::link(
+                                    'close_form'            => new EE_Form_Section_HTML(
+                                        EEH_HTML::div(
+                                            EEH_HTML::link(
                                                 '',
                                                 esc_html__('cancel', 'event_espresso'),
                                                 '', '',
@@ -169,7 +200,7 @@ class WaitListForm extends FormHandler
                                 ),
                             )
                         ),
-                        'clear_form'                          => new \EE_Form_Section_HTML(\EEH_HTML::div(\EEH_HTML::br(),
+                        'clear_form'                          => new EE_Form_Section_HTML(EEH_HTML::div(EEH_HTML::br(),
                             '', 'clear')),
                     ),
                 )
@@ -184,12 +215,12 @@ class WaitListForm extends FormHandler
      * returns true or false depending on whether the form was processed successfully or not
      *
      * @param array $form_data
-     * @return \EE_Attendee
-     * @throws \RuntimeException
-     * @throws \EventEspresso\core\exceptions\InvalidEntityException
-     * @throws \LogicException
-     * @throws \EventEspresso\core\exceptions\InvalidFormSubmissionException
-     * @throws \EE_Error
+     * @return EE_Attendee
+     * @throws RuntimeException
+     * @throws InvalidEntityException
+     * @throws LogicException
+     * @throws InvalidFormSubmissionException
+     * @throws EE_Error
      */
     public function process($form_data = array())
     {
@@ -198,40 +229,78 @@ class WaitListForm extends FormHandler
         if (empty($valid_data)) {
             throw new InvalidFormSubmissionException($this->formName());
         }
-        // \EEH_Debug_Tools::printr( $valid_data, '$valid_data', __FILE__, __LINE__ );
         $wait_list_form_inputs = (array)$valid_data["hidden_inputs-{$this->event->ID()}"];
         if (empty($wait_list_form_inputs)) {
             throw new InvalidFormSubmissionException($this->formName());
         }
-        // \EEH_Debug_Tools::printr( $wait_list_form_inputs, '$wait_list_form_inputs', __FILE__, __LINE__ );
-        /** @var \EE_Ticket $ticket */
-        $ticket = \EEM_Ticket::instance()->get_one_by_ID(
+        /** @var EE_Ticket $ticket */
+        $ticket = EEM_Ticket::instance()->get_one_by_ID(
             isset($wait_list_form_inputs['ticket']) ? absint($wait_list_form_inputs['ticket']) : 0
         );
-        if (! $ticket instanceof \EE_Ticket) {
+        if (! $ticket instanceof EE_Ticket) {
             throw new InvalidEntityException(get_class($ticket), 'EE_Ticket');
         }
-        /** @var \EE_Transaction $transaction */
+        /** @var EE_Transaction $transaction */
         $transaction = $this->registry->BUS->execute(
             new CreateTransactionCommand()
         );
-        /** @var \EE_Line_Item $ticket_line_item */
+        $quantity = $wait_list_form_inputs['quantity'] > 0 ? $wait_list_form_inputs['quantity'] : 1;
+        /** @var EE_Line_Item $ticket_line_item */
         $ticket_line_item = $this->registry->BUS->execute(
-            new CreateTicketLineItemCommand($transaction, $ticket)
+            new CreateTicketLineItemCommand($transaction, $ticket, $quantity)
         );
-        /** @var \EE_Registration $registration */
-        $registration = $this->registry->BUS->execute(
-            new CreateRegistrationCommand(
-                $transaction,
-                $ticket_line_item,
-                1,
-                1,
-                EEM_Registration::status_id_wait_list
-            )
+        $attendee = null;
+        for($x = 1; $x <= $quantity; $x++){
+            /** @var \EE_Registration $registration */
+            $registration = $this->registry->BUS->execute(
+                new CreateRegistrationCommand(
+                    $transaction,
+                    $ticket_line_item,
+                    $x,
+                    $quantity,
+                    EEM_Registration::status_id_wait_list
+                )
+            );
+            // add relation to registration
+            $transaction->_add_relation_to($registration, 'Registration');
+            $transaction->update_cache_after_object_save('Registration', $registration);
+            if ($x === 1) {
+                $attendee = $this->createAttendeeForPrimaryRegistrant($registration, $wait_list_form_inputs);
+            }
+            //ok, we have all of the pieces, now let's do some final tweaking
+            // add relation to attendee
+            $registration->_add_relation_to($attendee, 'Attendee');
+            $registration->set_attendee_id($attendee->ID());
+            $registration->update_cache_after_object_save('Attendee', $attendee);
+            $registration->add_extra_meta(
+                WaitList::REG_SIGNED_UP_META_KEY,
+                current_time('mysql', true),
+                true
+            );
+            $registration->save();
+        }
+        // update txn
+        $transaction->set_status(EEM_Transaction::incomplete_status_code);
+        $transaction->save();
+        // finally... update the wait list reg count
+        $this->event->update_extra_meta(
+            WaitList::REG_COUNT_META_KEY,
+            WaitList::waitListRegCount($this->event)
         );
-        // add relation to registration
-        $transaction->_add_relation_to($registration, 'Registration');
-        $transaction->update_cache_after_object_save('Registration', $registration);
+        return $attendee;
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @param array           $wait_list_form_inputs
+     * @return EE_Attendee
+     * @throws EE_Error
+     * @throws InvalidFormSubmissionException
+     */
+    private function createAttendeeForPrimaryRegistrant(EE_Registration $registration, array $wait_list_form_inputs)
+    {
         // now gather attendee details
         $registrant_name = isset($wait_list_form_inputs['registrant_name'])
             ? sanitize_text_field($wait_list_form_inputs['registrant_name'])
@@ -240,8 +309,7 @@ class WaitListForm extends FormHandler
             throw new InvalidFormSubmissionException($this->formName());
         }
         $registrant_name = explode(' ', $registrant_name);
-        /** @var \EE_Attendee $attendee */
-        $attendee = $this->registry->BUS->execute(
+        return $this->registry->BUS->execute(
             new CreateAttendeeCommand(
                 array(
                     // grab first string from registrant name array
@@ -253,26 +321,6 @@ class WaitListForm extends FormHandler
                 $registration
             )
         );
-        //ok, we have all of the pieces, now let's do some final tweaking
-        // add relation to attendee
-        $registration->_add_relation_to($attendee, 'Attendee');
-        $registration->set_attendee_id($attendee->ID());
-        $registration->update_cache_after_object_save('Attendee', $attendee);
-        // update txn and reg status
-        $transaction->set_status(\EEM_Transaction::incomplete_status_code);
-        $transaction->save();
-        $registration->add_extra_meta(
-            WaitList::REG_SIGNED_UP_META_KEY,
-            current_time('mysql', true),
-            true
-        );
-        $registration->save();
-        // finally... update the wait list reg count
-        $this->event->update_extra_meta(
-            WaitList::REG_COUNT_META_KEY,
-            WaitList::waitListRegCount($this->event)
-        );
-        return $attendee;
     }
 
 

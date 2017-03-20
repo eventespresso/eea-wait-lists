@@ -98,7 +98,7 @@ class WaitListCheckoutMonitor
      * @return bool
      * @throws EE_Error
      */
-    public function allowRegPayment($allow_payment = false, EE_Registration $registration)
+    public function allowRegPayment($allow_payment, EE_Registration $registration)
     {
         if ($registration->get_extra_meta(WaitList::REG_SIGNED_UP_META_KEY, true) !== null) {
             return true;

@@ -190,7 +190,7 @@ class EED_Wait_Lists extends EED_Module
     {
         // if not already generated, create a wait list monitor object
         if (! self::$wait_list_checkout_monitor instanceof WaitListCheckoutMonitor) {
-            self::$wait_list_checkout_monitor = new WaitListCheckoutMonitor(new WaitListEventsCollection());
+            self::$wait_list_checkout_monitor = new WaitListCheckoutMonitor();
         }
         return self::$wait_list_checkout_monitor;
     }
@@ -524,7 +524,7 @@ class EED_Wait_Lists extends EED_Module
      * @param bool            $revisit
      * @return bool
      */
-    public static function allow_reg_payment($allow_payment = false, EE_Registration $registration, $revisit = false)
+    public static function allow_reg_payment($allow_payment, EE_Registration $registration, $revisit = false)
     {
         if($revisit) {
             return $allow_payment;

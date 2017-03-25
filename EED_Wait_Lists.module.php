@@ -126,11 +126,6 @@ class EED_Wait_Lists extends EED_Module
             10, 3
         );
         add_action(
-            'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
-            array('EED_Wait_Lists', 'trigger_wait_list_notifications'),
-            10, 2
-        );
-        add_action(
             'AHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
             array('EED_Wait_Lists', 'load_and_instantiate_reg_steps')
         );
@@ -467,17 +462,6 @@ class EED_Wait_Lists extends EED_Module
         }
     }
 
-
-
-    /**
-     * @param EE_Registration[] $registrations
-     * @param \EE_Event         $event
-     */
-    public static function trigger_wait_list_notifications(array $registrations, \EE_Event $event)
-    {
-        $wait_list_notifications_manager = new WaitListNotificationsManager($registrations, $event);
-        $wait_list_notifications_manager->triggerNotifications();
-    }
 
 
 

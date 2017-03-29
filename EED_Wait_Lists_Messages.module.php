@@ -2,6 +2,7 @@
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
+
 /**
  * Module for handling wait list integration with the messages system.
  *
@@ -12,6 +13,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
  */
 class EED_Wait_Lists_Messages extends EED_Messages
 {
+
     /**
      * Called for setting any necessary hooks on the frontend
      */
@@ -21,6 +23,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     }
 
 
+
     /**
      * Called for setting any necessary hooks in the admin (or on ajax requests).
      */
@@ -28,6 +31,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     {
         self::_set_shared_hooks();
     }
+
 
 
     /**
@@ -42,6 +46,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             2
         );
     }
+
 
 
     /**

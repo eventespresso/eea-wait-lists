@@ -6,7 +6,6 @@ use EventEspresso\WaitList\WaitList;
 use EventEspresso\WaitList\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
-use EventEspresso\WaitList\WaitListNotificationsManager;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -464,7 +463,6 @@ class EED_Wait_Lists extends EED_Module
 
 
 
-
     /**
      * @param EE_Registration $registration
      * @return string
@@ -477,7 +475,7 @@ class EED_Wait_Lists extends EED_Module
             add_query_arg(
                 array(
                     'e_reg_url_link' => $registration->reg_url_link(),
-                    'revisit' => 0,
+                    'revisit'        => 0,
                 ),
                 EE_Registry::instance()->CFG->core->reg_page_url()
             ),
@@ -532,7 +530,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function allow_reg_payment($allow_payment, EE_Registration $registration, $revisit = false)
     {
-        if($revisit) {
+        if ($revisit) {
             return $allow_payment;
         }
         try {

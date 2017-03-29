@@ -61,8 +61,8 @@
                             </p>
                             <p>
                                 <?php esc_html_e('Ticket Selection:', 'event_espresso'); ?><br>
-                                <ul>[TICKET_LIST]</ul>
                             </p>
+                            <ul>[TICKET_LIST]</ul>
                             <p>
                                 <?php
                                     esc_html_e(

@@ -267,26 +267,27 @@ class WaitListMonitor
         $auto_promote = absint(
             $event->get_extra_meta(WaitList::AUTO_PROMOTE_META_KEY, true)
         );
-        if (
-            ! $auto_promote
-            && is_admin()
-            && EE_Registry::instance()->CAP->current_user_can(
-                'ee_edit_registration',
-                'espresso_promote_wait_list_registrants'
-            )
-        ) {
-            EE_Error::add_attention(
-                sprintf(
-                    esc_html__(
-                        'There is %1$d space(s) available for "%3$s" and %2$d registrant(s) on the Wait List for that event. %5$s Please click here to view a list of %4$s and select those you wish to offer a space to by updating their reg status accordingly.'
-                    ),
-                    $regs_to_promote,
-                    $wait_list_reg_count,
-                    $event->name(),
-                    EED_Wait_Lists::wait_list_registrations_list_table_link($event),
-                    '<br />'
+        if (! $auto_promote) {
+            if (
+                is_admin()
+                && EE_Registry::instance()->CAP->current_user_can(
+                    'ee_edit_registration',
+                    'espresso_promote_wait_list_registrants'
                 )
-            );
+            ) {
+                EE_Error::add_attention(
+                    sprintf(
+                        esc_html__(
+                            'There is %1$d space(s) available for "%3$s" and %2$d registrant(s) on the Wait List for that event. %5$s Please click here to view a list of %4$s and select those you wish to offer a space to by updating their reg status accordingly.'
+                        ),
+                        $regs_to_promote,
+                        $wait_list_reg_count,
+                        $event->name(),
+                        EED_Wait_Lists::wait_list_registrations_list_table_link($event),
+                        '<br />'
+                    )
+                );
+            }
             return true;
         }
         return false;

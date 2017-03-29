@@ -21,8 +21,6 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     {
         parent::setUp();
         require_once EE_WAITLISTS_TEST_DIR . 'mocks/EED_Wait_Lists_Messages_Mock.php';
-        //setup events etc for tests to use
-        $this->scenarios->get_scenarios_by_type('event');
     }
 
 

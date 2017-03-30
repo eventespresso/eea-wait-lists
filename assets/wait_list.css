@@ -34,6 +34,16 @@
     width: 99%;
 }
 
+.event_wait_list-hidden-inputs label.error {
+    color: #E53248;
+    font-weight: bold;
+}
+.event_wait_list-hidden-inputs input.error,
+.event_wait_list-hidden-inputs select.error {
+    /*box-shadow: 0 0 3px -1px rgba(229, 50, 72, .75);*/
+    box-shadow: 0 0 5px -1px #E53248;
+}
+
 .ee-wait-list-cancel-dv {
     text-align: right;
 }

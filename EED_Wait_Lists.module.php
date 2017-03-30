@@ -1,4 +1,5 @@
 <?php
+use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
@@ -237,6 +238,7 @@ class EED_Wait_Lists extends EED_Module
         );
         wp_enqueue_style('wait_list');
         // load JS
+        add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
             EE_WAIT_LISTS_URL . 'assets/wait_list.js',
@@ -275,7 +277,11 @@ class EED_Wait_Lists extends EED_Module
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
             EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            if (WP_DEBUG) {
+                new ExceptionStackTraceDisplay($e);
+            } else {
+                EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            }
         }
         // todo submit form via AJAX and process return here
         if (defined('DOING_AJAX') && DOING_AJAX) {

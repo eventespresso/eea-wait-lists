@@ -49,6 +49,19 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
+     * because tests are failing when they are run as a group
+     */
+    public function tearDown()
+    {
+        $this->events = array();
+        $this->wait_list_events = null;
+        $this->wait_list_monitor = null;
+        parent::tearDown();
+    }
+
+
+
+    /**
      * creates 10 events that each have one related datetime,
      * which in turn has one related ticket.
      * datetime reg limits are twice the "event key"
@@ -59,7 +72,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      *
      * @throws EE_Error
      */
-    public function setupEvents()
+    private function setupEvents()
     {
         $events = array();
         for ($x = 1; $x <= 10; $x++) {
@@ -135,7 +148,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      * @param EE_Event $event
      * @param int      $qty
      * @param string   $reg_status
-     * @return EE_Base_Class|EE_Base_Class[]|EE_Registration|EE_Registration[]
+     * @return EE_Base_Class[]|EE_Registration[]
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      */
@@ -186,7 +199,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             );
         }
         $ticket->save();
-        return $qty === 1 ? reset($registrations) : $registrations;
+        return $registrations;
     }
 
 
@@ -227,59 +240,79 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function test_registrationStatusUpdate()
     {
+        $reg_count = mt_rand(1, 3);
         $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(1);
         // add a wait list registrations for that event
-        $registration = $this->registerForWaitListEvent($event_with_wait_list);
-        $original_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
-        // now pretend that registration was promoted tp Pending Payment
-        $this->wait_list_monitor->registrationStatusUpdate(
-            $registration,
-            EEM_Registration::status_id_wait_list,
-            EEM_Registration::status_id_pending_payment
-        );
+        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+        $this->assertCount($reg_count, $registrations);
+        $event_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
+        // now pretend that registrations were promoted to Pending Payment
+        foreach ($registrations as $registration) {
+            $this->wait_list_monitor->registrationStatusUpdate(
+                $registration,
+                EEM_Registration::status_id_wait_list,
+                EEM_Registration::status_id_pending_payment
+            );
+        }
         $new_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
-        $this->assertEquals($original_reg_count - 1, $new_reg_count);
+        $this->assertEquals(
+            $event_reg_count - $reg_count,
+            $new_reg_count,
+            "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
+        );
     }
 
 
 
     /**
-     * @group waitlistNOW
+     * @group waitlist
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      * @throws \EventEspresso\core\exceptions\EntityNotFoundException
      */
     public function test_registrationStatusUpdateWithAutoPromote()
     {
+        $reg_count = mt_rand(1, 3);
         $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(2, true);
         // add a wait list registrations for that event
-        $this->registerForWaitListEvent($event_with_wait_list);
-        $original_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
+        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+        $this->assertCount($reg_count, $registrations);
+        $event_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
         // now perform sold out status check which will trigger auto promotion
+        // because WaitListMonitor::promoteWaitListRegistrants() is hooked into
+        // AHEE__EE_Event__perform_sold_out_status_check__end
         $event_with_wait_list->perform_sold_out_status_check();
         $new_reg_count = $event_with_wait_list->get_extra_meta(WaitList::REG_COUNT_META_KEY, true);
-        $this->assertEquals($original_reg_count - 1, $new_reg_count);
+        $this->assertEquals(
+            $event_reg_count - $reg_count,
+            $new_reg_count,
+            "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
+        );
     }
 
 
 
     /**
-     * @group waitlistNOW
+     * @group waitlist
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      */
     public function test_adjustEventSpacesAvailable()
     {
-        $number_of_registrations = 2;
+        $reg_count = mt_rand(1, 3);
         $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(3);
         // get existing number of spaces left
         $orig_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
         // now add a couple of regs to the wait list
-        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $number_of_registrations);
-        $this->assertCount($number_of_registrations, $registrations);
-        $event_with_wait_list->update_extra_meta(WaitList::REG_COUNT_META_KEY, $number_of_registrations);
+        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+        $this->assertCount($reg_count, $registrations);
+        $event_with_wait_list->update_extra_meta(WaitList::REG_COUNT_META_KEY, $reg_count);
         $new_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
-        $this->assertEquals($orig_spaces_remaining - $number_of_registrations, $new_spaces_remaining);
+        $this->assertEquals(
+            $orig_spaces_remaining - $reg_count,
+            $new_spaces_remaining,
+            "{$orig_spaces_remaining} - {$reg_count} !== {$new_spaces_remaining}"
+        );
     }
 
 }

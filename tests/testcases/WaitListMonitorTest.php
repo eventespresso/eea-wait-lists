@@ -41,6 +41,11 @@ class WaitListMonitorTest extends EE_UnitTestCase
     public function setUp()
     {
         parent::setUp();
+        // echo 'Event Count: ' . EEM_Event::instance()->count() . "\n";
+        // echo 'Datetime Count: ' . EEM_Datetime::instance()->count() . "\n";
+        // echo 'Ticket Count: ' . EEM_Ticket::instance()->count() . "\n";
+        // echo 'Registration Count: ' . EEM_Registration::instance()->count() . "\n";
+        // echo 'Transaction Count: ' . EEM_Transaction::instance()->count() . "\n";
         $this->events = $this->setupEvents();
         $this->wait_list_events = new WaitListEventsCollection();
         $this->wait_list_monitor = new WaitListMonitor($this->wait_list_events);
@@ -53,6 +58,27 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function tearDown()
     {
+        foreach ($this->events as $event) {
+            $event->delete_extra_meta(WaitList::SPACES_META_KEY);
+            $event->delete_extra_meta(WaitList::AUTO_PROMOTE_META_KEY);
+            $event->delete_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY);
+            $event->delete_extra_meta(WaitList::REG_COUNT_META_KEY);
+            $datetime = $event->first_datetime();
+            $datetime->decrease_sold(10000);
+            $tickets = $datetime->tickets();
+            $ticket = reset($tickets);
+            $ticket->decrease_sold(10000);
+            $registrations = EEM_Registration::instance()->get_all(array(array('EVT_ID' => $event->ID())));
+            foreach ($registrations as $registration) {
+                $registration->delete_extra_meta(WaitList::REG_SIGNED_UP_META_KEY);
+                $registration->delete_extra_meta(WaitList::REG_PROMOTED_META_KEY);
+                $registration->delete_extra_meta(WaitList::REG_DEMOTED_META_KEY);
+                $registration->delete();
+            }
+            $ticket->delete();
+            $datetime->delete();
+            $event->delete();
+        }
         $this->events = array();
         $this->wait_list_events = null;
         $this->wait_list_monitor = null;
@@ -205,7 +231,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group waitlist
+     * @group WaitListMonitor
      * @throws DomainException
      * @throws EE_Error
      * @throws InvalidArgumentException
@@ -233,7 +259,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group waitlist
+     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      * @throws \EventEspresso\core\exceptions\EntityNotFoundException
@@ -265,7 +291,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group waitlist
+     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      * @throws \EventEspresso\core\exceptions\EntityNotFoundException
@@ -293,7 +319,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group waitlist
+     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      */

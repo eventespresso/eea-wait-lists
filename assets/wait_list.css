@@ -6,7 +6,7 @@
 
 .event_wait_list-hidden-inputs {
     border: 1px solid #ddd;
-    bottom: -25px;
+    bottom: -150px;
     box-sizing: border-box;
     box-shadow: 0 25px 10px -5px rgba(0, 0, 0, .5), 0 5px 25px 5px rgba(0, 0, 0, .1);
     clear: both;
@@ -17,7 +17,7 @@
     position: absolute;
     width: 100%;
     max-width: 480px;
-    z-index: 999;
+    z-index: 9999;
     -webkit-animation-name: modal_drop;
     -webkit-animation-duration: 0.4s;
     animation-name: modal_drop;
@@ -77,7 +77,7 @@
         opacity: 0
     }
     to {
-        bottom: 0;
+        bottom: -150px;
         opacity: 1
     }
 }
@@ -88,7 +88,7 @@
         opacity: 0
     }
     to {
-        bottom: 0;
+        bottom: -150px;
         opacity: 1
     }
 }

@@ -56,6 +56,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
         $this->events = array();
         $this->wait_list_events = null;
         $this->wait_list_monitor = null;
+        EED_Wait_Lists::reset();
         parent::tearDown();
     }
 

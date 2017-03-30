@@ -9,12 +9,10 @@ use EE_Registry;
 use EED_Wait_Lists;
 use EEM_Registration;
 use EventEspresso\core\exceptions\EntityNotFoundException;
-use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\services\collections\Collection;
-use Exception;
 use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
@@ -107,42 +105,36 @@ class WaitListMonitor
 
     /**
      * @param int $event_id
-     * @return boolean
-     * @throws InvalidEntityException
-     * @throws InvalidFormSubmissionException
-     * @throws LogicException
+     * @return bool
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws DomainException
      * @throws EE_Error
+     * @throws InvalidEntityException
+     * @throws InvalidFormSubmissionException
+     * @throws LogicException
+     * @throws RuntimeException
      */
     public function processWaitListFormForEvent($event_id)
     {
         if ($this->wait_list_events->has($event_id)) {
             /** @var EE_Event $event */
             $event = $this->wait_list_events->get($event_id);
-            try {
-                $wait_list_form = new WaitListForm($event, EE_Registry::instance());
-                $attendee = $wait_list_form->process($_REQUEST);
-                EE_Error::add_success(
-                    apply_filters(
-                        'FHEE_EventEspresso_WaitList_WaitListMonitor__processWaitListFormForEvent__success_msg',
-                        sprintf(
-                            esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s',
-                                'event_espresso'),
-                            $attendee->full_name(),
-                            '<br />',
-                            $event->name()
-                        )
-                    ),
-                    __FILE__, __FUNCTION__, __LINE__
-                );
-            } catch (Exception $e) {
-                EE_Error::add_error(
-                    new ExceptionStackTraceDisplay($e),
-                    __FILE__, __FUNCTION__, __LINE__
-                );
-            }
+            $wait_list_form = new WaitListForm($event, EE_Registry::instance());
+            $attendee = $wait_list_form->process($_REQUEST);
+            EE_Error::add_success(
+                apply_filters(
+                    'FHEE_EventEspresso_WaitList_WaitListMonitor__processWaitListFormForEvent__success_msg',
+                    sprintf(
+                        esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s',
+                            'event_espresso'),
+                        $attendee->full_name(),
+                        '<br />',
+                        $event->name()
+                    )
+                ),
+                __FILE__, __FUNCTION__, __LINE__
+            );
         }
         return false;
     }

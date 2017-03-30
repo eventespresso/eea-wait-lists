@@ -45,6 +45,14 @@ class EED_Wait_Lists extends EED_Module
 
 
 
+    public static function reset() {
+        self::$admin_page = null;
+        self::$wait_list_monitor = null;
+        self::$wait_list_checkout_monitor = null;
+        self::$wait_list_settings_form = null;
+    }
+
+
     /**
      * set_hooks - for hooking into EE Core, other modules, etc
      *

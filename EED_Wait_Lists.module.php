@@ -50,6 +50,7 @@ class EED_Wait_Lists extends EED_Module
         self::$wait_list_monitor = null;
         self::$wait_list_checkout_monitor = null;
         self::$wait_list_settings_form = null;
+        self::$_instance = null;
     }
 
 

@@ -41,13 +41,18 @@ class WaitList
     const REG_COUNT_META_KEY = 'ee_wait_list_reg_count';
 
     /**
+     * Meta Key used for tracking IDs of registrants promoted from the wait list to pending payment
+     */
+    const PROMOTED_REG_IDS_META_KEY = 'ee_wait_list_promoted_reg_IDs';
+
+    /**
      * Meta Key used for tracking when a registrant first signed up for the wait list
      * which is then also used as a flag to identify all registrants that have been on a wait list
      */
     const REG_SIGNED_UP_META_KEY = 'ee_wait_list_reg_signed_up';
 
     /**
-     * Meta Key used for tracking when a registrant was moved from wait list to another reg status
+     * Meta Key used for tracking when a registrant was moved from wait list to a reg status that can pay
      */
     const REG_PROMOTED_META_KEY = 'ee_wait_list_reg_promoted';
 
@@ -55,6 +60,11 @@ class WaitList
      * Meta Key used for tracking when a registrant was moved from another reg status BACK to the  wait list
      */
     const REG_DEMOTED_META_KEY = 'ee_wait_list_reg_demoted';
+
+    /**
+     * Meta Key used for tracking when a registrant was removed completely from wait list to a "closed" reg status
+     */
+    const REG_REMOVED_META_KEY = 'ee_wait_list_reg_removed';
 
     /**
      * value to be used for the LOG_type field in the esp_log table

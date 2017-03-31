@@ -417,13 +417,13 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function reg_status_actions(array $reg_status_actions, array $active_mts)
     {
-        $reg_status_actions['wait_list_registration'] = __('Set Registrations to "Wait List"', 'event_espresso');
+        $reg_status_actions['wait_list_registration'] = __('Set Registrations to Wait List', 'event_espresso');
         if (
             in_array('waitlist_can_register', $active_mts, true)
             && EE_Registry::instance()->CAP->current_user_can('ee_send_message', 'batch_send_messages')
         ) {
             $def_reg_status_actions['wait_list_and_notify_registration'] = __(
-                'Set Registrations to "Wait List" and Notify',
+                'Set Registrations to Wait List and Notify',
                 'event_espresso'
             );
         }

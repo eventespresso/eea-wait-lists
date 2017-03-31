@@ -90,6 +90,11 @@ class EED_Wait_Lists extends EED_Module
             'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
             array('EED_Wait_Lists', 'event_update_callbacks')
         );
+        add_filter(
+            'FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array',
+            array('EED_Wait_Lists', 'reg_status_actions'),
+            10, 2
+        );
         add_action(
             'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
             array('EED_Wait_Lists', 'event_editor_overview_add')
@@ -321,10 +326,6 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function event_spaces_available($spaces_available, \EE_Event $event)
     {
-        // if there's nothing left, then there's nothing left
-        if ($spaces_available < 1) {
-            return $spaces_available;
-        }
         try {
             return EED_Wait_Lists::getWaitListMonitor()->adjustEventSpacesAvailable(
                 $spaces_available,
@@ -405,6 +406,28 @@ class EED_Wait_Lists extends EED_Module
         } catch (Exception $e) {
             EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
         }
+    }
+
+
+
+    /**
+     * @param array $reg_status_actions
+     * @param array $active_mts
+     * @return array
+     */
+    public static function reg_status_actions(array $reg_status_actions, array $active_mts)
+    {
+        $reg_status_actions['wait_list_registration'] = __('Set Registrations to "Wait List"', 'event_espresso');
+        if (
+            in_array('wait_list_registration', $active_mts, true)
+            && EE_Registry::instance()->CAP->current_user_can('ee_send_message', 'batch_send_messages')
+        ) {
+            $def_reg_status_actions['wait_list_and_notify_registration'] = __(
+                'Set Registrations to "Wait List" and Notify',
+                'event_espresso'
+            );
+        }
+        return $reg_status_actions;
     }
 
 

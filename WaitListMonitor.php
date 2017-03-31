@@ -1,4 +1,5 @@
 <?php
+
 namespace EventEspresso\WaitList;
 
 use DomainException;
@@ -142,6 +143,35 @@ class WaitListMonitor
 
 
     /**
+     * @param EE_Event $event
+     * @return int
+     * @throws EE_Error
+     */
+    private function getRegCount(EE_Event $event)
+    {
+        return absint(
+            $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
+        );
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return array
+     * @throws EE_Error
+     */
+    private function getPromotedRegIdsArray(EE_Event $event)
+    {
+        $promoted_reg_ids = $event->get_extra_meta(
+            WaitList::PROMOTED_REG_IDS_META_KEY, false, array()
+        );
+        return reset($promoted_reg_ids);
+    }
+
+
+
+    /**
      * increment or decrement the wait list reg count for an event
      * when a registration's status changes to or from RWL
      *
@@ -157,25 +187,30 @@ class WaitListMonitor
         if ($this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = null;
             if ($old_STS_ID === EEM_Registration::status_id_wait_list) {
-                $wait_list_reg_count = absint(
-                    $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
-                );
+                $wait_list_reg_count = $this->getRegCount($event);
                 $wait_list_reg_count--;
                 $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
-                $registration->add_extra_meta(
-                    WaitList::REG_DEMOTED_META_KEY,
-                    current_time('mysql', true)
-                );
+                // if new status is Approved or Pending Payment, then YAY!!!
+                if (in_array($new_STS_ID, EEM_Registration::reg_statuses_that_allow_payment(), true)) {
+                    $this->addMetaDataWhenRegistrationPromoted($registration, $event, $new_STS_ID);
+                } else {
+                    // this guy ain't going to the event EVER !!!
+                    $this->addMetaDataWhenRegistrationRemoved($registration);
+                }
             } elseif ($new_STS_ID === EEM_Registration::status_id_wait_list) {
-                $wait_list_reg_count = absint(
-                    $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
-                );
+                $wait_list_reg_count = $this->getRegCount($event);
                 $wait_list_reg_count++;
                 $event->update_extra_meta(WaitList::REG_COUNT_META_KEY, $wait_list_reg_count);
-                $registration->add_extra_meta(
-                    WaitList::REG_PROMOTED_META_KEY,
-                    current_time('mysql', true)
-                );
+                // if old status was Approved or Pending Payment, but they are being moved to the Wait List
+                if (in_array($old_STS_ID, EEM_Registration::reg_statuses_that_allow_payment(), true)) {
+                    $this->addMetaDataWhenRegistrationDemoted($registration, $event, $old_STS_ID);
+                } else {
+                    $this->addMetaDataWhenRegistrationSignsUp($registration);
+                }
+            } elseif ($old_STS_ID === EEM_Registration::status_id_pending_payment) {
+                // don't need to track this reg anymore,
+                // because they were either approved or cancelled altogether
+                $this->removeFromPromotedRegIdList($registration, $event);
             }
             if ($wait_list_reg_count !== null && $this->perform_sold_out_status_check) {
                 // updating the reg status will trigger a sold out status check on the event,
@@ -193,6 +228,100 @@ class WaitListMonitor
 
 
     /**
+     * @param EE_Registration $registration
+     * @throws EE_Error
+     */
+    private function addMetaDataWhenRegistrationSignsUp(EE_Registration $registration)
+    {
+        $registration->add_extra_meta(
+            WaitList::REG_SIGNED_UP_META_KEY,
+            current_time('mysql', true)
+        );
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @param EE_Event        $event
+     * @param string          $new_STS_ID
+     * @throws EE_Error
+     */
+    private function addMetaDataWhenRegistrationPromoted(EE_Registration $registration, EE_Event $event, $new_STS_ID)
+    {
+        $registration->add_extra_meta(
+            WaitList::REG_PROMOTED_META_KEY,
+            current_time('mysql', true)
+        );
+        // Approved registrations are guaranteed a space right away,
+        // but we need a way to track registrations that were promoted from the wait list to pending payment
+        if ($new_STS_ID === EEM_Registration::status_id_pending_payment) {
+            $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
+            $promoted_reg_ids[$registration->ID()] = current_time('mysql', true);
+            $event->update_extra_meta(
+                WaitList::PROMOTED_REG_IDS_META_KEY,
+                $promoted_reg_ids
+            );
+        }
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @param EE_Event        $event
+     * @param string          $old_STS_ID
+     * @throws EE_Error
+     */
+    private function addMetaDataWhenRegistrationDemoted(EE_Registration $registration, EE_Event $event, $old_STS_ID)
+    {
+        $registration->add_extra_meta(
+            WaitList::REG_DEMOTED_META_KEY,
+            current_time('mysql', true)
+        );
+        // don't track this registration anymore since they are back on the wait list
+        if ($old_STS_ID === EEM_Registration::status_id_pending_payment) {
+            $this->removeFromPromotedRegIdList($registration, $event);
+        }
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @throws EE_Error
+     */
+    private function addMetaDataWhenRegistrationRemoved(EE_Registration $registration)
+    {
+        $registration->add_extra_meta(
+            WaitList::REG_REMOVED_META_KEY,
+            current_time('mysql', true)
+        );
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @param EE_Event        $event
+     * @throws EE_Error
+     */
+    private function removeFromPromotedRegIdList(EE_Registration $registration, EE_Event $event)
+    {
+        // get list of IDs for Pending Payment registrations promoted from wait list
+        $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
+        //remove this registration
+        unset($promoted_reg_ids[$registration->ID()]);
+        // resave the list of Reg IDs
+        $event->update_extra_meta(
+            WaitList::PROMOTED_REG_IDS_META_KEY,
+            $promoted_reg_ids
+        );
+    }
+
+
+
+    /**
      * factors wait list registrations into calculations involving spaces available for events
      *
      * @param int      $spaces_available
@@ -203,10 +332,11 @@ class WaitListMonitor
     public function adjustEventSpacesAvailable($spaces_available, EE_Event $event)
     {
         if ($this->wait_list_events->hasObject($event)) {
-            $wait_list_reg_count = absint(
-                $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
-            );
-            // consider wait list registrations as taking available spaces
+            // registrations previously on wait list but now waiting to pay
+            $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
+            $spaces_available -= count($promoted_reg_ids);
+            // plus consider wait list registrations as taking available spaces
+            $wait_list_reg_count = $this->getRegCount($event);
             $spaces_available -= $wait_list_reg_count;
         }
         return $spaces_available;
@@ -231,17 +361,16 @@ class WaitListMonitor
         $spaces_remaining = 0
     ) {
         if ($this->promote_wait_list_registrants && $this->wait_list_events->hasObject($event)) {
-            $wait_list_reg_count = absint(
-                $event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true)
-            );
-            $regs_to_promote = $spaces_remaining + $wait_list_reg_count;
-            if ($regs_to_promote < 1) {
+            // registrations currently on wait list
+            $wait_list_reg_count = $this->getRegCount($event);
+            $spaces_remaining += $wait_list_reg_count;
+            if ($spaces_remaining < 1) {
                 return;
             }
-            if ($this->manuallyPromoteRegistrations($event, $regs_to_promote, $wait_list_reg_count)) {
+            if ($this->manuallyPromoteRegistrations($event, $spaces_remaining, $wait_list_reg_count)) {
                 return;
             }
-            $this->autoPromoteRegistrations($event, $regs_to_promote);
+            $this->autoPromoteRegistrations($event, $spaces_remaining);
         }
     }
 
@@ -336,10 +465,10 @@ class WaitListMonitor
             );
             \EEM_Change_Log::instance()->log(WaitList::LOG_TYPE, $message, $event);
             if (
-                EE_Registry::instance()->CAP->current_user_can(
-                    'ee_edit_registration',
-                    'espresso_view_wait_list_update_notice'
-                )
+            EE_Registry::instance()->CAP->current_user_can(
+                'ee_edit_registration',
+                'espresso_view_wait_list_update_notice'
+            )
             ) {
                 EE_Error::add_success($message);
             }

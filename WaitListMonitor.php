@@ -367,9 +367,7 @@ class WaitListMonitor
             if ($spaces_remaining < 1) {
                 return;
             }
-            if ($this->manuallyPromoteRegistrations($event, $spaces_remaining, $wait_list_reg_count)) {
-                return;
-            }
+            $spaces_remaining = $this->manuallyPromoteRegistrations($event, $spaces_remaining, $wait_list_reg_count);
             $this->autoPromoteRegistrations($event, $spaces_remaining);
         }
     }
@@ -378,40 +376,42 @@ class WaitListMonitor
 
     /**
      * @param EE_Event $event
-     * @param int      $regs_to_promote
+     * @param int      $spaces_remaining
      * @param int      $wait_list_reg_count
      * @return bool
      * @throws EE_Error
      */
-    private function manuallyPromoteRegistrations(EE_Event $event, $regs_to_promote, $wait_list_reg_count)
+    private function manuallyPromoteRegistrations(EE_Event $event, $spaces_remaining, $wait_list_reg_count)
     {
-        $auto_promote = absint(
-            $event->get_extra_meta(WaitList::AUTO_PROMOTE_META_KEY, true)
+        $manual_control_spaces = absint(
+            $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
-        if (! $auto_promote) {
-            if (
-                is_admin()
-                && EE_Registry::instance()->CAP->current_user_can(
-                    'ee_edit_registration',
-                    'espresso_promote_wait_list_registrants'
+        if (
+            $spaces_remaining > 0
+            && $manual_control_spaces > 0
+            && is_admin()
+            && EE_Registry::instance()->CAP->current_user_can(
+                'ee_edit_registration',
+                'espresso_promote_wait_list_registrants'
+            )
+        ) {
+
+            EE_Error::add_attention(
+                sprintf(
+                    esc_html__(
+                        'There is %1$d space(s) available for "%2$s", with %3$d space(s) under manual control, and %4$d registrant(s) on the Wait List for that event. %6$s Please click here to view a list of %5$s and select those you wish to offer a space to by updating their reg status accordingly.'
+                    ),
+                    min($spaces_remaining, $manual_control_spaces),
+                    $event->name(),
+                    $manual_control_spaces,
+                    $wait_list_reg_count,
+                    EED_Wait_Lists::wait_list_registrations_list_table_link($event),
+                    '<br />'
                 )
-            ) {
-                EE_Error::add_attention(
-                    sprintf(
-                        esc_html__(
-                            'There is %1$d space(s) available for "%3$s" and %2$d registrant(s) on the Wait List for that event. %5$s Please click here to view a list of %4$s and select those you wish to offer a space to by updating their reg status accordingly.'
-                        ),
-                        $regs_to_promote,
-                        $wait_list_reg_count,
-                        $event->name(),
-                        EED_Wait_Lists::wait_list_registrations_list_table_link($event),
-                        '<br />'
-                    )
-                );
-            }
-            return true;
+            );
         }
-        return false;
+        $spaces_remaining -= $manual_control_spaces;
+        return $spaces_remaining;
     }
 
 
@@ -424,11 +424,10 @@ class WaitListMonitor
      */
     private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0)
     {
-        $manual_control_spaces = absint(
-            $event->get_extra_meta(WaitList::MANUAL_CONTROL_SPACES_META_KEY, true)
+        $auto_promote = absint(
+            $event->get_extra_meta(WaitList::AUTO_PROMOTE_META_KEY, true)
         );
-        $regs_to_promote -= $manual_control_spaces;
-        if ($regs_to_promote < 1) {
+        if (! $auto_promote || $regs_to_promote < 1) {
             return;
         }
         /** @var EE_Registration[] $registrations */

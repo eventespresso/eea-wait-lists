@@ -41,7 +41,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     {
         add_action(
             'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
-            array(__CLASS__, 'trigger_wait_list_notifications'),
+            array('EED_Wait_Lists_Messages', 'trigger_wait_list_notifications'),
             10,
             2
         );

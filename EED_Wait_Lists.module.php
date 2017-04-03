@@ -243,11 +243,10 @@ class EED_Wait_Lists extends EED_Module
         );
         wp_enqueue_style('wait_list');
         // load JS
-        add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
             EE_WAIT_LISTS_URL . 'assets/wait_list.js',
-            array('espresso_core'),
+            array('espresso_core', 'jquery-validate'),
             EE_WAIT_LISTS_VERSION,
             true
         );

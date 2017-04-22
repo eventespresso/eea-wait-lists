@@ -1,0 +1,19 @@
+{
+  "versionFile" : "eea-wait-lists.php",
+  "slug" : "eea-wait-lists",
+  "name" : "Event Espresso Wait-lists Add-on",
+  "archiveBaseUrl" : "http://build.eventespresso.com/",
+  "archiveBasePath" : "~/www/build/",
+  "demoee" : false,
+  "srcBuildFolderName" : "eea-wait-lists",
+  "textDomain" : "event_espresso",
+  "releaseFilesRemove" : [
+    "src/tests/**",
+    "src/info.json",
+    "src/circle.yml",
+    "src/.travis.yml"
+  ],
+  "github" : true,
+  "awsbucket" : "",
+  "awsregion" : ""
+}

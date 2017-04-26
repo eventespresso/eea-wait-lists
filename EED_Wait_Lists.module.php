@@ -5,7 +5,6 @@ use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitList;
 use EventEspresso\WaitList\WaitListCheckoutMonitor;
-use EventEspresso\WaitList\WaitListEventsCollection;
 use EventEspresso\WaitList\WaitListMonitor;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -29,39 +28,25 @@ class EED_Wait_Lists extends EED_Module
      */
     protected static $admin_page;
 
-    /**
-     * @var WaitListMonitor $wait_list_monitor
-     */
-    protected static $wait_list_monitor;
-
-    /**
-     * @var WaitListCheckoutMonitor $wait_list_checkout_monitor
-     */
-    protected static $wait_list_checkout_monitor;
-
-    /**
-     * @var EventEditorWaitListMetaBoxForm $wait_list_settings_form
-     */
-    protected static $wait_list_settings_form;
-
-
 
     public static function reset() {
         self::$admin_page = null;
-        self::$wait_list_monitor = null;
-        self::$wait_list_checkout_monitor = null;
-        self::$wait_list_settings_form = null;
         self::$_instance = null;
     }
+
 
 
     /**
      * set_hooks - for hooking into EE Core, other modules, etc
      *
      * @return void
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
      */
     public static function set_hooks()
     {
+        EED_Wait_Lists::set_shared_hooks();
         EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
         add_filter(
             'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
@@ -69,7 +54,6 @@ class EED_Wait_Lists extends EED_Module
             10, 2
         );
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
-        EED_Wait_Lists::set_shared_hooks();
     }
 
 
@@ -78,9 +62,13 @@ class EED_Wait_Lists extends EED_Module
      * set_hooks_admin - for hooking into EE Admin Core, other modules, etc
      *
      * @return void
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
      */
     public static function set_hooks_admin()
     {
+        EED_Wait_Lists::set_shared_hooks();
         add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
             array('EED_Wait_Lists', 'setup_page_config'),
@@ -107,7 +95,6 @@ class EED_Wait_Lists extends EED_Module
             'wp_ajax_nopriv_process_wait_list_form_for_event',
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
-        EED_Wait_Lists::set_shared_hooks();
     }
 
 
@@ -116,9 +103,31 @@ class EED_Wait_Lists extends EED_Module
      * hooks set by both set_hooks() and set_hooks_admin()
      *
      * @return void
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
      */
     protected static function set_shared_hooks()
     {
+        EE_Dependency_Map::instance()->add_alias(
+            'EventEspresso\WaitList\WaitListEventsCollection',
+            'EventEspresso\core\services\collections\Collection',
+            'EventEspresso\WaitList\WaitListMonitor'
+        );
+        EE_Dependency_Map::register_class_loader(
+            'EventEspresso\WaitList\WaitListEventsCollection',
+            function () {
+                return new EventEspresso\WaitList\WaitListEventsCollection();
+            }
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\WaitListMonitor',
+            array('EventEspresso\WaitList\WaitListEventsCollection' => EE_Dependency_Map::load_from_cache)
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\EventEditorWaitListMetaBoxForm',
+            array('EE_Registry' => EE_Dependency_Map::load_from_cache)
+        );
         add_action(
             'AHEE__EE_Registration__set_status__after_update',
             array('EED_Wait_Lists', 'registration_status_update'),
@@ -174,59 +183,49 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @return WaitListMonitor
-     * @throws InvalidInterfaceException
-     * @throws InvalidEntityException
      * @throws EE_Error
+     * @throws InvalidEntityException
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
      */
     public static function getWaitListMonitor()
     {
-        // if not already generated, create a wait list monitor object
-        if (! self::$wait_list_monitor instanceof WaitListMonitor) {
-            self::$wait_list_monitor = new WaitListMonitor(new WaitListEventsCollection());
-        }
-        return self::$wait_list_monitor;
+        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\WaitListMonitor');
     }
 
 
 
     /**
      * @return WaitListCheckoutMonitor
+     * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
-     * @throws InvalidEntityException
-     * @throws EE_Error
      */
     public static function getWaitListCheckoutMonitor()
     {
-        // if not already generated, create a wait list monitor object
-        if (! self::$wait_list_checkout_monitor instanceof WaitListCheckoutMonitor) {
-            self::$wait_list_checkout_monitor = new WaitListCheckoutMonitor();
-        }
-        return self::$wait_list_checkout_monitor;
+        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\WaitListCheckoutMonitor');
     }
 
 
 
     /**
-     * @return \EventEspresso\WaitList\EventEditorWaitListMetaBoxForm
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \DomainException
+     * @return EventEditorWaitListMetaBoxForm
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
      */
     public static function getEventEditorWaitListMetaBoxForm()
     {
-        // if not already generated, create a wait list monitor object
-        if (! self::$wait_list_settings_form instanceof EventEditorWaitListMetaBoxForm) {
-            self::$wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
-                EED_Wait_Lists::$admin_page->get_event_object(),
-                EE_Registry::instance()
-            );
-        }
-        return self::$wait_list_settings_form;
+        return EE_Wait_Lists::loader()->load(
+            '\EventEspresso\WaitList\EventEditorWaitListMetaBoxForm',
+            array( EED_Wait_Lists::$admin_page->get_event_object() )
+        );
     }
 
 
 
     /**************************** FRONTEND FUNCTIONALITY ***************************/
+
+
+
     /**
      * enqueue_styles_and_scripts
      *
@@ -243,6 +242,7 @@ class EED_Wait_Lists extends EED_Module
         );
         wp_enqueue_style('wait_list');
         // load JS
+        add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
             EE_WAIT_LISTS_URL . 'assets/wait_list.js',
@@ -265,7 +265,7 @@ class EED_Wait_Lists extends EED_Module
         try {
             return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
         return $html;
     }
@@ -281,11 +281,7 @@ class EED_Wait_Lists extends EED_Module
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
             EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
-            if (WP_DEBUG) {
-                new ExceptionStackTraceDisplay($e);
-            } else {
-                EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
-            }
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
         // todo submit form via AJAX and process return here
         if (defined('DOING_AJAX') && DOING_AJAX) {
@@ -312,7 +308,7 @@ class EED_Wait_Lists extends EED_Module
         try {
             EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -331,7 +327,7 @@ class EED_Wait_Lists extends EED_Module
                 $event
             );
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
         return $spaces_available;
     }
@@ -339,6 +335,9 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** ADMIN FUNCTIONALITY ****************************/
+
+
+
     /**
      * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
      *
@@ -388,7 +387,7 @@ class EED_Wait_Lists extends EED_Module
                 '', 'misc-pub-section'
             );
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -403,7 +402,7 @@ class EED_Wait_Lists extends EED_Module
         try {
             echo EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->display();
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -459,7 +458,7 @@ class EED_Wait_Lists extends EED_Module
             );
             $wait_list_settings_form->process($form_data);
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -494,7 +493,7 @@ class EED_Wait_Lists extends EED_Module
                 $spaces_remaining
             );
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -553,7 +552,7 @@ class EED_Wait_Lists extends EED_Module
         try {
             EED_Wait_Lists::getWaitListCheckoutMonitor()->loadAndInstantiateRegSteps($checkout);
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
@@ -576,7 +575,7 @@ class EED_Wait_Lists extends EED_Module
                 $registration
             );
         } catch (Exception $e) {
-            EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
         return $allow_payment;
     }
@@ -587,6 +586,22 @@ class EED_Wait_Lists extends EED_Module
     {
         $allowed_enum_values[WaitList::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
         return $allowed_enum_values;
+    }
+
+
+
+    /**
+     * @param Exception $exception
+     * @param string    $file
+     * @param string    $func
+     * @param string    $line
+     */
+    protected static function handleException(Exception $exception, $file = '', $func = '', $line = '') {
+        if (WP_DEBUG) {
+            new ExceptionStackTraceDisplay($exception);
+        } else {
+            EE_Error::add_error($exception->getMessage(), $file, $func, $line);
+        }
     }
 
 

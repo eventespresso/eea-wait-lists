@@ -69,8 +69,9 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
     /**
      * creates and returns the actual form
      *
-     * @return void
+     * @return EE_Form_Section_Proper
      * @throws EE_Error
+     * @throws LogicException
      */
     public function generate()
     {
@@ -133,6 +134,7 @@ class EventEditorWaitListMetaBoxForm extends FormHandler
                 )
             )
         );
+        return $this->form();
     }
 
 

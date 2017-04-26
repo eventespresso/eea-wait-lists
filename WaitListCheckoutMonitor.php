@@ -67,7 +67,8 @@ class WaitListCheckoutMonitor
      */
     public function initializeTxnRegStepsArray(EE_Checkout $checkout)
     {
-        if (empty($checkout->transaction->reg_steps())) {
+        $reg_steps = $checkout->transaction->reg_steps();
+        if (empty($reg_steps)) {
             $registrations = $checkout->transaction->registrations();
             $checkout->total_ticket_count = count($registrations);
             $checkout->transaction->set_reg_steps(

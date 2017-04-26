@@ -1,4 +1,10 @@
-<?php if (! defined('EVENT_ESPRESSO_VERSION')) {
+<?php
+use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
+use EventEspresso\core\services\loaders\Loader;
+use EventEspresso\core\services\loaders\LoaderInterface;
+
+if (! defined('EVENT_ESPRESSO_VERSION')) {
     exit();
 }
 // define the plugin directory path and URL
@@ -18,6 +24,40 @@ define('EE_WAIT_LISTS_ADMIN', EE_WAIT_LISTS_PATH . 'admin' . DS . 'wait_lists' .
  */
 Class  EE_Wait_Lists extends EE_Addon
 {
+
+
+    /**
+     * @var LoaderInterface $loader
+     */
+    private static $loader;
+
+
+
+    /**
+     * EE_Wait_Lists constructor.
+     *
+     * @param LoaderInterface $loader
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     * @throws InvalidArgumentException
+     */
+    public function __construct(LoaderInterface $loader = null)
+    {
+        EE_Wait_Lists::$loader = $loader instanceof LoaderInterface ? $loader : new Loader();
+        parent::__construct();
+    }
+
+
+
+    /**
+     * @return LoaderInterface
+     */
+    public static function loader()
+    {
+        return EE_Wait_Lists::$loader;
+    }
+
+
 
     /**
      * this is not the place to perform any logic or add any other filter or action callbacks

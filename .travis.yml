@@ -3,7 +3,8 @@ cache:
   apt: true
 env:
   global:
-  - EE_VERSION=FET-3467-waitlists
+  - EE_VERSION=master
+  - EE_BRANCH=FET-3467-waitlists
   matrix:
   - WP_VERSION=latest WP_MULTISITE=0
   - WP_VERSION=latest WP_MULTISITE=1

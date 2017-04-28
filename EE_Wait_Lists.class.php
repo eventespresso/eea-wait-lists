@@ -43,7 +43,7 @@ Class  EE_Wait_Lists extends EE_Addon
      */
     public function __construct(LoaderInterface $loader = null)
     {
-        EE_Wait_Lists::$loader = $loader instanceof LoaderInterface ? $loader : new Loader();
+        EE_Wait_Lists::$loader = $loader;
         parent::__construct();
     }
 
@@ -54,6 +54,9 @@ Class  EE_Wait_Lists extends EE_Addon
      */
     public static function loader()
     {
+        if (! EE_Wait_Lists::$loader instanceof LoaderInterface) {
+            EE_Wait_Lists::$loader = EE_Registry::instance()->create('EventEspresso\core\services\loaders\Loader');
+        }
         return EE_Wait_Lists::$loader;
     }
 

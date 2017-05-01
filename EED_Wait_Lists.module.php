@@ -1,4 +1,5 @@
 <?php
+
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
@@ -6,6 +7,7 @@ use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
 use EventEspresso\WaitList\WaitList;
 use EventEspresso\WaitList\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\WaitListMonitor;
+
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -24,7 +26,7 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @var \Events_Admin_Page $admin_page
+     * @var Events_Admin_Page $admin_page
      */
     protected static $admin_page;
 
@@ -257,10 +259,10 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param string    $html
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @return string
      */
-    public static function add_wait_list_form_for_event($html = '', \EE_Event $event)
+    public static function add_wait_list_form_for_event($html = '', EE_Event $event)
     {
         try {
             return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent($event);
@@ -299,7 +301,7 @@ class EED_Wait_Lists extends EED_Module
     /**
      * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
      *
-     * @param \EE_Registration $registration
+     * @param EE_Registration  $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
      */
@@ -316,10 +318,10 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param int       $spaces_available
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @return int
      */
-    public static function event_spaces_available($spaces_available, \EE_Event $event)
+    public static function event_spaces_available($spaces_available, EE_Event $event)
     {
         try {
             return EED_Wait_Lists::getWaitListMonitor()->adjustEventSpacesAvailable(
@@ -342,17 +344,19 @@ class EED_Wait_Lists extends EED_Module
      * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
      *
      * @param array              $page_config current page config.
-     * @param \Events_Admin_Page $admin_page
+     * @param Events_Admin_Page $admin_page
      * @return array
      * @since  1.0.0
      */
-    public static function setup_page_config(array $page_config, \Events_Admin_Page $admin_page)
+    public static function setup_page_config(array $page_config, Events_Admin_Page $admin_page)
     {
         EED_Wait_Lists::$admin_page = $admin_page;
-        $page_config['edit']['metaboxes'] = array_merge(
+        $wait_list_meta_box = array_merge(
             $page_config['edit']['metaboxes'],
             array(array('EED_Wait_Lists', 'add_event_wait_list_meta_box'))
         );
+        $page_config['create_new']['metaboxes'] = $wait_list_meta_box;
+        $page_config['edit']['metaboxes'] = $wait_list_meta_box;
         return $page_config;
     }
 
@@ -382,7 +386,7 @@ class EED_Wait_Lists extends EED_Module
     public static function event_editor_overview_add()
     {
         try {
-            echo \EEH_HTML::div(
+            echo EEH_HTML::div(
                 EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->waitListRegCountDisplay(),
                 '', 'misc-pub-section'
             );
@@ -446,7 +450,7 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @param array     $form_data
      */
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
@@ -465,11 +469,11 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @param \EE_Event $event
+     * @param EE_Event $event
      * @return int
      * @throws EE_Error
      */
-    public static function waitListRegCount(\EE_Event $event)
+    public static function waitListRegCount(EE_Event $event)
     {
         return absint($event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true));
     }
@@ -482,7 +486,7 @@ class EED_Wait_Lists extends EED_Module
      * @param int      $spaces_remaining
      */
     public static function promote_wait_list_registrants(
-        \EE_Event $event,
+        EE_Event $event,
         $sold_out = false,
         $spaces_remaining = 0
     ) {
@@ -526,13 +530,13 @@ class EED_Wait_Lists extends EED_Module
      * @return string
      * @throws EE_Error
      */
-    public static function wait_list_registrations_list_table_link(\EE_Event $event)
+    public static function wait_list_registrations_list_table_link(EE_Event $event)
     {
-        return \EEH_HTML::link(
+        return EEH_HTML::link(
             add_query_arg(
                 array(
                     'route'       => 'default',
-                    '_reg_status' => \EEM_Registration::status_id_wait_list,
+                    '_reg_status' => EEM_Registration::status_id_wait_list,
                     'event_id'    => $event->ID(),
                 ),
                 REG_ADMIN_URL

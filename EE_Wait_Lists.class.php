@@ -1,18 +1,12 @@
 <?php
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
-use EventEspresso\core\services\loaders\Loader;
 use EventEspresso\core\services\loaders\LoaderInterface;
+use EventEspresso\WaitList\domain\Constants as WaitList;
 
 if (! defined('EVENT_ESPRESSO_VERSION')) {
     exit();
 }
-// define the plugin directory path and URL
-define('EE_WAIT_LISTS_BASENAME', plugin_basename(EE_WAIT_LISTS_PLUGIN_FILE));
-define('EE_WAIT_LISTS_PATH', plugin_dir_path(__FILE__));
-define('EE_WAIT_LISTS_URL', plugin_dir_url(__FILE__));
-define('EE_WAIT_LISTS_ADMIN', EE_WAIT_LISTS_PATH . 'admin' . DS . 'wait_lists' . DS);
-
 
 
 /**
@@ -34,8 +28,6 @@ Class  EE_Wait_Lists extends EE_Addon
 
 
     /**
-     * EE_Wait_Lists constructor.
-     *
      * @param LoaderInterface $loader
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
@@ -55,7 +47,9 @@ Class  EE_Wait_Lists extends EE_Addon
     public static function loader()
     {
         if (! EE_Wait_Lists::$loader instanceof LoaderInterface) {
-            EE_Wait_Lists::$loader = EE_Registry::instance()->create('EventEspresso\core\services\loaders\Loader');
+            EE_Wait_Lists::$loader = EE_Registry::instance()->create(
+                'EventEspresso\core\services\loaders\Loader'
+            );
         }
         return EE_Wait_Lists::$loader;
     }
@@ -79,35 +73,39 @@ Class  EE_Wait_Lists extends EE_Addon
             array(
                 'version'          => EE_WAIT_LISTS_VERSION,
                 'plugin_slug'      => 'eea_wait_lists',
-                'min_core_version' => EE_WAIT_LISTS_CORE_VERSION_REQUIRED,
+                'min_core_version' => WaitList::CORE_VERSION_REQUIRED,
                 'main_file_path'   => EE_WAIT_LISTS_PLUGIN_FILE,
                 'namespace'        => array(
                     'FQNS' => 'EventEspresso\WaitList',
                     'DIR'  => __DIR__,
                 ),
                 'module_paths'     => array(
-                    EE_WAIT_LISTS_PATH . 'EED_Wait_Lists.module.php',
-                    EE_WAIT_LISTS_PATH . 'EED_Wait_Lists_Messages.module.php',
+                    WaitList::pluginPath() . 'EED_Wait_Lists.module.php',
+                    WaitList::pluginPath() . 'EED_Wait_Lists_Messages.module.php',
                 ),
                 'message_types'    => array(
                     'waitlist_can_register' => array(
-                        'mtfilename'                                       => 'EE_Waitlist_Can_Register_message_type.class.php',
+                        'mtfilename'                                       =>
+                            'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(
-                            EE_WAIT_LISTS_PATH . 'messages/',
+                            WaitList::pluginPath() . 'domain/services/messages/',
                         ),
                         'messengers_to_activate_with'                      => array('email'),
                         'messengers_to_validate_with'                      => array('email'),
                         'force_activation'                                 => true,
                         'messengers_supporting_default_template_pack_with' => array('email'),
-                        'base_path_for_default_templates'                  => EE_WAIT_LISTS_PATH . 'messages/templates/',
-                        'base_path_for_default_variation'                  => EE_WAIT_LISTS_PATH . 'messages/templates/variations/',
-                        'base_url_for_default_variation'                   => EE_WAIT_LISTS_URL . 'messages/templates/variations/',
+                        'base_path_for_default_templates'                  => WaitList::pluginPath()
+                                                                              . 'domain/services/messages/templates/',
+                        'base_path_for_default_variation'                  => WaitList::pluginPath()
+                                                                              . 'domain/services/messages/templates/variations/',
+                        'base_url_for_default_variation'                   => WaitList::pluginUrl()
+                                                                              . 'domain/services/messages/templates/variations/',
                     ),
                 ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
                 'pue_options'      => array(
                     'pue_plugin_slug' => 'eea-wait-lists',
-                    'plugin_basename' => EE_WAIT_LISTS_BASENAME,
+                    'plugin_basename' => WaitList::pluginBasename(),
                     'checkPeriod'     => '24',
                     'use_wp_update'   => false,
                 ),
@@ -123,9 +121,9 @@ Class  EE_Wait_Lists extends EE_Addon
     public function after_registration()
     {
         $this->_register_custom_shortcode_library();
-        add_action(
+        add_filter(
             'FHEE__EE_Messages_Base__get_valid_shortcodes',
-            array(__CLASS__, 'modify_valid_shortcodes'),
+            array($this, 'modify_valid_shortcodes'),
             10,
             2
         );
@@ -147,8 +145,8 @@ Class  EE_Wait_Lists extends EE_Addon
                     'recipient_waitlist_shortcode_library',
                     array(
                         'name'                    => 'recipient_waitlist',
-                        'autoloadpaths'           => EE_WAIT_LISTS_PATH . 'messages/shortcodes/',
-                        'msgr_validator_callback' => array(__CLASS__, 'messenger_validator_callback'),
+                        'autoloadpaths'           => WaitList::pluginPath() . 'domain/services/messages/shortcodes/',
+                        'msgr_validator_callback' => array($this, 'messenger_validator_callback'),
                     )
                 );
             },
@@ -176,7 +174,7 @@ Class  EE_Wait_Lists extends EE_Addon
      * @param EE_message_type $message_type
      * @return array
      */
-    public static function modify_valid_shortcodes($valid_shortcodes, $message_type)
+    public function modify_valid_shortcodes($valid_shortcodes, $message_type)
     {
         if ($message_type instanceof EE_WaitList_Can_Register_message_type) {
             $valid_shortcodes['attendee'][] = 'recipient_waitlist';
@@ -214,7 +212,7 @@ Class  EE_Wait_Lists extends EE_Addon
      * @param EE_messenger $messenger
      * @return array
      */
-    public static function messenger_validator_callback($validator_config, EE_messenger $messenger)
+    public function messenger_validator_callback($validator_config, EE_messenger $messenger)
     {
         if ($messenger->name !== 'email') {
             return $validator_config;
@@ -227,6 +225,25 @@ Class  EE_Wait_Lists extends EE_Addon
             'ticket_list'
         );
         return $validator_config;
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return int
+     * @throws \EE_Error
+     */
+    public static function waitListRegCount(EE_Event $event)
+    {
+        return EEM_Registration::instance()->count(
+            array(
+                array(
+                    'STS_ID' => EEM_Registration::status_id_wait_list,
+                    'EVT_ID' => $event->ID(),
+                ),
+            )
+        );
     }
 
 }

@@ -6,7 +6,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 /**
  * Module for handling wait list integration with the messages system.
  *
- * @package    EventEspresso\WaitList
+ * @package    EventEspresso\Constants
  * @subpackage modules
  * @author     Darren Ethier
  * @since      1.0.0

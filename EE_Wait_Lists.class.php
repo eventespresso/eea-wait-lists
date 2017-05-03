@@ -89,17 +89,19 @@ Class  EE_Wait_Lists extends EE_Addon
                             'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(
                             Constants::pluginPath() . 'domain/services/messages/',
+                            Constants::pluginPath() . 'domain/dto',
+                            Constants::pluginPath() . 'domain/entities'
                         ),
                         'messengers_to_activate_with'                      => array('email'),
                         'messengers_to_validate_with'                      => array('email'),
                         'force_activation'                                 => true,
                         'messengers_supporting_default_template_pack_with' => array('email'),
                         'base_path_for_default_templates'                  => Constants::pluginPath()
-                                                                              . 'domain/services/messages/templates/',
+                                                                              . 'views/messages/templates/',
                         'base_path_for_default_variation'                  => Constants::pluginPath()
-                                                                              . 'domain/services/messages/templates/variations/',
+                                                                              . 'views/messages/variations/',
                         'base_url_for_default_variation'                   => Constants::pluginUrl()
-                                                                              . 'domain/services/messages/templates/variations/',
+                                                                              . 'views/messages/variations/',
                     ),
                 ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
@@ -145,7 +147,7 @@ Class  EE_Wait_Lists extends EE_Addon
                     'recipient_waitlist_shortcode_library',
                     array(
                         'name'                    => 'recipient_waitlist',
-                        'autoloadpaths'           => Constants::pluginPath() . 'domain/services/messages/shortcodes/',
+                        'autoloadpaths'           => Constants::pluginPath() . 'domain/services/messages/',
                         'msgr_validator_callback' => array($this, 'messenger_validator_callback'),
                     )
                 );

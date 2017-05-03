@@ -1,8 +1,6 @@
 <?php
 namespace EventEspresso\WaitList\domain;
 
-use EE_Event;
-use EEM_Registration;
 use EventEspresso\core\domain\ConstantsAbstract;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -49,7 +47,7 @@ class Constants extends ConstantsAbstract
     /**
      * Event Meta Key used for tracking whether or not to proceed with promoting wait list registrants
      */
-    const PROMOTE_WAIT_LIST_REGISTRANTS = 'ee_wait_list_promote_wait_list_regs';
+    const PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY = 'ee_wait_list_promote_wait_list_regs';
 
     /**
      * Event Meta Key used for tracking IDs of registrants promoted from the wait list to pending payment
@@ -59,7 +57,7 @@ class Constants extends ConstantsAbstract
     /**
      * Event Meta Key used for tracking whether or not to perform a sold out status check for the event
      */
-    const PERFORM_SOLD_OUT_STATUS_CHECK = 'ee_wait_list_perform_sold_out_status_check';
+    const PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY = 'ee_wait_list_perform_sold_out_status_check';
 
     /**
      * Registration Meta Key used for tracking when a registrant first signed up for the wait list

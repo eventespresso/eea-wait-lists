@@ -1,6 +1,6 @@
 <?php
-use EventEspresso\WaitList\WaitList;
-use EventEspresso\WaitList\WaitListCheckoutMonitor;
+use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -19,7 +19,7 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
 {
 
     /**
-     * @var WaitListCheckoutMonitor $wait_list_checkout_monitor
+     * @var \EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor $wait_list_checkout_monitor
     */
     protected $wait_list_checkout_monitor;
 
@@ -59,7 +59,7 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
         $this->assertFalse($this->wait_list_checkout_monitor->allowRegPayment(false, $registration));
         // now add meta data to indicate that this guy was on the waitlist
         $registration->add_extra_meta(
-            WaitList::REG_SIGNED_UP_META_KEY,
+            Constants::REG_SIGNED_UP_META_KEY,
             current_time('mysql', true),
             true
         );

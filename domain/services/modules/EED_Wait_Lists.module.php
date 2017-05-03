@@ -3,10 +3,10 @@
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
-use EventEspresso\WaitList\EventEditorWaitListMetaBoxForm;
-use EventEspresso\WaitList\WaitList;
-use EventEspresso\WaitList\WaitListCheckoutMonitor;
-use EventEspresso\WaitList\WaitListMonitor;
+use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler;
+use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
+use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
 
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -48,6 +48,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function set_hooks()
     {
+        EED_Wait_Lists::register_dependencies();
         EED_Wait_Lists::set_shared_hooks();
         EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
         add_filter(
@@ -70,6 +71,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function set_hooks_admin()
     {
+        EED_Wait_Lists::register_dependencies();
         EED_Wait_Lists::set_shared_hooks();
         add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
@@ -102,6 +104,67 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
+     * @return void
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
+     */
+    protected static function register_dependencies()
+    {
+        EE_Dependency_Map::instance()->add_alias(
+            'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection',
+            'EventEspresso\core\services\collections\Collection',
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor'
+        );
+        EE_Dependency_Map::register_class_loader(
+            'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection',
+            function () {
+                return new \EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection();
+            }
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor',
+            array(
+                'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection' =>
+                    EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandBusInterface' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\loaders\LoaderInterface' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommandHandler',
+            array(
+                'EEM_Registration' => EE_Dependency_Map::load_from_cache,
+                'EE_Capabilities' => EE_Dependency_Map::load_from_cache,
+                'EEM_Change_Log' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\notices\CommandHandlerNotices' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommandHandler',
+            array(
+                'EventEspresso\core\services\commands\notices\CommandHandlerNotices' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandBusInterface' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandFactoryInterface' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
+            array( null, 'EE_Registry' => EE_Dependency_Map::load_from_cache)
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
+            array( null, 'EE_Registry' => EE_Dependency_Map::load_from_cache)
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommand',
+            array( null, null, null, null, 'EEM_Ticket' => EE_Dependency_Map::load_from_cache)
+        );
+    }
+
+
+
+    /**
      * hooks set by both set_hooks() and set_hooks_admin()
      *
      * @return void
@@ -111,25 +174,6 @@ class EED_Wait_Lists extends EED_Module
      */
     protected static function set_shared_hooks()
     {
-        EE_Dependency_Map::instance()->add_alias(
-            'EventEspresso\WaitList\WaitListEventsCollection',
-            'EventEspresso\core\services\collections\Collection',
-            'EventEspresso\WaitList\WaitListMonitor'
-        );
-        EE_Dependency_Map::register_class_loader(
-            'EventEspresso\WaitList\WaitListEventsCollection',
-            function () {
-                return new EventEspresso\WaitList\WaitListEventsCollection();
-            }
-        );
-        EE_Dependency_Map::register_dependencies(
-            'EventEspresso\WaitList\WaitListMonitor',
-            array('EventEspresso\WaitList\WaitListEventsCollection' => EE_Dependency_Map::load_from_cache)
-        );
-        EE_Dependency_Map::register_dependencies(
-            'EventEspresso\WaitList\EventEditorWaitListMetaBoxForm',
-            array('EE_Registry' => EE_Dependency_Map::load_from_cache)
-        );
         add_action(
             'AHEE__EE_Registration__set_status__after_update',
             array('EED_Wait_Lists', 'registration_status_update'),
@@ -192,7 +236,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListMonitor()
     {
-        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\WaitListMonitor');
+        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\domain\services\event\WaitListMonitor');
     }
 
 
@@ -204,20 +248,20 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListCheckoutMonitor()
     {
-        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\WaitListCheckoutMonitor');
+        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor');
     }
 
 
 
     /**
-     * @return EventEditorWaitListMetaBoxForm
+     * @return EventEditorWaitListMetaBoxFormHandler
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
      */
     public static function getEventEditorWaitListMetaBoxForm()
     {
         return EE_Wait_Lists::loader()->load(
-            '\EventEspresso\WaitList\EventEditorWaitListMetaBoxForm',
+            '\EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
             array( EED_Wait_Lists::$admin_page->get_event_object() )
         );
     }
@@ -238,7 +282,7 @@ class EED_Wait_Lists extends EED_Module
         // load css
         wp_register_style(
             'wait_list',
-            EE_WAIT_LISTS_URL . 'assets/wait_list.css',
+            EventEspresso\WaitList\domain\Constants::pluginUrl() . 'assets/wait_list.css',
             array(),
             EE_WAIT_LISTS_VERSION
         );
@@ -247,7 +291,7 @@ class EED_Wait_Lists extends EED_Module
         add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
-            EE_WAIT_LISTS_URL . 'assets/wait_list.js',
+            EventEspresso\WaitList\domain\Constants::pluginUrl() . 'assets/wait_list.js',
             array('espresso_core', 'jquery-validate'),
             EE_WAIT_LISTS_VERSION,
             true
@@ -456,7 +500,7 @@ class EED_Wait_Lists extends EED_Module
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {
         try {
-            $wait_list_settings_form = new EventEditorWaitListMetaBoxForm(
+            $wait_list_settings_form = new EventEditorWaitListMetaBoxFormHandler(
                 $event,
                 EE_Registry::instance()
             );
@@ -475,7 +519,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function waitListRegCount(EE_Event $event)
     {
-        return absint($event->get_extra_meta(WaitList::REG_COUNT_META_KEY, true));
+        return absint($event->get_extra_meta(Constants::REG_COUNT_META_KEY, true));
     }
 
 
@@ -493,7 +537,6 @@ class EED_Wait_Lists extends EED_Module
         try {
             EED_Wait_Lists::getWaitListMonitor()->promoteWaitListRegistrants(
                 $event,
-                $sold_out,
                 $spaces_remaining
             );
         } catch (Exception $e) {
@@ -588,7 +631,7 @@ class EED_Wait_Lists extends EED_Module
 
     public static function allowed_enum_values(array $allowed_enum_values)
     {
-        $allowed_enum_values[WaitList::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
+        $allowed_enum_values[Constants::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
         return $allowed_enum_values;
     }
 

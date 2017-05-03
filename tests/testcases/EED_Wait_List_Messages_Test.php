@@ -12,6 +12,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
  * @since      1.0.0
  * @group      messages
  * @group      integration
+ * @group      WaitList
  */
 class EED_Wait_List_Messages_Test extends EE_UnitTestCase
 {

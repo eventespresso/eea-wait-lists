@@ -11,9 +11,9 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * Class WaitListMonitorTest
  * Unit tests for the WaitListMonitor class that directly or indirectly test all public methods
  *
- * @package       Event Espresso
- * @author        Brent Christensen
- * @since         $VID:$
+ * @package Event Espresso
+ * @author  Brent Christensen
+ * @group   WaitList
  */
 class WaitListMonitorTest extends EE_UnitTestCase
 {
@@ -43,7 +43,10 @@ class WaitListMonitorTest extends EE_UnitTestCase
         parent::setUp();
         $this->events = $this->setupEvents();
         $this->wait_list_events = new WaitListEventsCollection();
-        $this->wait_list_monitor = new WaitListMonitor($this->wait_list_events);
+        $this->wait_list_monitor = EE_Registry::instance()->create(
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor',
+            array($this->wait_list_events)
+        );
     }
 
 

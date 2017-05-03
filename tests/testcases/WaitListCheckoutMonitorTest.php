@@ -11,9 +11,9 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * Unit tests for the WaitListCheckoutMonitor class
  * PLZ NOTE: not yet able to test methods that utilize EE_Checkout
  *
- * @package       Event Espresso
- * @author        Brent Christensen
- * @since         $VID:$
+ * @package Event Espresso
+ * @author  Brent Christensen
+ * @group   WaitList
  */
 class WaitListCheckoutMonitorTest extends EE_UnitTestCase
 {

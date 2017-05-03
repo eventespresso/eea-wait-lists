@@ -1,5 +1,5 @@
 <?php
-namespace EventEspresso\WaitList;
+namespace EventEspresso\WaitList\domain\services\collections;
 
 use EE_Error;
 use EE_Event;

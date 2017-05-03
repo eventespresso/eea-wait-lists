@@ -73,7 +73,7 @@ function load_espresso_wait_lists()
         );
         espresso_load_required(
             'EE_Wait_Lists',
-            EventEspresso\WaitList\domain\Constants::pluginPath() . 'EE_Wait_Lists.php'
+            EventEspresso\WaitList\domain\Constants::pluginPath() . 'EE_Wait_Lists.class.php'
         );
         EE_Wait_Lists::register_addon();
     } else {

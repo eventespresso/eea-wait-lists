@@ -80,8 +80,8 @@ Class  EE_Wait_Lists extends EE_Addon
                     'DIR'  => __DIR__,
                 ),
                 'module_paths'     => array(
-                    WaitList::pluginPath() . 'EED_Wait_Lists.module.php',
-                    WaitList::pluginPath() . 'EED_Wait_Lists_Messages.module.php',
+                    WaitList::pluginPath() . 'domain/services/modules/EED_Wait_Lists.module.php',
+                    WaitList::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
                 'message_types'    => array(
                     'waitlist_can_register' => array(

@@ -2,7 +2,7 @@
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\loaders\LoaderInterface;
-use EventEspresso\WaitList\domain\Constants as WaitList;
+use EventEspresso\WaitList\domain\Constants;
 
 if (! defined('EVENT_ESPRESSO_VERSION')) {
     exit();
@@ -73,39 +73,39 @@ Class  EE_Wait_Lists extends EE_Addon
             array(
                 'version'          => EE_WAIT_LISTS_VERSION,
                 'plugin_slug'      => 'eea_wait_lists',
-                'min_core_version' => WaitList::CORE_VERSION_REQUIRED,
+                'min_core_version' => Constants::CORE_VERSION_REQUIRED,
                 'main_file_path'   => EE_WAIT_LISTS_PLUGIN_FILE,
                 'namespace'        => array(
                     'FQNS' => 'EventEspresso\WaitList',
                     'DIR'  => __DIR__,
                 ),
                 'module_paths'     => array(
-                    WaitList::pluginPath() . 'domain/services/modules/EED_Wait_Lists.module.php',
-                    WaitList::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
+                    Constants::pluginPath() . 'domain/services/modules/EED_Wait_Lists.module.php',
+                    Constants::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
                 'message_types'    => array(
                     'waitlist_can_register' => array(
                         'mtfilename'                                       =>
                             'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(
-                            WaitList::pluginPath() . 'domain/services/messages/',
+                            Constants::pluginPath() . 'domain/services/messages/',
                         ),
                         'messengers_to_activate_with'                      => array('email'),
                         'messengers_to_validate_with'                      => array('email'),
                         'force_activation'                                 => true,
                         'messengers_supporting_default_template_pack_with' => array('email'),
-                        'base_path_for_default_templates'                  => WaitList::pluginPath()
+                        'base_path_for_default_templates'                  => Constants::pluginPath()
                                                                               . 'domain/services/messages/templates/',
-                        'base_path_for_default_variation'                  => WaitList::pluginPath()
+                        'base_path_for_default_variation'                  => Constants::pluginPath()
                                                                               . 'domain/services/messages/templates/variations/',
-                        'base_url_for_default_variation'                   => WaitList::pluginUrl()
+                        'base_url_for_default_variation'                   => Constants::pluginUrl()
                                                                               . 'domain/services/messages/templates/variations/',
                     ),
                 ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
                 'pue_options'      => array(
                     'pue_plugin_slug' => 'eea-wait-lists',
-                    'plugin_basename' => WaitList::pluginBasename(),
+                    'plugin_basename' => Constants::pluginBasename(),
                     'checkPeriod'     => '24',
                     'use_wp_update'   => false,
                 ),
@@ -145,7 +145,7 @@ Class  EE_Wait_Lists extends EE_Addon
                     'recipient_waitlist_shortcode_library',
                     array(
                         'name'                    => 'recipient_waitlist',
-                        'autoloadpaths'           => WaitList::pluginPath() . 'domain/services/messages/shortcodes/',
+                        'autoloadpaths'           => Constants::pluginPath() . 'domain/services/messages/shortcodes/',
                         'msgr_validator_callback' => array($this, 'messenger_validator_callback'),
                     )
                 );

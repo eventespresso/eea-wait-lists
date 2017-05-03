@@ -1,10 +1,11 @@
 <?php
-namespace EventEspresso\WaitList;
+namespace EventEspresso\WaitList\domain\services\checkout;
 
 use EE_Checkout;
 use EE_Error;
 use EE_Registration;
 use EEM_Registration;
+use EventEspresso\WaitList\domain\Constants;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -40,7 +41,7 @@ class WaitListCheckoutMonitor
             return;
         }
         // ok, but were they ever on a wait list ?
-        if ($registration->get_extra_meta(WaitList::REG_SIGNED_UP_META_KEY, true) !== null) {
+        if ($registration->get_extra_meta(Constants::REG_SIGNED_UP_META_KEY, true) !== null) {
             // reload reg steps
             add_filter('FHEE__Single_Page_Checkout__load_reg_steps__reload_reg_steps', '__return_true');
             // and do NOT bypass loading for any of them, the registrant needs to visit each step
@@ -101,7 +102,7 @@ class WaitListCheckoutMonitor
      */
     public function allowRegPayment($allow_payment, EE_Registration $registration)
     {
-        if ($registration->get_extra_meta(WaitList::REG_SIGNED_UP_META_KEY, true) !== null) {
+        if ($registration->get_extra_meta(Constants::REG_SIGNED_UP_META_KEY, true) !== null) {
             return true;
         }
         return $allow_payment;
@@ -109,4 +110,4 @@ class WaitListCheckoutMonitor
 
 }
 // End of file WaitListCheckoutMonitor.php
-// Location: EventEspresso/WaitList/WaitListCheckoutMonitor.php
+// Location: EventEspresso/Constants/WaitListCheckoutMonitor.php

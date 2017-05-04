@@ -21,6 +21,7 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     public function setUp()
     {
         parent::setUp();
+        require_once EE_WAITLISTS_PLUGIN_DIR . 'domain/services/modules/EED_Wait_Lists_Messages.module.php';
         require_once EE_WAITLISTS_TEST_DIR . 'mocks/EED_Wait_Lists_Messages_Mock.php';
     }
 

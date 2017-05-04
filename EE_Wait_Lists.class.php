@@ -89,7 +89,6 @@ Class  EE_Wait_Lists extends EE_Addon
                             'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(
                             Constants::pluginPath() . 'domain/services/messages/',
-                            Constants::pluginPath() . 'domain/dto',
                             Constants::pluginPath() . 'domain/entities'
                         ),
                         'messengers_to_activate_with'                      => array('email'),
@@ -98,10 +97,6 @@ Class  EE_Wait_Lists extends EE_Addon
                         'messengers_supporting_default_template_pack_with' => array('email'),
                         'base_path_for_default_templates'                  => Constants::pluginPath()
                                                                               . 'views/messages/templates/',
-                        'base_path_for_default_variation'                  => Constants::pluginPath()
-                                                                              . 'views/messages/variations/',
-                        'base_url_for_default_variation'                   => Constants::pluginUrl()
-                                                                              . 'views/messages/variations/',
                     ),
                 ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.

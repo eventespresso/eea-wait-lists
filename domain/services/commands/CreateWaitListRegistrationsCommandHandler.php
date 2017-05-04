@@ -17,7 +17,7 @@ use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\commands\CommandFactoryInterface;
-use EventEspresso\core\services\commands\notices\CommandHandlerNotices;
+use EventEspresso\core\services\notices\NoticesInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\core\services\commands\CompositeCommandHandler;
 use EventEspresso\WaitList\domain\Constants;
@@ -39,7 +39,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
 
     /**
-     * @var CommandHandlerNotices $notices
+     * @var NoticesInterface $notices
      */
     private $notices;
 
@@ -48,22 +48,24 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     /**
      * CreateWaitListRegistrationsCommandHandler constructor.
      *
-     * @param CommandHandlerNotices   $notices
      * @param CommandBusInterface     $command_bus
      * @param CommandFactoryInterface $command_factory
+     * @param NoticesInterface        $notices
      */
     public function __construct(
-        CommandHandlerNotices $notices,
         CommandBusInterface $command_bus,
-        CommandFactoryInterface $command_factory
+        CommandFactoryInterface $command_factory,
+        NoticesInterface $notices
     ) {
         $this->notices = $notices;
         parent::__construct($command_bus, $command_factory);
     }
 
+
+
     /**
      * @param CommandInterface $command
-     * @return mixed
+     * @return NoticesInterface
      * @throws UnexpectedEntityException
      * @throws InvalidEntityException
      * @throws EE_Error
@@ -83,7 +85,6 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $registrant_email = $command->getRegistrantEmail();
         $ticket = $command->getTicket();
         $quantity = $command->getQuantity();
-
         /** @var EE_Transaction $transaction */
         $transaction = $this->commandBus()->execute(
             $this->commandFactory()->getNew(
@@ -97,7 +98,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
                 array(
                     $transaction,
                     $ticket,
-                    $quantity
+                    $quantity,
                 )
             )
         );
@@ -153,7 +154,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $registrant_name,
         $registrant_email,
         $quantity
-    ){
+    ) {
         $attendee = null;
         for ($x = 1; $x <= $quantity; $x++) {
             /** @var \EE_Registration $registration */
@@ -165,7 +166,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
                         $ticket_line_item,
                         $x,
                         $quantity,
-                        EEM_Registration::status_id_wait_list
+                        EEM_Registration::status_id_wait_list,
                     )
                 )
             );
@@ -206,8 +207,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         EE_Registration $registration,
         $registrant_name,
         $registrant_email
-    )
-    {
+    ) {
         $registrant_name = explode(' ', $registrant_name);
         return $this->commandBus()->execute(
             new CreateAttendeeCommand(

@@ -13,8 +13,8 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\services\collections\Collection;
 use EventEspresso\core\services\commands\CommandBusInterface;
-use EventEspresso\core\services\commands\notices\CommandHandlerNotices;
-use EventEspresso\core\services\commands\notices\ConvertNoticesToEeErrors;
+use EventEspresso\core\services\notices\NoticesInterface;
+use EventEspresso\core\services\notices\ConvertNoticesToEeErrors;
 use EventEspresso\core\services\loaders\LoaderInterface;
 use EventEspresso\WaitList\domain\Constants;
 use InvalidArgumentException;
@@ -221,15 +221,15 @@ class WaitListMonitor
 
 
     /**
-     * @param CommandHandlerNotices $notices
+     * @param NoticesInterface $notices
      * @throws EE_Error
      */
-    protected function processNotices(CommandHandlerNotices $notices = null)
+    protected function processNotices(NoticesInterface $notices = null)
     {
-        if ($notices instanceof CommandHandlerNotices) {
-            /** @var ConvertNoticesToEeErrors $convert_notices */
+        if ($notices instanceof NoticesInterface) {
+            /** @var \EventEspresso\core\services\notices\ConvertNoticesToEeErrors $convert_notices */
             $convert_notices = $this->loader->getNew(
-                'EventEspresso\core\services\commands\notices\ConvertNoticesToEeErrors',
+                'EventEspresso\core\services\notices\ConvertNoticesToEeErrors',
                 array($notices)
             );
             $convert_notices->process();

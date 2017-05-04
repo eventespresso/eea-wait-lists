@@ -10,7 +10,7 @@ use EED_Wait_Lists;
 use EEM_Change_Log;
 use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidEntityException;
-use EventEspresso\core\services\notices\NoticesInterface;
+use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\WaitList\domain\Constants;
 use RuntimeException;
@@ -47,7 +47,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     private $change_log;
 
     /**
-     * @var NoticesInterface $notices
+     * @var NoticesContainerInterface $notices
      */
     private $notices;
 
@@ -56,16 +56,16 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     /**
      * PromoteWaitListRegistrantsCommandHandler constructor.
      *
-     * @param EEM_Registration $registration_model
-     * @param EE_Capabilities  $capabilities
-     * @param EEM_Change_Log   $change_log
-     * @param NoticesInterface $notices
+     * @param EEM_Registration          $registration_model
+     * @param EE_Capabilities           $capabilities
+     * @param EEM_Change_Log            $change_log
+     * @param NoticesContainerInterface $notices
      */
     public function __construct(
         EEM_Registration $registration_model,
         EE_Capabilities $capabilities,
         EEM_Change_Log $change_log,
-        NoticesInterface $notices
+        NoticesContainerInterface $notices
     ) {
         $this->registration_model = $registration_model;
         $this->capabilities = $capabilities;
@@ -77,7 +77,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
 
     /**
      * @param CommandInterface $command
-     * @return NoticesInterface|null
+     * @return NoticesContainerInterface|null
      * @throws EE_Error
      * @throws InvalidEntityException
      * @throws RuntimeException

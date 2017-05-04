@@ -17,7 +17,7 @@ use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\commands\CommandFactoryInterface;
-use EventEspresso\core\services\notices\NoticesInterface;
+use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\core\services\commands\CompositeCommandHandler;
 use EventEspresso\WaitList\domain\Constants;
@@ -39,7 +39,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
 
     /**
-     * @var NoticesInterface $notices
+     * @var NoticesContainerInterface $notices
      */
     private $notices;
 
@@ -48,14 +48,14 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     /**
      * CreateWaitListRegistrationsCommandHandler constructor.
      *
-     * @param CommandBusInterface     $command_bus
-     * @param CommandFactoryInterface $command_factory
-     * @param NoticesInterface        $notices
+     * @param CommandBusInterface       $command_bus
+     * @param CommandFactoryInterface   $command_factory
+     * @param NoticesContainerInterface $notices
      */
     public function __construct(
         CommandBusInterface $command_bus,
         CommandFactoryInterface $command_factory,
-        NoticesInterface $notices
+        NoticesContainerInterface $notices
     ) {
         $this->notices = $notices;
         parent::__construct($command_bus, $command_factory);
@@ -65,7 +65,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 
     /**
      * @param CommandInterface $command
-     * @return NoticesInterface
+     * @return NoticesContainerInterface
      * @throws UnexpectedEntityException
      * @throws InvalidEntityException
      * @throws EE_Error

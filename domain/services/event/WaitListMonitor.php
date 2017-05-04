@@ -13,7 +13,7 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\services\collections\Collection;
 use EventEspresso\core\services\commands\CommandBusInterface;
-use EventEspresso\core\services\notices\NoticesInterface;
+use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\notices\ConvertNoticesToEeErrors;
 use EventEspresso\core\services\loaders\LoaderInterface;
 use EventEspresso\WaitList\domain\Constants;
@@ -221,12 +221,12 @@ class WaitListMonitor
 
 
     /**
-     * @param NoticesInterface $notices
+     * @param NoticesContainerInterface $notices
      * @throws EE_Error
      */
-    protected function processNotices(NoticesInterface $notices = null)
+    protected function processNotices(NoticesContainerInterface $notices = null)
     {
-        if ($notices instanceof NoticesInterface) {
+        if ($notices instanceof NoticesContainerInterface) {
             /** @var \EventEspresso\core\services\notices\ConvertNoticesToEeErrors $convert_notices */
             $convert_notices = $this->loader->getNew(
                 'EventEspresso\core\services\notices\ConvertNoticesToEeErrors',

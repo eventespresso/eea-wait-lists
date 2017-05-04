@@ -10,7 +10,7 @@ use EED_Wait_Lists;
 use EEM_Change_Log;
 use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidEntityException;
-use EventEspresso\core\services\commands\notices\CommandHandlerNotices;
+use EventEspresso\core\services\notices\NoticesInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\WaitList\domain\Constants;
 use RuntimeException;
@@ -47,7 +47,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     private $change_log;
 
     /**
-     * @var CommandHandlerNotices $notices
+     * @var NoticesInterface $notices
      */
     private $notices;
 
@@ -56,16 +56,16 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     /**
      * PromoteWaitListRegistrantsCommandHandler constructor.
      *
-     * @param EEM_Registration      $registration_model
-     * @param EE_Capabilities       $capabilities
-     * @param EEM_Change_Log        $change_log
-     * @param CommandHandlerNotices $notices
+     * @param EEM_Registration $registration_model
+     * @param EE_Capabilities  $capabilities
+     * @param EEM_Change_Log   $change_log
+     * @param NoticesInterface $notices
      */
     public function __construct(
         EEM_Registration $registration_model,
         EE_Capabilities $capabilities,
         EEM_Change_Log $change_log,
-        CommandHandlerNotices $notices
+        NoticesInterface $notices
     ) {
         $this->registration_model = $registration_model;
         $this->capabilities = $capabilities;
@@ -77,7 +77,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
 
     /**
      * @param CommandInterface $command
-     * @return CommandHandlerNotices|null
+     * @return NoticesInterface|null
      * @throws EE_Error
      * @throws InvalidEntityException
      * @throws RuntimeException
@@ -207,10 +207,10 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             );
             $this->change_log->log(Constants::LOG_TYPE, $message, $event);
             if (
-                $this->capabilities->current_user_can(
-                    'ee_edit_registration',
-                    'espresso_view_wait_list_update_notice'
-                )
+            $this->capabilities->current_user_can(
+                'ee_edit_registration',
+                'espresso_view_wait_list_update_notice'
+            )
             ) {
                 $this->notices->addSuccess($message, __FILE__, __FUNCTION__, __LINE__);
             }

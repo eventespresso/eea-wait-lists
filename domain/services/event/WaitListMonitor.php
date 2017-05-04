@@ -13,8 +13,8 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\services\collections\Collection;
 use EventEspresso\core\services\commands\CommandBusInterface;
+use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
-use EventEspresso\core\services\notices\ConvertNoticesToEeErrors;
 use EventEspresso\core\services\loaders\LoaderInterface;
 use EventEspresso\WaitList\domain\Constants;
 use InvalidArgumentException;
@@ -52,19 +52,31 @@ class WaitListMonitor
      */
     private $loader;
 
+    /**
+     * @var NoticeConverterInterface
+     */
+    private $notice_converter;
+
+
 
     /**
      * WaitListMonitor constructor.
      *
-     * @param Collection          $wait_list_events
-     * @param CommandBusInterface $command_bus
-     * @param LoaderInterface     $loader
+     * @param Collection               $wait_list_events
+     * @param CommandBusInterface      $command_bus
+     * @param LoaderInterface          $loader
+     * @param NoticeConverterInterface $notice_converter
      */
-    public function __construct(Collection $wait_list_events, CommandBusInterface $command_bus, LoaderInterface $loader)
-    {
+    public function __construct(
+        Collection $wait_list_events,
+        CommandBusInterface $command_bus,
+        LoaderInterface $loader,
+        NoticeConverterInterface $notice_converter
+    ) {
         $this->wait_list_events = $wait_list_events;
         $this->command_bus = $command_bus;
         $this->loader = $loader;
+        $this->notice_converter = $notice_converter;
     }
 
 
@@ -227,12 +239,7 @@ class WaitListMonitor
     protected function processNotices(NoticesContainerInterface $notices = null)
     {
         if ($notices instanceof NoticesContainerInterface) {
-            /** @var \EventEspresso\core\services\notices\ConvertNoticesToEeErrors $convert_notices */
-            $convert_notices = $this->loader->getNew(
-                'EventEspresso\core\services\notices\ConvertNoticesToEeErrors',
-                array($notices)
-            );
-            $convert_notices->process();
+            $this->notice_converter->process();
         }
     }
 

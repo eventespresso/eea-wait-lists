@@ -134,17 +134,17 @@ class EED_Wait_Lists extends EED_Module
         EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommandHandler',
             array(
-                'EEM_Registration' => EE_Dependency_Map::load_from_cache,
-                'EE_Capabilities' => EE_Dependency_Map::load_from_cache,
-                'EEM_Change_Log' => EE_Dependency_Map::load_from_cache,
-                'EventEspresso\core\services\commands\notices\CommandHandlerNotices' => EE_Dependency_Map::load_from_cache,
+                'EEM_Registration'                            => EE_Dependency_Map::load_from_cache,
+                'EE_Capabilities'                             => EE_Dependency_Map::load_from_cache,
+                'EEM_Change_Log'                              => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\notices\Notices' => EE_Dependency_Map::load_from_cache,
             )
         );
         EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommandHandler',
             array(
-                'EventEspresso\core\services\commands\notices\CommandHandlerNotices' => EE_Dependency_Map::load_from_cache,
-                'EventEspresso\core\services\commands\CommandBusInterface' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\notices\Notices'                  => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandBusInterface'     => EE_Dependency_Map::load_from_cache,
                 'EventEspresso\core\services\commands\CommandFactoryInterface' => EE_Dependency_Map::load_from_cache,
             )
         );

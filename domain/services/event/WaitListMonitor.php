@@ -239,7 +239,7 @@ class WaitListMonitor
     protected function processNotices(NoticesContainerInterface $notices = null)
     {
         if ($notices instanceof NoticesContainerInterface) {
-            $this->notice_converter->process();
+            $this->notice_converter->process($notices);
         }
     }
 

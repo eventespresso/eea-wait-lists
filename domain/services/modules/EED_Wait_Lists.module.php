@@ -306,6 +306,7 @@ class EED_Wait_Lists extends EED_Module
      * @param string    $html
      * @param EE_Event $event
      * @return string
+     * @throws Exception
      */
     public static function add_wait_list_form_for_event($html = '', EE_Event $event)
     {
@@ -321,6 +322,8 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * process_wait_list_form_for_event
+     *
+     * @throws Exception
      */
     public static function process_wait_list_form_for_event()
     {
@@ -349,6 +352,7 @@ class EED_Wait_Lists extends EED_Module
      * @param EE_Registration  $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
+     * @throws Exception
      */
     public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
@@ -365,6 +369,7 @@ class EED_Wait_Lists extends EED_Module
      * @param int       $spaces_available
      * @param EE_Event $event
      * @return int
+     * @throws Exception
      */
     public static function event_spaces_available($spaces_available, EE_Event $event)
     {
@@ -427,6 +432,8 @@ class EED_Wait_Lists extends EED_Module
     /**
      * callback that adds a link to the Event Editor Publish metabox
      * to view registrations on the wait list for the event
+     *
+     * @throws Exception
      */
     public static function event_editor_overview_add()
     {
@@ -445,6 +452,8 @@ class EED_Wait_Lists extends EED_Module
     /**
      * callback that adds the main "event_wait_list_meta_box" meta_box
      * calls non static method below
+     *
+     * @throws Exception
      */
     public static function event_wait_list_meta_box()
     {
@@ -497,6 +506,7 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param EE_Event $event
      * @param array     $form_data
+     * @throws Exception
      */
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {
@@ -529,6 +539,7 @@ class EED_Wait_Lists extends EED_Module
      * @param EE_Event $event
      * @param bool     $sold_out
      * @param int      $spaces_remaining
+     * @throws Exception
      */
     public static function promote_wait_list_registrants(
         EE_Event $event,
@@ -594,6 +605,7 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param EE_Checkout $checkout
+     * @throws Exception
      */
     public static function load_and_instantiate_reg_steps(EE_Checkout $checkout)
     {
@@ -611,6 +623,7 @@ class EED_Wait_Lists extends EED_Module
      * @param EE_Registration $registration
      * @param bool            $revisit
      * @return bool
+     * @throws Exception
      */
     public static function allow_reg_payment($allow_payment, EE_Registration $registration, $revisit = false)
     {
@@ -643,6 +656,7 @@ class EED_Wait_Lists extends EED_Module
      * @param string    $file
      * @param string    $func
      * @param string    $line
+     * @throws Exception
      */
     protected static function handleException(Exception $exception, $file = '', $func = '', $line = '') {
         if (WP_DEBUG) {

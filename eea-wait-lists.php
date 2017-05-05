@@ -65,7 +65,7 @@ function load_espresso_wait_lists()
     if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\ConstantsAbstract')) {
         espresso_load_required(
             'EventEspresso\WaitList\domain\Constants',
-            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . '/domain/Constants.php'
+            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . 'domain/Constants.php'
         );
         EventEspresso\WaitList\domain\Constants::init(
             EE_WAIT_LISTS_PLUGIN_FILE,

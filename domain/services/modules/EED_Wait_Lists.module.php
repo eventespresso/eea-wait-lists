@@ -402,12 +402,8 @@ class EED_Wait_Lists extends EED_Module
     public static function setup_page_config(array $page_config, Events_Admin_Page $admin_page)
     {
         EED_Wait_Lists::$admin_page = $admin_page;
-        $wait_list_meta_box = array_merge(
-            $page_config['edit']['metaboxes'],
-            array(array('EED_Wait_Lists', 'add_event_wait_list_meta_box'))
-        );
-        $page_config['create_new']['metaboxes'] = $wait_list_meta_box;
-        $page_config['edit']['metaboxes'] = $wait_list_meta_box;
+        $page_config['edit']['metaboxes'][] = array('EED_Wait_Lists', 'add_event_wait_list_meta_box');
+        $page_config['create_new']['metaboxes'] = $page_config['edit']['metaboxes'];
         return $page_config;
     }
 
@@ -423,8 +419,8 @@ class EED_Wait_Lists extends EED_Module
             esc_html__('Event Wait List', 'event_espresso'),
             array('EED_Wait_Lists', 'event_wait_list_meta_box'),
             EVENTS_PG_SLUG,
-            'normal', // advanced   normal  side
-            'high' // default   high    low
+            'normal', // normal    advanced    side
+            'core' // high    core    default    low
         );
     }
 

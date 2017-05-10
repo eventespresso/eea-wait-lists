@@ -135,6 +135,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         );
         if (
             $spaces_remaining > 0
+            && $wait_list_reg_count > 0
             && ($manual_control_spaces > 0 || $auto_promote === false)
             && is_admin()
             && $this->capabilities->current_user_can(

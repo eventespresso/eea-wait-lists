@@ -46,9 +46,43 @@ abstract class WaitListCommandHandler extends CommandHandler
     protected function getPromotedRegIdsArray(EE_Event $event)
     {
         $promoted_reg_ids = $event->get_extra_meta(
-            Constants::PROMOTED_REG_IDS_META_KEY, false, array()
+            Constants::PROMOTED_REG_IDS_META_KEY, false, array(array())
         );
         return reset($promoted_reg_ids);
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return mixed
+     * @throws EE_Error
+     */
+    protected function getPromoteWaitListRegistrants(EE_Event $event)
+    {
+        return filter_var(
+            $event->get_extra_meta(
+                Constants::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
+                true,
+                true
+            ),
+            FILTER_VALIDATE_BOOLEAN
+        );
+    }
+
+
+
+    /**
+     * @param EE_Event $event
+     * @return boolean
+     * @throws EE_Error
+     */
+    protected function getAutoPromote(EE_Event $event)
+    {
+        return filter_var(
+            $event->get_extra_meta(Constants::AUTO_PROMOTE_META_KEY, true, false),
+            FILTER_VALIDATE_BOOLEAN
+        );
     }
 
 }

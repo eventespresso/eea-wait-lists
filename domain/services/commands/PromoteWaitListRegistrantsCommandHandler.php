@@ -2,6 +2,7 @@
 
 namespace EventEspresso\WaitList\domain\services\commands;
 
+use EE_Attendee;
 use EE_Capabilities;
 use EE_Error;
 use EE_Event;
@@ -92,11 +93,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         }
         $event = $command->getEvent();
         $spaces_remaining = $command->getSpacesRemaining();
-        $promote_wait_list_registrants = $event->get_extra_meta(
-            Constants::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
-            true,
-            true
-        );
+        $promote_wait_list_registrants = $this->getPromoteWaitListRegistrants($event);
         if ($promote_wait_list_registrants) {
             // registrations currently on wait list
             $wait_list_reg_count = $this->getRegCount($event);
@@ -104,8 +101,14 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             if ($spaces_remaining < 1) {
                 return null;
             }
-            $spaces_remaining = $this->manuallyPromoteRegistrations($event, $spaces_remaining, $wait_list_reg_count);
-            $this->autoPromoteRegistrations($event, $spaces_remaining);
+            $auto_promote = $this->getAutoPromote($event);
+            $spaces_remaining = $this->manuallyPromoteRegistrations(
+                $event,
+                $spaces_remaining,
+                $wait_list_reg_count,
+                $auto_promote
+            );
+            $this->autoPromoteRegistrations($event, $spaces_remaining, $auto_promote);
             return $this->notices;
         }
         return null;
@@ -117,18 +120,22 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @param EE_Event $event
      * @param int      $spaces_remaining
      * @param int      $wait_list_reg_count
+     * @param bool     $auto_promote
      * @return bool
-     * @throws \EE_Error
      * @throws EE_Error
      */
-    private function manuallyPromoteRegistrations(EE_Event $event, $spaces_remaining, $wait_list_reg_count)
-    {
+    private function manuallyPromoteRegistrations(
+        EE_Event $event,
+        $spaces_remaining,
+        $wait_list_reg_count,
+        $auto_promote = false
+    ) {
         $manual_control_spaces = absint(
             $event->get_extra_meta(Constants::MANUAL_CONTROL_SPACES_META_KEY, true)
         );
         if (
             $spaces_remaining > 0
-            && $manual_control_spaces > 0
+            && ($manual_control_spaces > 0 || $auto_promote === false)
             && is_admin()
             && $this->capabilities->current_user_can(
                 'ee_edit_registration',
@@ -140,7 +147,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                     esc_html__(
                         'There is %1$d space(s) available for "%2$s", with %3$d space(s) under manual control, and %4$d registrant(s) on the Wait List for that event. %6$s Please click here to view a list of %5$s and select those you wish to offer a space to by updating their reg status accordingly.'
                     ),
-                    min($spaces_remaining, $manual_control_spaces),
+                    $auto_promote === false ? $spaces_remaining : min($spaces_remaining, $manual_control_spaces),
                     $event->name(),
                     $manual_control_spaces,
                     $wait_list_reg_count,
@@ -159,14 +166,12 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     /**
      * @param EE_Event $event
      * @param int      $regs_to_promote
+     * @param bool     $auto_promote
      * @throws EE_Error
      * @throws RuntimeException
      */
-    private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0)
+    private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {
-        $auto_promote = absint(
-            $event->get_extra_meta(Constants::AUTO_PROMOTE_META_KEY, true)
-        );
         if (! $auto_promote || $regs_to_promote < 1) {
             return;
         }
@@ -193,12 +198,15 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             false
         );
         foreach ($registrations as $registration) {
+            if (! $registration instanceof EE_Registration) {
+                continue;
+            }
             $registration->set_status($event->default_registration_status());
             $message = sprintf(
                 esc_html__(
                     'The registration status for "%1$s" %2$s(ID:%3$d)%4$s has been successfully updated to "%5$s". They were previously on the Wait List for "%6$s".'
                 ),
-                $registration->attendee()->full_name(),
+                $registration->attendee() instanceof EE_Attendee ? $registration->attendee()->full_name() : '',
                 '<span class="lt-grey-text">',
                 $registration->ID(),
                 '</span>',
@@ -207,10 +215,10 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             );
             $this->change_log->log(Constants::LOG_TYPE, $message, $event);
             if (
-            $this->capabilities->current_user_can(
-                'ee_edit_registration',
-                'espresso_view_wait_list_update_notice'
-            )
+                $this->capabilities->current_user_can(
+                    'ee_edit_registration',
+                    'espresso_view_wait_list_update_notice'
+                )
             ) {
                 $this->notices->addSuccess($message, __FILE__, __FUNCTION__, __LINE__);
             }

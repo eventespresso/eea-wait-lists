@@ -7,7 +7,6 @@ use EE_Error;
 use EE_Line_Item;
 use EE_Registration;
 use EE_Transaction;
-use EE_Wait_Lists;
 use EEM_Registration;
 use EEM_Transaction;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
@@ -39,6 +38,10 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
 
     /**
+     * @var EEM_Registration $registration_model
+     */
+    private $registration_model;
+    /**
      * @var NoticesContainerInterface $notices
      */
     private $notices;
@@ -48,15 +51,18 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     /**
      * CreateWaitListRegistrationsCommandHandler constructor.
      *
+     * @param EEM_Registration          $registration_model
      * @param CommandBusInterface       $command_bus
      * @param CommandFactoryInterface   $command_factory
      * @param NoticesContainerInterface $notices
      */
     public function __construct(
+        EEM_Registration $registration_model,
         CommandBusInterface $command_bus,
         CommandFactoryInterface $command_factory,
         NoticesContainerInterface $notices
     ) {
+        $this->registration_model = $registration_model;
         $this->notices = $notices;
         parent::__construct($command_bus, $command_factory);
     }
@@ -116,7 +122,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $event = $ticket->get_related_event();
         $event->update_extra_meta(
             Constants::REG_COUNT_META_KEY,
-            EE_Wait_Lists::waitListRegCount($event)
+            $this->registration_model->event_reg_count_for_status($event, EEM_Registration::status_id_wait_list)
         );
         $this->notices->addSuccess(
             apply_filters(

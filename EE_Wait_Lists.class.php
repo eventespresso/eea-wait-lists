@@ -225,24 +225,6 @@ Class  EE_Wait_Lists extends EE_Addon
     }
 
 
-
-    /**
-     * @param EE_Event $event
-     * @return int
-     * @throws \EE_Error
-     */
-    public static function waitListRegCount(EE_Event $event)
-    {
-        return EEM_Registration::instance()->count(
-            array(
-                array(
-                    'STS_ID' => EEM_Registration::status_id_wait_list,
-                    'EVT_ID' => $event->ID(),
-                ),
-            )
-        );
-    }
-
 }
 // End of file EE_Wait_Lists.class.php
 // Location: wp-content/plugins/eea-wait-lists/EE_Wait_Lists.class.php

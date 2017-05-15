@@ -20,6 +20,7 @@ use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\core\services\commands\CompositeCommandHandler;
 use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -38,6 +39,11 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
 
     /**
+     * @param WaitListEventMeta $event_meta
+     */
+    private $event_meta;
+
+    /**
      * @var EEM_Registration $registration_model
      */
     private $registration_model;
@@ -51,17 +57,20 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     /**
      * CreateWaitListRegistrationsCommandHandler constructor.
      *
+     * @param WaitListEventMeta         $event_meta
      * @param EEM_Registration          $registration_model
      * @param CommandBusInterface       $command_bus
      * @param CommandFactoryInterface   $command_factory
      * @param NoticesContainerInterface $notices
      */
     public function __construct(
+        WaitListEventMeta $event_meta,
         EEM_Registration $registration_model,
         CommandBusInterface $command_bus,
         CommandFactoryInterface $command_factory,
         NoticesContainerInterface $notices
     ) {
+        $this->event_meta = $event_meta;
         $this->registration_model = $registration_model;
         $this->notices = $notices;
         parent::__construct($command_bus, $command_factory);
@@ -120,9 +129,12 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $transaction->save();
         // finally... update the wait list reg count
         $event = $ticket->get_related_event();
-        $event->update_extra_meta(
-            Constants::REG_COUNT_META_KEY,
-            $this->registration_model->event_reg_count_for_status($event, EEM_Registration::status_id_wait_list)
+        $this->event_meta->updateRegCount(
+            $event,
+            $this->registration_model->event_reg_count_for_status(
+                $event,
+                EEM_Registration::status_id_wait_list
+            )
         );
         $this->notices->addSuccess(
             apply_filters(

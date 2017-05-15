@@ -8,13 +8,14 @@ use EE_Event;
 use EE_Form_Section_HTML;
 use EE_Form_Section_Proper;
 use EE_Registry;
-use EE_Wait_Lists;
 use EED_Wait_Lists;
 use EEH_HTML;
+use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 use LogicException;
 
@@ -40,20 +41,39 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      */
     protected $event;
 
+    /**
+     * @var EEM_Registration $registration_model
+     */
+    private $registration_model;
+
+    /**
+     * @param WaitListEventMeta $event_meta
+     */
+    private $event_meta;
+
 
 
     /**
      * Form constructor.
      *
-     * @param EE_Event    $event
-     * @param EE_Registry $registry
+     * @param EE_Event          $event
+     * @param WaitListEventMeta $event_meta
+     * @param EEM_Registration  $registration_model
+     * @param EE_Registry       $registry
      * @throws DomainException
-     * @throws InvalidDataTypeException
      * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
      */
-    public function __construct(EE_Event $event, EE_Registry $registry)
+    public function __construct(
+        EE_Event $event,
+        WaitListEventMeta $event_meta,
+        EEM_Registration $registration_model,
+        EE_Registry $registry
+    )
     {
         $this->event = $event;
+        $this->event_meta = $event_meta;
+        $this->registration_model = $registration_model;
         parent::__construct(
             esc_html__('Event Wait List Settings', 'event_espresso'),
             esc_html__('Event Wait List Settings', 'event_espresso'),
@@ -97,7 +117,17 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         $this->form(true)->add_subsections(
             array(
                 'view_wait_list_link' => new EE_Form_Section_HTML(
-                    EEH_HTML::br() . $this->waitListRegCountDisplay() . EEH_HTML::br(2)
+                    EEH_HTML::br()
+                    . $this->waitListRegCountDisplay()
+                    . EEH_HTML::span(
+                        sprintf(
+                            esc_html__('( available spaces: %1$s )', 'event_espresso'),
+                            $this->event->spaces_remaining(array(), false)
+                        ),
+                        '', 'ee-available-spaces-before-waitlist-spn',
+                        'color:#999; margin:0 2em;'
+                    )
+                    . EEH_HTML::br(2)
                 ),
             ),
             'wait_list_spaces'
@@ -146,23 +176,20 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
             return false;
         }
         $wait_list_spaces = absint($valid_data['wait_list_spaces']);
-        $this->event->update_extra_meta(Constants::SPACES_META_KEY, $wait_list_spaces);
-        $this->event->update_extra_meta(
-            Constants::AUTO_PROMOTE_META_KEY,
-            filter_var(
-                $valid_data['auto_promote_registrants'],
-                FILTER_VALIDATE_BOOLEAN
-            )
-        );
+        $this->event_meta->updateWaitListSpaces($this->event, $wait_list_spaces);
+        $this->event_meta->updateAutoPromote($this->event, $valid_data['auto_promote_registrants']);
         $manual_control_spaces = absint($valid_data['manual_control_spaces']);
         // manual control spaces can't be more than the total number of spaces in the wait list
         $manual_control_spaces = $wait_list_spaces > 0
             ? min($wait_list_spaces, $manual_control_spaces)
             : $manual_control_spaces;
-        $this->event->update_extra_meta(Constants::MANUAL_CONTROL_SPACES_META_KEY, $manual_control_spaces);
-        $this->event->update_extra_meta(
-            Constants::REG_COUNT_META_KEY,
-            EE_Wait_Lists::waitListRegCount($this->event)
+        $this->event_meta->updateManualControlSpaces($this->event, $manual_control_spaces);
+        $this->event_meta->updateRegCount(
+            $this->event,
+            $this->registration_model->event_reg_count_for_status(
+                $this->event,
+                EEM_Registration::status_id_wait_list
+            )
         );
         // mark event as having a waitlist if number of spaces available is positive
         $this->event->set('EVT_allow_overflow', $wait_list_spaces > 0);

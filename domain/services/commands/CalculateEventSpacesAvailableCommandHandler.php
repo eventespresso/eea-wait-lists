@@ -40,11 +40,9 @@ class CalculateEventSpacesAvailableCommandHandler extends WaitListCommandHandler
         $event = $command->getEvent();
         $spaces_available = $command->getSpacesAvailable();
         // registrations previously on wait list but now waiting to pay
-        $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
-        $spaces_available -= count($promoted_reg_ids);
+        $spaces_available -= $this->eventMeta()->getPromotedRegIdsArrayCount($event);
         // plus consider wait list registrations as taking available spaces
-        $wait_list_reg_count = $this->getRegCount($event);
-        $spaces_available -= $wait_list_reg_count;
+        $spaces_available -= $this->eventMeta()->getRegCount($event);
         return $spaces_available;
     }
 }

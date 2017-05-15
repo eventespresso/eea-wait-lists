@@ -41,7 +41,7 @@ class PromoteWaitListRegistrantsCommand extends Command
     public function __construct(EE_Event $event, $spaces_remaining)
     {
         $this->event = $event;
-        $this->spaces_remaining = absint($spaces_remaining);
+        $this->spaces_remaining = (int)$spaces_remaining;
     }
 
 

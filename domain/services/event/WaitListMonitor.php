@@ -16,7 +16,6 @@ use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
-use EventEspresso\WaitList\domain\Constants;
 use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
@@ -43,6 +42,11 @@ class WaitListMonitor
     private $wait_list_events;
 
     /**
+     * @param WaitListEventMeta $event_meta
+     */
+    private $wait_list_event_meta;
+
+    /**
      * @var CommandBusInterface $command_bus
      */
     private $command_bus;
@@ -63,17 +67,20 @@ class WaitListMonitor
      * WaitListMonitor constructor.
      *
      * @param Collection               $wait_list_events
+     * @param WaitListEventMeta        $wait_list_event_meta
      * @param CommandBusInterface      $command_bus
      * @param LoaderInterface          $loader
      * @param NoticeConverterInterface $notice_converter
      */
     public function __construct(
         Collection $wait_list_events,
+        WaitListEventMeta $wait_list_event_meta,
         CommandBusInterface $command_bus,
         LoaderInterface $loader,
         NoticeConverterInterface $notice_converter
     ) {
         $this->wait_list_events = $wait_list_events;
+        $this->wait_list_event_meta = $wait_list_event_meta;
         $this->command_bus = $command_bus;
         $this->loader = $loader;
         $this->notice_converter = $notice_converter;
@@ -91,9 +98,10 @@ class WaitListMonitor
     protected function eventHasOpenWaitList(EE_Event $event)
     {
         if ($this->wait_list_events->hasObject($event)) {
-            $wait_list_reg_count = absint($event->get_extra_meta(Constants::REG_COUNT_META_KEY, true));
-            $wait_list_spaces = absint($event->get_extra_meta(Constants::SPACES_META_KEY, true));
-            if ($wait_list_reg_count < $wait_list_spaces) {
+            $wait_list_reg_count = $this->wait_list_event_meta->getRegCount($event);
+            $wait_list_spaces = $this->wait_list_event_meta->getWaitListSpaces($event);
+            $promoted_reg_ids = $this->wait_list_event_meta->getPromotedRegIdsArrayCount($event);
+            if ($wait_list_reg_count + $promoted_reg_ids < $wait_list_spaces) {
                 return true;
             }
         }

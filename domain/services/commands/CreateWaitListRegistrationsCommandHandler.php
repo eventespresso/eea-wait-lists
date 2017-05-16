@@ -21,6 +21,7 @@ use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\core\services\commands\CompositeCommandHandler;
 use EventEspresso\WaitList\domain\Constants;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
+use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 use InvalidArgumentException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -39,14 +40,20 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
 
     /**
-     * @param WaitListEventMeta $event_meta
+     * @var WaitListEventMeta $event_meta
      */
     private $event_meta;
+
+    /**
+     * @var WaitListRegistrationMeta $registration_meta
+     */
+    private $registration_meta;
 
     /**
      * @var EEM_Registration $registration_model
      */
     private $registration_model;
+
     /**
      * @var NoticesContainerInterface $notices
      */
@@ -58,6 +65,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
      * CreateWaitListRegistrationsCommandHandler constructor.
      *
      * @param WaitListEventMeta         $event_meta
+     * @param WaitListRegistrationMeta  $registration_meta
      * @param EEM_Registration          $registration_model
      * @param CommandBusInterface       $command_bus
      * @param CommandFactoryInterface   $command_factory
@@ -65,12 +73,14 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
      */
     public function __construct(
         WaitListEventMeta $event_meta,
+        WaitListRegistrationMeta $registration_meta,
         EEM_Registration $registration_model,
         CommandBusInterface $command_bus,
         CommandFactoryInterface $command_factory,
         NoticesContainerInterface $notices
     ) {
         $this->event_meta = $event_meta;
+        $this->registration_meta = $registration_meta;
         $this->registration_model = $registration_model;
         $this->notices = $notices;
         parent::__construct($command_bus, $command_factory);
@@ -203,11 +213,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
             $registration->_add_relation_to($attendee, 'Attendee');
             $registration->set_attendee_id($attendee->ID());
             $registration->update_cache_after_object_save('Attendee', $attendee);
-            $registration->add_extra_meta(
-                Constants::REG_SIGNED_UP_META_KEY,
-                current_time('mysql', true),
-                true
-            );
+            $this->registration_meta->addRegistrationSignedUp($registration);
             $registration->save();
         }
         return $attendee;

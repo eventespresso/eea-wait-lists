@@ -14,7 +14,6 @@ use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
-use EventEspresso\WaitList\domain\Constants;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 use LogicException;

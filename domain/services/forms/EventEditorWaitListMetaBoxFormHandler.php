@@ -68,8 +68,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         WaitListEventMeta $event_meta,
         EEM_Registration $registration_model,
         EE_Registry $registry
-    )
-    {
+    ) {
         $this->event = $event;
         $this->event_meta = $event_meta;
         $this->registration_model = $registration_model;
@@ -95,7 +94,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
     public function generate()
     {
         $this->setForm(
-            new EventEditorWaitListMetaBoxForm($this->event)
+            new EventEditorWaitListMetaBoxForm($this->event, $this->event_meta)
         );
         return $this->form();
     }
@@ -151,7 +150,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
             'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
         );
         $html .= ' ' . EED_Wait_Lists::wait_list_registrations_list_table_link($this->event);
-        $html .= ' : ' . EED_Wait_Lists::waitListRegCount($this->event);
+        $html .= ' : ' . $this->event_meta->getRegCount($this->event);
         return $html;
     }
 

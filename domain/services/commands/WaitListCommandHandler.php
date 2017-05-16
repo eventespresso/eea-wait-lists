@@ -42,7 +42,7 @@ abstract class WaitListCommandHandler extends CommandHandler
 
 
     /**
-     * @return mixed
+     * @return WaitListEventMeta
      */
     public function eventMeta()
     {

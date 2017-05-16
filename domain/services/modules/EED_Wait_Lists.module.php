@@ -147,6 +147,9 @@ class EED_Wait_Lists extends EED_Module
         EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommandHandler',
             array(
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
                 'EEM_Registration'                                              => EE_Dependency_Map::load_from_cache,
                 'EventEspresso\core\services\commands\CommandBusInterface'      => EE_Dependency_Map::load_from_cache,
                 'EventEspresso\core\services\commands\CommandFactoryInterface'  => EE_Dependency_Map::load_from_cache,
@@ -157,6 +160,8 @@ class EED_Wait_Lists extends EED_Module
             'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommandHandler',
             array(
                 'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
             )
         );
         EE_Dependency_Map::register_dependencies(

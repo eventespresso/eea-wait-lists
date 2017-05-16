@@ -5,7 +5,7 @@ use EE_Checkout;
 use EE_Error;
 use EE_Registration;
 use EEM_Registration;
-use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -22,6 +22,25 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  */
 class WaitListCheckoutMonitor
 {
+
+    /**
+     * @var WaitListRegistrationMeta $event_meta
+     */
+    private $registration_meta;
+
+
+
+    /**
+     * WaitListCheckoutMonitor constructor.
+     *
+     * @param WaitListRegistrationMeta $registration_meta
+     */
+    public function __construct(WaitListRegistrationMeta $registration_meta)
+    {
+        $this->registration_meta = $registration_meta;
+    }
+
+
 
     /**
      * checks if
@@ -41,7 +60,7 @@ class WaitListCheckoutMonitor
             return;
         }
         // ok, but were they ever on a wait list ?
-        if ($registration->get_extra_meta(Constants::REG_SIGNED_UP_META_KEY, true) !== null) {
+        if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {
             // reload reg steps
             add_filter('FHEE__Single_Page_Checkout__load_reg_steps__reload_reg_steps', '__return_true');
             // and do NOT bypass loading for any of them, the registrant needs to visit each step
@@ -102,7 +121,7 @@ class WaitListCheckoutMonitor
      */
     public function allowRegPayment($allow_payment, EE_Registration $registration)
     {
-        if ($registration->get_extra_meta(Constants::REG_SIGNED_UP_META_KEY, true) !== null) {
+        if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {
             return true;
         }
         return $allow_payment;

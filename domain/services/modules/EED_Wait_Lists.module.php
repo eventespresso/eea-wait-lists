@@ -180,6 +180,14 @@ class EED_Wait_Lists extends EED_Module
             )
         );
         EE_Dependency_Map::register_dependencies(
+            '\EventEspresso\WaitList\domain\services\forms\WaitListForm',
+            array(
+                null,
+                null,
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
             array( null, 'EE_Registry' => EE_Dependency_Map::load_from_cache)
         );

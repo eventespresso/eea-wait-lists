@@ -276,15 +276,15 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
+     * @param null $event
      * @return EventEditorWaitListMetaBoxFormHandler
-     * @throws InvalidArgumentException
-     * @throws InvalidInterfaceException
      */
-    public static function getEventEditorWaitListMetaBoxForm()
+    public static function getEventEditorWaitListMetaBoxForm($event = null)
     {
+        $event = $event instanceof EE_Event ? $event : EED_Wait_Lists::$admin_page->get_event_object();
         return EE_Wait_Lists::loader()->load(
             '\EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
-            array( EED_Wait_Lists::$admin_page->get_event_object() )
+            array($event)
         );
     }
 
@@ -528,28 +528,12 @@ class EED_Wait_Lists extends EED_Module
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {
         try {
-            $wait_list_settings_form = new EventEditorWaitListMetaBoxFormHandler(
-                $event,
-                EEM_Registration::instance(),
-                EE_Registry::instance()
-            );
-            $wait_list_settings_form->process($form_data);
+            EED_Wait_Lists::getEventEditorWaitListMetaBoxForm($event)->process($form_data);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
 
-
-
-    /**
-     * @param EE_Event $event
-     * @return int
-     * @throws EE_Error
-     */
-    public static function waitListRegCount(EE_Event $event)
-    {
-        return absint($event->get_extra_meta(Constants::REG_COUNT_META_KEY, true));
-    }
 
 
 

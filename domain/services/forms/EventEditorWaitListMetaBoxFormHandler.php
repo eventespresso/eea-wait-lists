@@ -111,6 +111,10 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      */
     public function display()
     {
+        $spaces_remaining = $this->event->spaces_remaining(array(), false);
+        $spaces_remaining = $spaces_remaining === EE_INF
+            ? esc_html__('unlimited', 'event_espresso')
+            : $spaces_remaining;
         // inject some additional subsections with HTML that's for display only
         $this->form(true)->add_subsections(
             array(
@@ -120,7 +124,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
                     . EEH_HTML::span(
                         sprintf(
                             esc_html__('( available spaces: %1$s )', 'event_espresso'),
-                            $this->event->spaces_remaining(array(), false)
+                            $spaces_remaining
                         ),
                         '', 'ee-available-spaces-before-waitlist-spn',
                         'color:#999; margin:0 2em;'

@@ -8,7 +8,6 @@ use EventEspresso\core\services\commands\Command;
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
 
-
 /**
  * Class CalculateEventSpacesAvailableCommand
  * DTO for passing data to CalculateEventSpacesAvailableCommandHandler
@@ -27,24 +26,22 @@ class CalculateEventSpacesAvailableCommand extends Command
     private $event;
 
     /**
-     * @var int $spaces_available
+     * @var int|float $spaces_available
      */
     private $spaces_available;
-
 
 
     /**
      * CalculateEventSpacesAvailableCommand constructor.
      *
      * @param EE_Event $event
-     * @param int      $spaces_available
+     * @param int|float $spaces_available
      */
     public function __construct(EE_Event $event, $spaces_available)
     {
         $this->event = $event;
         $this->spaces_available = $spaces_available === EE_INF ? $spaces_available : absint($spaces_available);
     }
-
 
 
     /**
@@ -56,9 +53,8 @@ class CalculateEventSpacesAvailableCommand extends Command
     }
 
 
-
     /**
-     * @return int
+     * @return int|float
      */
     public function getSpacesAvailable()
     {

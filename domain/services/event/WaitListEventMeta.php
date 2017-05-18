@@ -23,6 +23,11 @@ class WaitListEventMeta
 {
 
 
+    /**
+     * @param EE_Event $event
+     * @return int
+     * @throws EE_Error
+     */
     public function getWaitListSpaces(EE_Event $event)
     {
         return absint($event->get_extra_meta(Constants::SPACES_META_KEY, true));

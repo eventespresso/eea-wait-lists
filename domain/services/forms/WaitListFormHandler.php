@@ -77,7 +77,7 @@ class WaitListFormHandler extends FormHandler
         }
         $this->setForm(
             $this->registry->create(
-                '\EventEspresso\WaitList\domain\services\forms\WaitListForm',
+                'EventEspresso\WaitList\domain\services\forms\WaitListForm',
                 array($this->event, $tickets)
             )
         );

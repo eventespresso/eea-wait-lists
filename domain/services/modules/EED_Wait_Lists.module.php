@@ -135,6 +135,13 @@ class EED_Wait_Lists extends EED_Module
             )
         );
         EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor',
+            array(
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommandHandler',
             array(
                 'EEM_Registration'                                               => EE_Dependency_Map::load_from_cache,
@@ -180,7 +187,7 @@ class EED_Wait_Lists extends EED_Module
             )
         );
         EE_Dependency_Map::register_dependencies(
-            '\EventEspresso\WaitList\domain\services\forms\WaitListForm',
+            'EventEspresso\WaitList\domain\services\forms\WaitListForm',
             array(
                 null,
                 null,

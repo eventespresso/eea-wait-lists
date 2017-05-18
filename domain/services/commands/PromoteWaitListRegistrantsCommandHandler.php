@@ -179,6 +179,10 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         if (! $auto_promote || $regs_to_promote < 1) {
             return;
         }
+        // because we use $regs_to_promote as a query limit, make sure it's not INF
+        $regs_to_promote = $regs_to_promote === EE_INF
+            ? $this->eventMeta()->getWaitListSpaces($event)
+            : $regs_to_promote;
         /** @var EE_Registration[] $registrations */
         $registrations = $this->registration_model->get_all(
             array(

@@ -31,7 +31,9 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->wait_list_checkout_monitor = new WaitListCheckoutMonitor();
+        $this->wait_list_checkout_monitor = EE_Registry::instance()->create(
+            'EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor'
+        );
     }
 
 

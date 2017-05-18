@@ -188,7 +188,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         $this->event_meta->updateManualControlSpaces($this->event, $manual_control_spaces);
         $this->event_meta->updateRegCount(
             $this->event,
-            $this->registration_model->event_reg_count_for_status(
+            $this->registration_model->event_reg_count_for_statuses(
                 $this->event,
                 EEM_Registration::status_id_wait_list
             )

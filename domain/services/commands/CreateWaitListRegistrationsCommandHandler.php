@@ -141,7 +141,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $event = $ticket->get_related_event();
         $this->event_meta->updateRegCount(
             $event,
-            $this->registration_model->event_reg_count_for_status(
+            $this->registration_model->event_reg_count_for_statuses(
                 $event,
                 EEM_Registration::status_id_wait_list
             )

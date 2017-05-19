@@ -13,6 +13,7 @@ use EEH_HTML;
 use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
+use EventEspresso\core\exceptions\InvalidStatusException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
@@ -159,13 +160,14 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
     }
 
 
-
     /**
      * handles processing the form submission
      * returns true or false depending on whether the form was processed successfully or not
      *
      * @param array $form_data
      * @return bool
+     * @throws InvalidArgumentException
+     * @throws InvalidStatusException
      * @throws LogicException
      * @throws InvalidFormSubmissionException
      * @throws EE_Error
@@ -189,11 +191,11 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         $this->event_meta->updateRegCount(
             $this->event,
             $this->registration_model->event_reg_count_for_statuses(
-                $this->event,
+                $this->event->ID(),
                 EEM_Registration::status_id_wait_list
             )
         );
-        // mark event as having a waitlist if number of spaces available is positive
+        // mark event as having a wait list if number of spaces available is positive
         $this->event->set('EVT_allow_overflow', $wait_list_spaces > 0);
         return false;
     }

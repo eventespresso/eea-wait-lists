@@ -12,6 +12,7 @@ use EEM_Transaction;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
+use EventEspresso\core\exceptions\InvalidStatusException;
 use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\core\services\commands\attendee\CreateAttendeeCommand;
 use EventEspresso\core\services\commands\CommandBusInterface;
@@ -19,7 +20,6 @@ use EventEspresso\core\services\commands\CommandFactoryInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\core\services\commands\CompositeCommandHandler;
-use EventEspresso\WaitList\domain\Constants;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 use InvalidArgumentException;
@@ -87,10 +87,10 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     }
 
 
-
     /**
      * @param CommandInterface $command
      * @return NoticesContainerInterface
+     * @throws InvalidStatusException
      * @throws UnexpectedEntityException
      * @throws InvalidEntityException
      * @throws EE_Error
@@ -142,7 +142,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $this->event_meta->updateRegCount(
             $event,
             $this->registration_model->event_reg_count_for_statuses(
-                $event,
+                $event->ID(),
                 EEM_Registration::status_id_wait_list
             )
         );

@@ -63,7 +63,8 @@ Class  EE_Wait_Lists extends EE_Addon
      * EED_Wait_Lists is the place for most filter and action callbacks (relating
      * the the primary business logic of your addon) to be placed
      *
-     * @throws \EE_Error
+     * @throws EE_Error
+     * @throws DomainException
      */
     public static function register_addon()
     {
@@ -114,6 +115,8 @@ Class  EE_Wait_Lists extends EE_Addon
 
     /**
      * Register things that have to happen early in loading.
+     *
+     * @throws DomainException
      */
     public function after_registration()
     {
@@ -130,6 +133,8 @@ Class  EE_Wait_Lists extends EE_Addon
 
     /**
      * Takes care of registering the custom shortcode library for this add-on
+     *
+     * @throws DomainException
      */
     protected function _register_custom_shortcode_library()
     {

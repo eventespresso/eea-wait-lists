@@ -4,7 +4,7 @@ use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler;
-use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
 
@@ -324,7 +324,7 @@ class EED_Wait_Lists extends EED_Module
         // load css
         wp_register_style(
             'wait_list',
-            EventEspresso\WaitList\domain\Constants::pluginUrl() . 'assets/wait_list.css',
+            EventEspresso\WaitList\domain\Domain::pluginUrl() . 'assets/wait_list.css',
             array(),
             EE_WAIT_LISTS_VERSION
         );
@@ -333,7 +333,7 @@ class EED_Wait_Lists extends EED_Module
         add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
-            EventEspresso\WaitList\domain\Constants::pluginUrl() . 'assets/wait_list.js',
+            EventEspresso\WaitList\domain\Domain::pluginUrl() . 'assets/wait_list.js',
             array('espresso_core', 'jquery-validate'),
             EE_WAIT_LISTS_VERSION,
             true
@@ -667,7 +667,7 @@ class EED_Wait_Lists extends EED_Module
 
     public static function allowed_enum_values(array $allowed_enum_values)
     {
-        $allowed_enum_values[Constants::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
+        $allowed_enum_values[Domain::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
         return $allowed_enum_values;
     }
 

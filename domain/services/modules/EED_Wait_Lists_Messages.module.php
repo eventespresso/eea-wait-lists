@@ -59,7 +59,10 @@ class EED_Wait_Lists_Messages extends EED_Messages
     public static function trigger_wait_list_notifications(array $registrations, EE_Event $event = null)
     {
         self::_load_controller();
-        self::$_MSG_PROCESSOR->generate_for_all_active_messengers('waitlist_can_register', $registrations);
+        self::$_MSG_PROCESSOR->generate_for_all_active_messengers(
+            'waitlist_can_register',
+            $registrations
+        );
     }
 
 }

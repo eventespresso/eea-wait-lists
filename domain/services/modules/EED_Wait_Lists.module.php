@@ -3,6 +3,7 @@
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
+use EventEspresso\core\exceptions\InvalidStatusException;
 use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
@@ -42,6 +43,7 @@ class EED_Wait_Lists extends EED_Module
      * set_hooks - for hooking into EE Core, other modules, etc
      *
      * @return void
+     * @throws DomainException
      * @throws InvalidInterfaceException
      * @throws InvalidEntityException
      * @throws EE_Error
@@ -50,7 +52,12 @@ class EED_Wait_Lists extends EED_Module
     {
         EED_Wait_Lists::register_dependencies();
         EED_Wait_Lists::set_shared_hooks();
-        EE_Config::register_route('join', 'EED_Wait_Lists', 'process_wait_list_form_for_event', 'wait_list');
+        EE_Config::register_route(
+            'join',
+            'EED_Wait_Lists',
+            'process_wait_list_form_for_event',
+            'wait_list'
+        );
         add_filter(
             'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
             array('EED_Wait_Lists', 'add_wait_list_form_for_event'),
@@ -65,6 +72,7 @@ class EED_Wait_Lists extends EED_Module
      * set_hooks_admin - for hooking into EE Admin Core, other modules, etc
      *
      * @return void
+     * @throws DomainException
      * @throws InvalidInterfaceException
      * @throws InvalidEntityException
      * @throws EE_Error
@@ -106,6 +114,7 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @return void
+     * @throws DomainException
      * @throws InvalidInterfaceException
      * @throws InvalidEntityException
      * @throws EE_Error
@@ -255,12 +264,8 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     *    run - initial module setup
-     *    this method is primarily used for activating resources in the EE_Front_Controller thru the use of filters
-     *
-     * @access    public
-     * @var            WP $WP
-     * @return    void
+     * @var WP $WP
+     * @return void
      */
     public function run($WP)
     {
@@ -318,6 +323,7 @@ class EED_Wait_Lists extends EED_Module
      * enqueue_styles_and_scripts
      *
      * @return void
+     * @throws DomainException
      */
     public static function enqueue_styles_and_scripts()
     {
@@ -387,6 +393,9 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** SPLIT FUNCTIONALITY ***************************/
+
+
+
     /**
      * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
      *
@@ -398,7 +407,11 @@ class EED_Wait_Lists extends EED_Module
     public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
         try {
-            EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate($registration, $old_STS_ID, $new_STS_ID);
+            EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate(
+                $registration,
+                $old_STS_ID,
+                $new_STS_ID
+            );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
@@ -542,8 +555,9 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param EE_Event $event
-     * @param array     $form_data
+     * @param array    $form_data
      * @throws Exception
+     * @throws InvalidStatusException
      */
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {

@@ -1,6 +1,5 @@
 <?php
 use EventEspresso\WaitList\domain\Domain;
-use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 

@@ -13,7 +13,7 @@ use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
-use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use RuntimeException;
 
@@ -218,7 +218,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 $registration->pretty_status(),
                 $event->name()
             );
-            $this->change_log->log(Constants::LOG_TYPE, $message, $event);
+            $this->change_log->log(Domain::LOG_TYPE, $message, $event);
             if (
                 $this->capabilities->current_user_can(
                     'ee_edit_registration',

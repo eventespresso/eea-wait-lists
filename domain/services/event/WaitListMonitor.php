@@ -11,11 +11,11 @@ use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
-use EventEspresso\core\services\collections\Collection;
 use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
+use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
@@ -37,7 +37,7 @@ class WaitListMonitor
 {
 
     /**
-     * @var Collection $wait_list_events
+     * @var WaitListEventsCollection $wait_list_events
      */
     private $wait_list_events;
 
@@ -66,14 +66,14 @@ class WaitListMonitor
     /**
      * WaitListMonitor constructor.
      *
-     * @param Collection               $wait_list_events
+     * @param WaitListEventsCollection $wait_list_events
      * @param WaitListEventMeta        $wait_list_event_meta
      * @param CommandBusInterface      $command_bus
      * @param LoaderInterface          $loader
      * @param NoticeConverterInterface $notice_converter
      */
     public function __construct(
-        Collection $wait_list_events,
+        WaitListEventsCollection $wait_list_events,
         WaitListEventMeta $wait_list_event_meta,
         CommandBusInterface $command_bus,
         LoaderInterface $loader,

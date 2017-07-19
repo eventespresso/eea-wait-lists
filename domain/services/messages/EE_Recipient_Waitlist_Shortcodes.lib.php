@@ -34,7 +34,7 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
         );
         $this->_shortcodes = array(
             '[RECIPIENT_WAITLIST_REGISTRATION_URL]' => esc_html__(
-                'This returns the generated url for the wait-list registrant to complete the signup process.',
+                'This returns the generated url for the wait-list registrant to complete the sign-up process.',
                 'event_espresso'
             ),
         );
@@ -72,7 +72,9 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
                 if (! $this->_recipient->reg_obj instanceof EE_Registration) {
                     return '';
                 }
-                return EED_Wait_Lists::wait_list_checkout_url($this->_recipient->reg_obj->get_primary_registration());
+                return EED_Wait_Lists::wait_list_checkout_url(
+                    $this->_recipient->reg_obj->get_primary_registration()
+                );
         }
         return '';
     }

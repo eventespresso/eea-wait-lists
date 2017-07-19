@@ -8,7 +8,6 @@ use EventEspresso\core\services\commands\Command;
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
 
-
 /**
  * Class PromoteWaitListRegistrantsCommand
  * DTO for passing data to PromoteWaitListRegistrantsCommandHandler
@@ -26,24 +25,22 @@ class PromoteWaitListRegistrantsCommand extends Command
     private $event;
 
     /**
-     * @var int $spaces_remaining
+     * @var int|float $spaces_remaining
      */
     private $spaces_remaining;
-
 
 
     /**
      * PromoteWaitListRegistrantsCommand constructor.
      *
      * @param EE_Event $event
-     * @param int      $spaces_remaining
+     * @param int|float $spaces_remaining
      */
     public function __construct(EE_Event $event, $spaces_remaining)
     {
         $this->event = $event;
-        $this->spaces_remaining = $spaces_remaining;
+        $this->spaces_remaining = $spaces_remaining === EE_INF ? $spaces_remaining : absint($spaces_remaining);
     }
-
 
 
     /**
@@ -55,15 +52,13 @@ class PromoteWaitListRegistrantsCommand extends Command
     }
 
 
-
     /**
-     * @return int
+     * @return int|float
      */
     public function getSpacesRemaining()
     {
         return $this->spaces_remaining;
     }
-
 
 
 }

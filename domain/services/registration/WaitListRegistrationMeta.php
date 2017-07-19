@@ -4,7 +4,7 @@ namespace EventEspresso\WaitList\domain\services\registration;
 
 use EE_Error;
 use EE_Registration;
-use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -28,7 +28,7 @@ class WaitListRegistrationMeta
      */
     public function getRegistrationSignedUp(EE_Registration $registration)
     {
-        return $registration->get_extra_meta(Constants::REG_SIGNED_UP_META_KEY, true);
+        return $registration->get_extra_meta(Domain::REG_SIGNED_UP_META_KEY, true);
     }
 
 
@@ -41,7 +41,7 @@ class WaitListRegistrationMeta
     public function addRegistrationSignedUp(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Constants::REG_SIGNED_UP_META_KEY,
+            Domain::REG_SIGNED_UP_META_KEY,
             current_time('mysql', true),
             true
         );
@@ -57,7 +57,7 @@ class WaitListRegistrationMeta
     public function addRegistrationPromoted(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Constants::REG_PROMOTED_META_KEY,
+            Domain::REG_PROMOTED_META_KEY,
             current_time('mysql', true)
         );
     }
@@ -72,7 +72,7 @@ class WaitListRegistrationMeta
     public function addRegistrationDemoted(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Constants::REG_DEMOTED_META_KEY,
+            Domain::REG_DEMOTED_META_KEY,
             current_time('mysql', true)
         );
     }
@@ -87,7 +87,7 @@ class WaitListRegistrationMeta
     public function addRegistrationRemoved(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Constants::REG_REMOVED_META_KEY,
+            Domain::REG_REMOVED_META_KEY,
             current_time('mysql', true)
         );
     }

@@ -3,7 +3,7 @@
   Plugin Name: Event Espresso - Wait Lists (EE4.9+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Wait Lists Addon maximizes event sales by allowing attendees to partially register for a datetime or ticket that has sold out, but then complete the registration process later after spaces have become available due to venue change, additional tickets, non-payment, cancellation, etc.
-  Version: 1.0.0.dev.022
+  Version: 1.0.0.dev.027
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
   Copyright 2014 Event Espresso (email : support@eventespresso.com)
@@ -62,18 +62,18 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
  */
 function load_espresso_wait_lists()
 {
-    if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\ConstantsAbstract')) {
+    if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\DomainBase')) {
         espresso_load_required(
-            'EventEspresso\WaitList\domain\Constants',
-            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . 'domain/Constants.php'
+            'EventEspresso\WaitList\domain\Domain',
+            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . 'domain/Domain.php'
         );
-        EventEspresso\WaitList\domain\Constants::init(
+        EventEspresso\WaitList\domain\Domain::init(
             EE_WAIT_LISTS_PLUGIN_FILE,
             EE_WAIT_LISTS_VERSION
         );
         espresso_load_required(
             'EE_Wait_Lists',
-            EventEspresso\WaitList\domain\Constants::pluginPath() . 'EE_Wait_Lists.class.php'
+            EventEspresso\WaitList\domain\Domain::pluginPath() . 'EE_Wait_Lists.class.php'
         );
         EE_Wait_Lists::register_addon();
     } else {

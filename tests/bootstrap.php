@@ -4,10 +4,11 @@
  */
 use EETests\bootstrap\AddonLoader;
 
-$core_tests_dir = dirname(dirname(__DIR__)) . '/event-espresso-core/tests/';
+$ee_core_dir = 'event-espresso-core';
+$core_tests_dir = dirname(dirname(__DIR__)) . "/{$ee_core_dir}/tests/";
 //if still don't have $core_tests_dir, then let's check tmp folder.
 if (! is_dir($core_tests_dir)) {
-    $core_tests_dir = '/tmp/event-espresso-core/tests/';
+    $core_tests_dir = "/tmp/{$ee_core_dir}/tests/";
 }
 require $core_tests_dir . 'includes/CoreLoader.php';
 require $core_tests_dir . 'includes/AddonLoader.php';

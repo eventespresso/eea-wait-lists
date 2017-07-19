@@ -5,7 +5,7 @@ namespace EventEspresso\WaitList\domain\services\event;
 use EE_Error;
 use EE_Event;
 use EE_Registration;
-use EventEspresso\WaitList\domain\Constants;
+use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -23,9 +23,14 @@ class WaitListEventMeta
 {
 
 
+    /**
+     * @param EE_Event $event
+     * @return int
+     * @throws EE_Error
+     */
     public function getWaitListSpaces(EE_Event $event)
     {
-        return absint($event->get_extra_meta(Constants::SPACES_META_KEY, true));
+        return absint($event->get_extra_meta(Domain::SPACES_META_KEY, true));
     }
 
 
@@ -38,7 +43,7 @@ class WaitListEventMeta
      */
     public function updateWaitListSpaces(EE_Event $event, $wait_list_spaces)
     {
-        return $event->update_extra_meta(Constants::SPACES_META_KEY, absint($wait_list_spaces));
+        return $event->update_extra_meta(Domain::SPACES_META_KEY, absint($wait_list_spaces));
     }
 
 
@@ -50,7 +55,7 @@ class WaitListEventMeta
     public function getRegCount(EE_Event $event)
     {
         return absint(
-            $event->get_extra_meta(Constants::REG_COUNT_META_KEY, true, 0)
+            $event->get_extra_meta(Domain::REG_COUNT_META_KEY, true, 0)
         );
     }
 
@@ -65,7 +70,7 @@ class WaitListEventMeta
     public function updateRegCount(EE_Event $event, $reg_count)
     {
         return $event->update_extra_meta(
-            Constants::REG_COUNT_META_KEY,
+            Domain::REG_COUNT_META_KEY,
             absint($reg_count)
         );
     }
@@ -80,7 +85,7 @@ class WaitListEventMeta
     public function getPromotedRegIdsArray(EE_Event $event)
     {
         $promoted_reg_ids = $event->get_extra_meta(
-            Constants::PROMOTED_REG_IDS_META_KEY, false, array(array())
+            Domain::PROMOTED_REG_IDS_META_KEY, false, array(array())
         );
         return reset($promoted_reg_ids);
     }
@@ -96,7 +101,7 @@ class WaitListEventMeta
     public function updatePromotedRegIdsArray(EE_Event $event, array $promoted_reg_ids)
     {
         return $event->update_extra_meta(
-            Constants::PROMOTED_REG_IDS_META_KEY,
+            Domain::PROMOTED_REG_IDS_META_KEY,
             $promoted_reg_ids
         );
     }
@@ -143,7 +148,7 @@ class WaitListEventMeta
     {
         return filter_var(
             $event->get_extra_meta(
-                Constants::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
+                Domain::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
                 true,
                 true
             ),
@@ -162,7 +167,7 @@ class WaitListEventMeta
     public function updatePromoteWaitListRegistrants(EE_Event $event, $promote_wait_list_registrants)
     {
         return $event->update_extra_meta(
-            Constants::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
+            Domain::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
             filter_var(
                 $promote_wait_list_registrants,
                 FILTER_VALIDATE_BOOLEAN
@@ -180,7 +185,7 @@ class WaitListEventMeta
     public function getAutoPromote(EE_Event $event)
     {
         return filter_var(
-            $event->get_extra_meta(Constants::AUTO_PROMOTE_META_KEY, true, false),
+            $event->get_extra_meta(Domain::AUTO_PROMOTE_META_KEY, true, false),
             FILTER_VALIDATE_BOOLEAN
         );
     }
@@ -196,7 +201,7 @@ class WaitListEventMeta
     public function updateAutoPromote(EE_Event $event, $auto_promote_registrants)
     {
         return $event->update_extra_meta(
-            Constants::AUTO_PROMOTE_META_KEY,
+            Domain::AUTO_PROMOTE_META_KEY,
             filter_var(
                 $auto_promote_registrants,
                 FILTER_VALIDATE_BOOLEAN
@@ -215,7 +220,7 @@ class WaitListEventMeta
     {
        return absint(
            $event->get_extra_meta(
-               Constants::MANUAL_CONTROL_SPACES_META_KEY,
+               Domain::MANUAL_CONTROL_SPACES_META_KEY,
                true,
                0
            )
@@ -232,7 +237,7 @@ class WaitListEventMeta
     public function updateManualControlSpaces(EE_Event $event, $manual_control_spaces)
     {
        return $event->update_extra_meta(
-           Constants::MANUAL_CONTROL_SPACES_META_KEY,
+           Domain::MANUAL_CONTROL_SPACES_META_KEY,
            absint($manual_control_spaces)
        );
     }
@@ -247,7 +252,7 @@ class WaitListEventMeta
     public function getPerformSoldOutStatusCheck(EE_Event $event)
     {
         return $event->get_extra_meta(
-            Constants::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
+            Domain::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
             true,
             true
         );
@@ -263,7 +268,7 @@ class WaitListEventMeta
     public function updatePerformSoldOutStatusCheck(EE_Event $event, $perform_sold_out_status_check)
     {
         return $event->update_extra_meta(
-            Constants::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
+            Domain::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
             filter_var(
                 $perform_sold_out_status_check,
                 FILTER_VALIDATE_BOOLEAN

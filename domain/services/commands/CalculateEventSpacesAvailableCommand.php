@@ -40,7 +40,7 @@ class CalculateEventSpacesAvailableCommand extends Command
     public function __construct(EE_Event $event, $spaces_available)
     {
         $this->event = $event;
-        $this->spaces_available = $spaces_available === EE_INF ? $spaces_available : absint($spaces_available);
+        $this->spaces_available = $spaces_available === EE_INF ? $spaces_available : (int)$spaces_available;
     }
 
 

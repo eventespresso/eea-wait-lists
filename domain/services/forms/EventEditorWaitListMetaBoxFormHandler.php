@@ -14,6 +14,7 @@ use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\exceptions\InvalidStatusException;
+use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
@@ -107,6 +108,8 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      * returns a string of HTML that can be directly echoed in a template
      *
      * @return string
+     * @throws UnexpectedEntityException
+     * @throws DomainException
      * @throws LogicException
      * @throws EE_Error
      */

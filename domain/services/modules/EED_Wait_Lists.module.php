@@ -34,7 +34,6 @@ class EED_Wait_Lists extends EED_Module
 
     public static function reset() {
         self::$admin_page = null;
-        self::$_instance = null;
     }
 
 

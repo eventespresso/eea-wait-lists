@@ -32,7 +32,6 @@ class EED_Wait_List_Test extends EE_UnitTestCase
             $registration
         );
         $reg_page_url = EE_Registry::instance()->CFG->core->reg_page_url();
-        echo "\n " . '$reg_page_url: ' . $reg_page_url;
         PHPUnit_Framework_TestCase::assertNotEmpty($reg_page_url);
         PHPUnit_Framework_TestCase::assertEquals(
             add_query_arg(

@@ -13,6 +13,7 @@ use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use InvalidArgumentException;
 use LogicException;
+use ReflectionException;
 use RuntimeException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -55,7 +56,13 @@ class WaitListFormHandler extends FormHandler
             esc_html__('Event Wait List', 'event_espresso'),
             esc_html__('Event Wait List', 'event_espresso'),
             'event_wait_list',
-            site_url() . '?wait_list=join&event_id=' . $event->ID(),
+            add_query_arg(
+                array(
+                    'wait_list' => 'join',
+                    'event_id'  => $event->ID()
+                ),
+                site_url()
+            ),
             FormHandler::ADD_FORM_TAGS_ONLY,
             $registry
         );
@@ -67,6 +74,7 @@ class WaitListFormHandler extends FormHandler
      * creates and returns the actual form
      *
      * @return void
+     * @throws ReflectionException
      * @throws EE_Error
      */
     public function generate()
@@ -91,6 +99,7 @@ class WaitListFormHandler extends FormHandler
      *
      * @param array $form_data
      * @return EE_Attendee
+     * @throws ReflectionException
      * @throws RuntimeException
      * @throws InvalidEntityException
      * @throws LogicException

@@ -33,7 +33,7 @@ class EED_Wait_Lists extends EED_Module
 
 
     public static function reset() {
-        self::$admin_page = null;
+        EED_Wait_Lists::$admin_page = null;
     }
 
 
@@ -373,9 +373,10 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function process_wait_list_form_for_event()
     {
+        $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         try {
             $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
-            EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+            $referrer = EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
@@ -385,7 +386,7 @@ class EED_Wait_Lists extends EED_Module
             exit();
         }
         EE_Error::get_notices(false, true);
-        wp_safe_redirect(filter_input(INPUT_SERVER, 'HTTP_REFERER'));
+        wp_safe_redirect($referrer);
         exit();
     }
 

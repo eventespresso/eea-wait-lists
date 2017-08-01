@@ -145,7 +145,8 @@ class WaitListMonitor
 
     /**
      * @param int $event_id
-     * @return void
+     * @return string
+     * @throws \ReflectionException
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws DomainException
@@ -157,12 +158,18 @@ class WaitListMonitor
      */
     public function processWaitListFormForEvent($event_id)
     {
+        $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         if ($this->wait_list_events->has($event_id)) {
             /** @var EE_Event $event */
             $event = $this->wait_list_events->get($event_id);
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
+            if(isset($_REQUEST['event_wait_list']) && is_array($_REQUEST['event_wait_list'])) {
+                $inputs = reset($_REQUEST['event_wait_list']);
+                $referrer = ! empty($inputs['referrer']) ? $inputs['referrer'] : $referrer;
+            }
         }
+        return $referrer;
     }
 
 

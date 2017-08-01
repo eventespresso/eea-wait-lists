@@ -6,6 +6,7 @@ use EE_Div_Per_Section_Layout;
 use EE_Email_Input;
 use EE_Error;
 use EE_Event;
+use EE_Fixed_Hidden_Input;
 use EE_Form_Section_HTML;
 use EE_Form_Section_Proper;
 use EE_Integer_Input;
@@ -217,6 +218,11 @@ class WaitListForm extends EE_Form_Section_Proper
                                         . '"'
                                     ),
                                     '', 'ee-wait-list-cancel-dv'
+                                )
+                            ),
+                            'referrer' => new EE_Fixed_Hidden_Input(
+                                array(
+                                    'default' => home_url(add_query_arg(null, null)),
                                 )
                             ),
                         ),

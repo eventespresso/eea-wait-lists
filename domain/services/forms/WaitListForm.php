@@ -55,6 +55,7 @@ class WaitListForm extends EE_Form_Section_Proper
         $form_options = $wait_list_spaces_left === 0
             ? $this->emptyFormOptions()
             : $this->waitListFormOptions($event, $tickets, $wait_list_spaces_left);
+        $form_options['subsections'] += $this->hiddenInputs($event);
         parent::__construct($form_options);
     }
 
@@ -78,7 +79,31 @@ class WaitListForm extends EE_Form_Section_Proper
 
 
     /**
+     * @param EE_Event $event
      * @return array
+     * @throws EE_Error
+     */
+    private function hiddenInputs(EE_Event $event)
+    {
+        return array(
+            'route' => new EE_Fixed_Hidden_Input(
+                array(
+                    'default' => 'join',
+                )
+            ),
+            'event_id' => new EE_Fixed_Hidden_Input(
+                array(
+                    'default' => $event->ID(),
+                )
+            ),
+        );
+    }
+
+
+
+    /**
+     * @return array
+     * @throws EE_Error
      */
     private function emptyFormOptions()
     {
@@ -86,7 +111,7 @@ class WaitListForm extends EE_Form_Section_Proper
             'name'            => 'event_wait_list',
             'html_id'         => 'event_wait_list',
             'layout_strategy' => new EE_Div_Per_Section_Layout(),
-            'subsections'     => array(new EE_Form_Section_HTML())
+            'subsections'     => array()
         );
     }
 

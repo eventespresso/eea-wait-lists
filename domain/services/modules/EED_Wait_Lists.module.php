@@ -1,6 +1,7 @@
 <?php
 
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\exceptions\InvalidStatusException;
@@ -55,7 +56,7 @@ class EED_Wait_Lists extends EED_Module
             'join',
             'EED_Wait_Lists',
             'process_wait_list_form_for_event',
-            'wait_list'
+            'event_wait_list[route]'
         );
         add_filter(
             'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
@@ -93,7 +94,7 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array',
             array('EED_Wait_Lists', 'reg_status_actions'),
-            10, 2
+            10, 3
         );
         add_action(
             'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
@@ -375,7 +376,9 @@ class EED_Wait_Lists extends EED_Module
     {
         $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         try {
-            $event_id = isset($_REQUEST['event_id']) ? absint($_REQUEST['event_id']) : 0;
+            $event_id = isset($_REQUEST['event_wait_list'], $_REQUEST['event_wait_list']['event_id'])
+                ? absint($_REQUEST['event_wait_list']['event_id'])
+                : 0;
             $referrer = EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
@@ -519,17 +522,18 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param array $reg_status_actions
      * @param array $active_mts
+     * @param bool  $can_send
      * @return array
      */
-    public static function reg_status_actions(array $reg_status_actions, array $active_mts)
+    public static function reg_status_actions(array $reg_status_actions, array $active_mts, $can_send = false)
     {
-        $reg_status_actions['wait_list_registration'] = __('Set Registrations to Wait List', 'event_espresso');
-        if (
-            in_array('waitlist_can_register', $active_mts, true)
-            && EE_Registry::instance()->CAP->current_user_can('ee_send_message', 'batch_send_messages')
-        ) {
-            $def_reg_status_actions['wait_list_and_notify_registration'] = __(
-                'Set Registrations to Wait List and Notify',
+        $reg_status_actions['wait_list_registrations'] = esc_html__(
+            'Move Registrations to Wait List',
+            'event_espresso'
+        );
+        if ($can_send && in_array('waitlist_can_register', $active_mts, true)) {
+            $reg_status_actions['wait_list_and_notify_registrations'] = esc_html__(
+                'Move Registrations to Wait List and Notify',
                 'event_espresso'
             );
         }
@@ -597,6 +601,9 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param EE_Registration $registration
      * @return string
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      * @throws EE_Error
      */
     public static function wait_list_checkout_url(EE_Registration $registration)

@@ -142,7 +142,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             && ($manual_control_spaces > 0 || $auto_promote === false)
             && is_admin()
             && $this->capabilities->current_user_can(
-                'ee_edit_registration',
+                'ee_edit_registrations',
                 'espresso_promote_wait_list_registrants'
             )
         ) {
@@ -221,7 +221,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             $this->change_log->log(Domain::LOG_TYPE, $message, $event);
             if (
                 $this->capabilities->current_user_can(
-                    'ee_edit_registration',
+                    'ee_edit_registrations',
                     'espresso_view_wait_list_update_notice'
                 )
             ) {

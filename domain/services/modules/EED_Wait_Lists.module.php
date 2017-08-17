@@ -92,6 +92,11 @@ class EED_Wait_Lists extends EED_Module
             array('EED_Wait_Lists', 'event_update_callbacks')
         );
         add_filter(
+            'FHEE__Extend_Registrations_Admin_Page__page_setup__page_routes',
+            array('EED_Wait_Lists', 'reg_admin_page_routes'),
+            10
+        );
+        add_filter(
             'FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array',
             array('EED_Wait_Lists', 'reg_status_actions'),
             10, 3
@@ -520,12 +525,35 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
+     * @param array $page_routes
+     * @return array
+     */
+    public static function reg_admin_page_routes($page_routes = array())
+    {
+        $page_routes['wait_list_registrations'] = array(
+            'func'       => 'bulk_action_on_registrations',
+            'noheader'   => true,
+            'capability' => 'ee_edit_registrations',
+            'args'       => array('wait_list'),
+        );
+        $page_routes['wait_list_and_notify_registrations'] = array(
+            'func'       => 'bulk_action_on_registrations',
+            'noheader'   => true,
+            'capability' => 'ee_edit_registrations',
+            'args'       => array('wait_list', true),
+        );
+        return $page_routes;
+    }
+
+
+
+    /**
      * @param array $reg_status_actions
      * @param array $active_mts
      * @param bool  $can_send
      * @return array
      */
-    public static function reg_status_actions(array $reg_status_actions, array $active_mts, $can_send = false)
+    public static function reg_status_actions($reg_status_actions = array(), $active_mts = array(), $can_send = false)
     {
         $reg_status_actions['wait_list_registrations'] = esc_html__(
             'Move Registrations to Wait List',

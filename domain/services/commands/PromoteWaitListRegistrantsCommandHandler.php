@@ -106,13 +106,20 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 return null;
             }
             $auto_promote = $this->eventMeta()->getAutoPromote($event);
-            $spaces_remaining = $this->manuallyPromoteRegistrations(
+            $manual_control_spaces = $this->eventMeta()->getManualControlSpaces($event);
+            $regs_to_promote = $spaces_remaining - $manual_control_spaces;
+            $this->autoPromoteRegistrations(
                 $event,
-                $spaces_remaining,
-                $wait_list_reg_count,
+                $regs_to_promote,
                 $auto_promote
             );
-            $this->autoPromoteRegistrations($event, $spaces_remaining, $auto_promote);
+            $this->manuallyPromoteRegistrationsNotification(
+                $event,
+                $spaces_remaining - $regs_to_promote,
+                $wait_list_reg_count - $regs_to_promote,
+                $manual_control_spaces,
+                $auto_promote
+            );
             return $this->notices;
         }
         return null;
@@ -124,17 +131,18 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @param EE_Event $event
      * @param int      $spaces_remaining
      * @param int      $wait_list_reg_count
+     * @param int      $manual_control_spaces
      * @param bool     $auto_promote
-     * @return bool
+     * @return void
      * @throws EE_Error
      */
-    private function manuallyPromoteRegistrations(
+    private function manuallyPromoteRegistrationsNotification(
         EE_Event $event,
         $spaces_remaining,
         $wait_list_reg_count,
+        $manual_control_spaces,
         $auto_promote = false
     ) {
-        $manual_control_spaces = $this->eventMeta()->getManualControlSpaces($event);
         if (
             $spaces_remaining > 0
             && $wait_list_reg_count > 0
@@ -160,8 +168,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 __FILE__, __FUNCTION__, __LINE__
             );
         }
-        $spaces_remaining -= $manual_control_spaces;
-        return $spaces_remaining;
     }
 
 
@@ -235,7 +241,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         );
         $this->eventMeta()->updatePerformSoldOutStatusCheck($event, true);
     }
-
 
 
 }

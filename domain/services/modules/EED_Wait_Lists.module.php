@@ -282,9 +282,9 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @return WaitListMonitor
      * @throws EE_Error
-     * @throws InvalidEntityException
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      */
     public static function getWaitListMonitor()
     {
@@ -297,6 +297,7 @@ class EED_Wait_Lists extends EED_Module
      * @return WaitListCheckoutMonitor
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      */
     public static function getWaitListCheckoutMonitor()
     {
@@ -308,6 +309,9 @@ class EED_Wait_Lists extends EED_Module
     /**
      * @param null $event
      * @return EventEditorWaitListMetaBoxFormHandler
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      */
     public static function getEventEditorWaitListMetaBoxForm($event = null)
     {

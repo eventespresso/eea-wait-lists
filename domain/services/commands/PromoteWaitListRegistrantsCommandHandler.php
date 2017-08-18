@@ -102,7 +102,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             // registrations currently on wait list
             $wait_list_reg_count = $this->eventMeta()->getRegCount($event);
             $spaces_remaining += $wait_list_reg_count;
-            $spaces_remaining -= $this->eventMeta()->getPromotedRegIdsArrayCount($event);
             if ($spaces_remaining < 1) {
                 return null;
             }

@@ -1,6 +1,7 @@
 <?php
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
+use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\loaders\LoaderInterface;
 use EventEspresso\WaitList\domain\Domain;
 
@@ -43,13 +44,14 @@ Class  EE_Wait_Lists extends EE_Addon
 
     /**
      * @return LoaderInterface
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      */
     public static function loader()
     {
         if (! EE_Wait_Lists::$loader instanceof LoaderInterface) {
-            EE_Wait_Lists::$loader = EE_Registry::instance()->create(
-                'EventEspresso\core\services\loaders\Loader'
-            );
+            EE_Wait_Lists::$loader = LoaderFactory::getLoader();
         }
         return EE_Wait_Lists::$loader;
     }

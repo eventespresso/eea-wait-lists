@@ -127,8 +127,16 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
                     . $this->waitListRegCountDisplay()
                     . EEH_HTML::span(
                         sprintf(
-                            esc_html__('( available spaces: %1$s )', 'event_espresso'),
+                            esc_html__('Total Available Event Spaces: %1$s', 'event_espresso'),
                             $spaces_remaining
+                        ),
+                        '', 'ee-available-spaces-before-waitlist-spn',
+                        'color:#999; margin:0 2em;'
+                    )
+                    . EEH_HTML::span(
+                        sprintf(
+                            esc_html__('Wait List Registrants Previously Promoted: %1$s', 'event_espresso'),
+                            $this->event_meta->getPromotedRegIdsArrayCount($this->event)
                         ),
                         '', 'ee-available-spaces-before-waitlist-spn',
                         'color:#999; margin:0 2em;'

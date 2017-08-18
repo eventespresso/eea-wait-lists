@@ -117,7 +117,7 @@ class WaitListMonitor
     public function waitListFormForEvent(EE_Event $event)
     {
         return EE_Wait_Lists::loader()->getShared(
-            '\EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
+            'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
             array($event)
         );
     }

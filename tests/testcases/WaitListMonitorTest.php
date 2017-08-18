@@ -66,12 +66,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * creates 10 events that each have one related datetime,
+     * creates 18 events that each have one related datetime,
      * which in turn has one related ticket.
      * datetime reg limits are twice the "event key"
      * which is used to access the event within $this->events.
-     * events with an "event key" that is a factor of 3 (ie: 3, 6, 9),
-     * have wait lists with spaces set to their key (ie: 3, 6, 9),
+     * events with an "event key" that is a factor of 2 (ie: 2, 4, 6),
+     * have wait lists with spaces set to their key (ie: 2, 4, 6),
      * auto promote is turned OFF, and there are no manually controlled spaces
      *
      * @throws EE_Error
@@ -79,12 +79,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
     private function setupEvents()
     {
         $events = array();
-        for ($x = 1; $x <= 10; $x++) {
+        for ($x = 1; $x <= 18; $x++) {
             $args = array(
                 'status' => 'publish',
             );
             // for factors of 3
-            if ($x % 3 === 0) {
+            if ($x % 2 === 0) {
                 $args['EVT_allow_overflow'] = true;
             }
             /** @var EE_Event $event */
@@ -109,8 +109,8 @@ class WaitListMonitorTest extends EE_UnitTestCase
                     'datetime_objects' => array($datetime),
                 )
             );
-            // for factors of 3
-            if ($x % 3 === 0) {
+            // for factors of 2
+            if ($x % 2 === 0) {
                 // add wait list details to event
                 $events[$x]->add_extra_meta(Domain::SPACES_META_KEY, $x);
                 $events[$x]->add_extra_meta(Domain::AUTO_PROMOTE_META_KEY, false);
@@ -132,8 +132,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     private function getSoldOutEventWithEmptyWaitList($number = 1, $auto_promote = false)
     {
-
-        $number *= 3;
+        $number *= 2;
         // events whose key is a factor of 3 have wait lists, let's get one
         $event_with_wait_list = $this->events[$number];
         $this->assertInstanceOf('EE_Event', $event_with_wait_list);
@@ -227,7 +226,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function test_getWaitListFormForEvent()
     {
-        $event_with_wait_list = $this->events[3];
+        $event_with_wait_list = $this->events[2];
         $this->assertInstanceOf('EE_Event', $event_with_wait_list);
         $this->assertTrue($event_with_wait_list->allow_overflow());
         $this->assertFalse($event_with_wait_list->is_sold_out());
@@ -251,26 +250,27 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function test_registrationStatusUpdate()
     {
-        $reg_count = mt_rand(1, 3);
-        $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(1);
-        // add a wait list registrations for that event
-        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
-        $this->assertCount($reg_count, $registrations);
-        $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
-        // now pretend that registrations were promoted to Pending Payment
-        foreach ($registrations as $registration) {
-            $this->wait_list_monitor->registrationStatusUpdate(
-                $registration,
-                EEM_Registration::status_id_wait_list,
-                EEM_Registration::status_id_pending_payment
+        for($reg_count = 1; $reg_count < 4; $reg_count++) {
+            $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(1);
+            // add a wait list registrations for that event
+            $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+            $this->assertCount($reg_count, $registrations);
+            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            // now pretend that registrations were promoted to Pending Payment
+            foreach ($registrations as $registration) {
+                $this->wait_list_monitor->registrationStatusUpdate(
+                    $registration,
+                    EEM_Registration::status_id_wait_list,
+                    EEM_Registration::status_id_pending_payment
+                );
+            }
+            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $this->assertEquals(
+                $event_reg_count - $reg_count,
+                $new_reg_count,
+                "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
             );
         }
-        $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
-        $this->assertEquals(
-            $event_reg_count - $reg_count,
-            $new_reg_count,
-            "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
-        );
     }
 
 
@@ -283,22 +283,23 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function test_registrationStatusUpdateWithAutoPromote()
     {
-        $reg_count = mt_rand(1, 3);
-        $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(2, true);
-        // add a wait list registrations for that event
-        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
-        $this->assertCount($reg_count, $registrations);
-        $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
-        // now perform sold out status check which will trigger auto promotion
-        // because WaitListMonitor::promoteWaitListRegistrants() is hooked into
-        // AHEE__EE_Event__perform_sold_out_status_check__end
-        $event_with_wait_list->perform_sold_out_status_check();
-        $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
-        $this->assertEquals(
-            $event_reg_count - $reg_count,
-            $new_reg_count,
-            "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
-        );
+        for ($reg_count = 4; $reg_count < 7; $reg_count++) {
+            $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList($reg_count, true);
+            // add a wait list registrations for that event
+            $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+            $this->assertCount($reg_count, $registrations);
+            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            // now perform sold out status check which will trigger auto promotion
+            // because WaitListMonitor::promoteWaitListRegistrants() is hooked into
+            // AHEE__EE_Event__perform_sold_out_status_check__end
+            $event_with_wait_list->perform_sold_out_status_check();
+            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $this->assertEquals(
+                $event_reg_count - $reg_count,
+                $new_reg_count,
+                "{$event_reg_count} - {$reg_count} !== {$new_reg_count}"
+            );
+        }
     }
 
 
@@ -310,20 +311,21 @@ class WaitListMonitorTest extends EE_UnitTestCase
      */
     public function test_adjustEventSpacesAvailable()
     {
-        $reg_count = mt_rand(1, 3);
-        $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(3);
-        // get existing number of spaces left
-        $orig_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
-        // now add a couple of regs to the wait list
-        $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
-        $this->assertCount($reg_count, $registrations);
-        // $event_with_wait_list->update_extra_meta(Domain::REG_COUNT_META_KEY, $reg_count);
-        $new_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
-        $this->assertEquals(
-            $orig_spaces_remaining - $reg_count,
-            $new_spaces_remaining,
-            "{$orig_spaces_remaining} - {$reg_count} !== {$new_spaces_remaining}"
-        );
+        for ($reg_count = 7; $reg_count < 10; $reg_count++) {
+            $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList($reg_count);
+            // get existing number of spaces left
+            $orig_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
+            // now add a couple of regs to the wait list
+            $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
+            $this->assertCount($reg_count, $registrations);
+            // $event_with_wait_list->update_extra_meta(Domain::REG_COUNT_META_KEY, $reg_count);
+            $new_spaces_remaining = $event_with_wait_list->spaces_remaining_for_sale();
+            $this->assertEquals(
+                $orig_spaces_remaining - $reg_count,
+                $new_spaces_remaining,
+                "{$orig_spaces_remaining} - {$reg_count} !== {$new_spaces_remaining}"
+            );
+        }
     }
 
 }

@@ -260,9 +260,9 @@ class EED_Wait_Lists extends EED_Module
             10, 3
         );
         add_filter(
-            'FHEE__EE_Enum_Text_Field___allowed_enum_options',
-            array('EED_Wait_Lists', 'allowed_enum_values'),
-            10, 2
+            'FHEE__EEM_Change_Log__get_pretty_label_map_for_registered_types',
+            array('EED_Wait_Lists', 'register_wait_list_log_type'),
+            10
         );
     }
 
@@ -719,17 +719,14 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @param array              $allowed_enum_values
-     * @param EE_Enum_Text_Field $enum_text_field
+     * @param array $log_type_labels
      * @return array
      * @throws EE_Error
      */
-    public static function allowed_enum_values(array $allowed_enum_values, EE_Enum_Text_Field $enum_text_field)
+    public static function register_wait_list_log_type($log_type_labels = array())
     {
-        if($enum_text_field->get_name() === 'LOG_type') {
-            $allowed_enum_values[Domain::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
-        }
-        return $allowed_enum_values;
+        $log_type_labels[Domain::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
+        return $log_type_labels;
     }
 
 

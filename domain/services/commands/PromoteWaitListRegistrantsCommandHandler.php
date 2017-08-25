@@ -72,9 +72,9 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         WaitListEventMeta $wait_list_event_meta
     ) {
         $this->registration_model = $registration_model;
-        $this->capabilities = $capabilities;
-        $this->change_log = $change_log;
-        $this->notices = $notices;
+        $this->capabilities       = $capabilities;
+        $this->change_log         = $change_log;
+        $this->notices            = $notices;
         parent::__construct($wait_list_event_meta);
     }
 
@@ -95,34 +95,32 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommand'
             );
         }
-        $event = $command->getEvent();
+        $event            = $command->getEvent();
         $spaces_remaining = $command->getSpacesRemaining();
+        // registrations currently on wait list
+        $wait_list_reg_count = $this->eventMeta()->getRegCount($event);
+        $spaces_remaining    += $wait_list_reg_count;
+        if ($spaces_remaining < 1) {
+            return null;
+        }
+        $auto_promote                  = $this->eventMeta()->getAutoPromote($event);
+        $manual_control_spaces         = $this->eventMeta()->getManualControlSpaces($event);
         $promote_wait_list_registrants = $this->eventMeta()->getPromoteWaitListRegistrants($event);
         if ($promote_wait_list_registrants) {
-            // registrations currently on wait list
-            $wait_list_reg_count = $this->eventMeta()->getRegCount($event);
-            $spaces_remaining += $wait_list_reg_count;
-            if ($spaces_remaining < 1) {
-                return null;
-            }
-            $auto_promote = $this->eventMeta()->getAutoPromote($event);
-            $manual_control_spaces = $this->eventMeta()->getManualControlSpaces($event);
-            $regs_to_promote = $spaces_remaining - $manual_control_spaces;
-            $this->autoPromoteRegistrations(
+            $wait_list_reg_count -= $this->autoPromoteRegistrations(
                 $event,
-                $regs_to_promote,
+                $spaces_remaining - $manual_control_spaces,
                 $auto_promote
             );
-            $this->manuallyPromoteRegistrationsNotification(
-                $event,
-                $spaces_remaining - $regs_to_promote,
-                $wait_list_reg_count - $regs_to_promote,
-                $manual_control_spaces,
-                $auto_promote
-            );
-            return $this->notices;
         }
-        return null;
+        $this->manuallyPromoteRegistrationsNotification(
+            $event,
+            $spaces_remaining,
+            $wait_list_reg_count,
+            $manual_control_spaces,
+            $auto_promote
+        );
+        return $this->notices;
     }
 
 
@@ -176,13 +174,14 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @param EE_Event $event
      * @param int      $regs_to_promote
      * @param bool     $auto_promote
+     * @return int
      * @throws EE_Error
      * @throws RuntimeException
      */
     private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {
         if (! $auto_promote || $regs_to_promote < 1) {
-            return;
+            return 0;
         }
         // because we use $regs_to_promote as a query limit, make sure it's not INF
         $regs_to_promote = $regs_to_promote === EE_INF
@@ -200,13 +199,14 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             )
         );
         if (empty($registrations)) {
-            return;
+            return 0;
         }
         // updating the reg status will trigger a sold out status check on the event,
         // so let's turn that off while we promote these registrations by switching their status,
         // because that won't affect the event status, as these registrations
         // were already being counted against the event's sold tickets count
         $this->eventMeta()->updatePerformSoldOutStatusCheck($event, false);
+        $promoted = 0;
         foreach ($registrations as $registration) {
             if (! $registration instanceof EE_Registration) {
                 continue;
@@ -225,13 +225,14 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             );
             $this->change_log->log(Domain::LOG_TYPE, $message, $event);
             if (
-                $this->capabilities->current_user_can(
-                    'ee_edit_registrations',
-                    'espresso_view_wait_list_update_notice'
-                )
+            $this->capabilities->current_user_can(
+                'ee_edit_registrations',
+                'espresso_view_wait_list_update_notice'
+            )
             ) {
                 $this->notices->addSuccess($message, __FILE__, __FUNCTION__, __LINE__);
             }
+            $promoted++;
         }
         do_action(
             'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
@@ -240,6 +241,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             $this
         );
         $this->eventMeta()->updatePerformSoldOutStatusCheck($event, true);
+        return $promoted;
     }
 
 

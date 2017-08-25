@@ -21,7 +21,7 @@ class Domain extends DomainBase
     /**
      * EE Core Version Required for Add-on
      */
-    const CORE_VERSION_REQUIRED = '4.9.44.rc.020';
+    const CORE_VERSION_REQUIRED = '4.9.46.rc.015';
 
     /**
      * Event Meta Key used for tracking the number of spaces allocated for Wait List Registrations,

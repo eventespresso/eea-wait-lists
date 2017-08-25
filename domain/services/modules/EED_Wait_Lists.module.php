@@ -307,7 +307,7 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @param null $event
+     * @param EE_Event $event
      * @return EventEditorWaitListMetaBoxFormHandler
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException

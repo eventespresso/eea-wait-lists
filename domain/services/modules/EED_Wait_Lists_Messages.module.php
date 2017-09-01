@@ -40,10 +40,9 @@ class EED_Wait_Lists_Messages extends EED_Messages
     protected static function _set_shared_hooks()
     {
         add_action(
-            'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
+            'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_notifications'),
-            10,
-            2
+            10
         );
     }
 
@@ -53,15 +52,14 @@ class EED_Wait_Lists_Messages extends EED_Messages
      * Callback for
      * AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted
      *
-     * @param EE_Registration[] $registrations
-     * @param EE_Event|null     $event
+     * @param EE_Registration $registration
      */
-    public static function trigger_wait_list_notifications(array $registrations, EE_Event $event = null)
+    public static function trigger_wait_list_notifications(EE_Registration $registration)
     {
         self::_load_controller();
         self::$_MSG_PROCESSOR->generate_for_all_active_messengers(
             'waitlist_can_register',
-            $registrations
+            $registration
         );
     }
 

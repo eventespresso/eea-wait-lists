@@ -87,7 +87,7 @@ Class  EE_Wait_Lists extends EE_Addon
                     Domain::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
                 'message_types'    => array(
-                    'waitlist_can_register' => array(
+                    Domain::MESSAGE_TYPE => array(
                         'mtfilename'                                       =>
                             'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(

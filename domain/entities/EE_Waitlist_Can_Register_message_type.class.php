@@ -1,4 +1,7 @@
 <?php
+
+use EventEspresso\WaitList\domain\Domain;
+
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
@@ -19,7 +22,7 @@ class EE_Waitlist_Can_Register_message_type extends EE_message_type
      */
     public function __construct()
     {
-        $this->name = 'waitlist_can_register';
+        $this->name = Domain::MESSAGE_TYPE;
         $this->description = esc_html__(
             'Triggered when registration is opened up for those on the waitlist and will send out notifications to all '
             . 'wait-list registrants.',

@@ -563,7 +563,7 @@ class EED_Wait_Lists extends EED_Module
             'Move Registrations to Wait List',
             'event_espresso'
         );
-        if ($can_send && in_array('waitlist_can_register', $active_mts, true)) {
+        if ($can_send && in_array(Domain::MESSAGE_TYPE, $active_mts, true)) {
             $reg_status_actions['wait_list_and_notify_registrations'] = esc_html__(
                 'Move Registrations to Wait List and Notify',
                 'event_espresso'

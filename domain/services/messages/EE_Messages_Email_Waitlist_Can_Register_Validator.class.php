@@ -1,4 +1,7 @@
 <?php
+
+use EventEspresso\WaitList\domain\Domain;
+
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
@@ -25,7 +28,7 @@ class EE_Messages_Email_Waitlist_Can_Register_Validator extends EE_Messages_Vali
     public function __construct($fields, $context)
     {
         $this->_m_name = 'email';
-        $this->_mt_name = 'waitlist_can_register';
+        $this->_mt_name = Domain::MESSAGE_TYPE;
         parent::__construct($fields, $context);
     }
 

@@ -1,4 +1,7 @@
 <?php
+
+use EventEspresso\WaitList\domain\Domain;
+
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
@@ -58,7 +61,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     {
         self::_load_controller();
         self::$_MSG_PROCESSOR->generate_for_all_active_messengers(
-            'waitlist_can_register',
+            Domain::MESSAGE_TYPE,
             $registration
         );
     }

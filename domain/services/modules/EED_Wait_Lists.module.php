@@ -640,17 +640,25 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function wait_list_checkout_url(EE_Registration $registration)
     {
-        return apply_filters(
+        $checkout_url = apply_filters(
             'FHEE__EED_Wait_Lists__wait_list_checkout_url',
             add_query_arg(
                 array(
                     'e_reg_url_link' => $registration->reg_url_link(),
-                    'revisit'        => 0,
+                    'step'           => 'attendee_information',
                 ),
                 EE_Registry::instance()->CFG->core->reg_page_url()
             ),
             $registration
         );
+        if(WP_DEBUG){
+            EEM_Change_Log::instance()->log(
+                Domain::LOG_TYPE,
+                "Wait List Checkout URL: {$checkout_url}",
+                $registration
+            );
+        }
+        return $checkout_url;
     }
 
 

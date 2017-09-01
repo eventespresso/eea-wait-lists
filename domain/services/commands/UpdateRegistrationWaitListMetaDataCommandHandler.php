@@ -74,6 +74,12 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
             // if new status is Approved or Pending Payment, then YAY!!!
             if (in_array($new_STS_ID, EEM_Registration::reg_statuses_that_allow_payment(), true)) {
                 $this->addMetaDataWhenRegistrationPromoted($registration, $event, $new_STS_ID);
+                do_action(
+                    'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
+                    $registration,
+                    $event,
+                    $this
+                );
             } else {
                 // this guy ain't going to the event EVER !!!
                 $this->addMetaDataWhenRegistrationRemoved($registration, $event);
@@ -85,6 +91,12 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
             // if old status was Approved or Pending Payment, but they are being moved to the Wait List
             if (in_array($old_STS_ID, EEM_Registration::reg_statuses_that_allow_payment(), true)) {
                 $this->addMetaDataWhenRegistrationDemoted($registration, $event, $old_STS_ID);
+                do_action(
+                    'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
+                    $registration,
+                    $event,
+                    $this
+                );
             } else {
                 $this->registration_meta->addRegistrationSignedUp($registration);
             }

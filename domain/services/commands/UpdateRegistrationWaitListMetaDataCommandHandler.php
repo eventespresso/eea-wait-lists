@@ -80,6 +80,17 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
                     $event,
                     $this
                 );
+                add_filter(
+                    'FHEE__Registrations_Admin_Page___set_registration_status_from_request__notify',
+                    function($notify = false, $REG_IDs = array()) use ($registration) {
+                        if(in_array($registration->ID(), $REG_IDs, true)){
+                            $notify = false;
+                        }
+                        return $notify;
+                    },
+                    10, 2
+                );
+
             } else {
                 // this guy ain't going to the event EVER !!!
                 $this->addMetaDataWhenRegistrationRemoved($registration, $event);

@@ -85,6 +85,11 @@ class Domain extends DomainBase
      */
     const LOG_TYPE = 'wait_list';
 
+    /**
+     * Slug representing the Wait List Notification message type.
+     */
+    const MESSAGE_TYPE = 'waitlist_can_register';
+
 
 }
 // End of file Constants.php

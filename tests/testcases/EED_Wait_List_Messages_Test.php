@@ -57,10 +57,13 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
             'ATT_email'     => 'john.smith@gmail.com',
         ));
         $attendee->save();
-        array_walk($registrations, function (EE_Registration $registration) use ($attendee) {
-            $registration->_add_relation_to($attendee, 'Attendee');
-            $registration->save();
-        });
+        array_walk(
+            $registrations,
+            function (EE_Registration $registration) use ($attendee) {
+                $registration->_add_relation_to($attendee, 'Attendee');
+                $registration->save();
+            }
+        );
         //okay now let's trigger the messages
         EED_Wait_Lists_Messages::trigger_wait_list_notifications($registrations);
         //let's trigger generation and see what we got.

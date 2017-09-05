@@ -37,7 +37,7 @@ class EED_Wait_List_Test extends EE_UnitTestCase
             add_query_arg(
                 array(
                     'e_reg_url_link' => $registration->reg_url_link(),
-                    'revisit'        => 0,
+                    'step'           => 'attendee_information',
                 ),
                 $reg_page_url
             ),

@@ -540,12 +540,6 @@ class EED_Wait_Lists extends EED_Module
             'capability' => 'ee_edit_registrations',
             'args'       => array('wait_list'),
         );
-        $page_routes['wait_list_and_notify_registrations'] = array(
-            'func'       => 'bulk_action_on_registrations',
-            'noheader'   => true,
-            'capability' => 'ee_edit_registrations',
-            'args'       => array('wait_list', true),
-        );
         return $page_routes;
     }
 
@@ -563,12 +557,6 @@ class EED_Wait_Lists extends EED_Module
             'Move Registrations to Wait List',
             'event_espresso'
         );
-        if ($can_send && in_array(Domain::MESSAGE_TYPE, $active_mts, true)) {
-            $reg_status_actions['wait_list_and_notify_registrations'] = esc_html__(
-                'Move Registrations to Wait List and Notify',
-                'event_espresso'
-            );
-        }
         return $reg_status_actions;
     }
 

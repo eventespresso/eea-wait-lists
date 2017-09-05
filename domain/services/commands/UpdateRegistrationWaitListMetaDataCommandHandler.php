@@ -71,6 +71,7 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
             $wait_list_reg_count = $this->eventMeta()->getRegCount($event);
             $wait_list_reg_count--;
             $this->eventMeta()->updateRegCount($event, $wait_list_reg_count);
+
             // if new status is Approved or Pending Payment, then YAY!!!
             if (in_array($new_STS_ID, EEM_Registration::reg_statuses_that_allow_payment(), true)) {
                 $this->addMetaDataWhenRegistrationPromoted($registration, $event, $new_STS_ID);
@@ -81,16 +82,15 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
                     $this
                 );
                 add_filter(
-                    'FHEE__Registrations_Admin_Page___set_registration_status_from_request__notify',
-                    function($notify = false, $REG_IDs = array()) use ($registration) {
-                        if(in_array($registration->ID(), $REG_IDs, true)){
-                            $notify = false;
+                    'FHEE__Registrations_Admin_Page___set_registration_status__REG_IDs',
+                    //exclude registrations that will be processed else where.
+                    function ($registrations_ids) use ($registration) {
+                        if (false !== ($key = array_search($registration->ID(), (array) $registrations_ids, true))) {
+                            unset($registrations_ids[$key]);
                         }
-                        return $notify;
-                    },
-                    10, 2
+                        return $registrations_ids;
+                    }
                 );
-
             } else {
                 // this guy ain't going to the event EVER !!!
                 $this->addMetaDataWhenRegistrationRemoved($registration, $event);

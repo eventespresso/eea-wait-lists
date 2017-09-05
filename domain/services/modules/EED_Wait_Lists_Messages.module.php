@@ -55,9 +55,9 @@ class EED_Wait_Lists_Messages extends EED_Messages
      * Callback for
      * AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted
      *
-     * @param EE_Registration $registration
+     * @param EE_Registration|EE_Registration[] $registration
      */
-    public static function trigger_wait_list_notifications(EE_Registration $registration)
+    public static function trigger_wait_list_notifications($registration)
     {
         self::_load_controller();
         self::$_MSG_PROCESSOR->generate_for_all_active_messengers(

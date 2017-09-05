@@ -33,7 +33,6 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
     private $registration_meta;
 
 
-
     /**
      * UpdateRegistrationWaitListMetaDataCommandHandler constructor.
      *
@@ -47,12 +46,13 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
     }
 
 
-
     /**
      * @param CommandInterface $command
-     * @return boolean
+     * @return bool
      * @throws EE_Error
      * @throws InvalidEntityException
+     * @throws \DomainException
+     * @throws \EventEspresso\core\exceptions\UnexpectedEntityException
      */
     public function handle(CommandInterface $command)
     {
@@ -180,6 +180,4 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
         $this->eventMeta()->removeRegistrationFromPromotedRegIdsArray($registration, $event);
         $this->registration_meta->addRegistrationRemoved($registration);
     }
-
-
 }

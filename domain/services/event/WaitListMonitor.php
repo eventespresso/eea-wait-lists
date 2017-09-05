@@ -188,14 +188,12 @@ class WaitListMonitor
     public function registrationStatusUpdate(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
     {
         $event = $registration->event();
-        if ($this->wait_list_events->hasObject($event)) {
-            $this->command_bus->execute(
-                $this->loader->getNew(
-                    'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommand',
-                    array($event, $registration, $old_STS_ID, $new_STS_ID)
-                )
-            );
-        }
+        $this->command_bus->execute(
+            $this->loader->getNew(
+                'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommand',
+                array($event, $registration, $old_STS_ID, $new_STS_ID)
+            )
+        );
     }
 
 

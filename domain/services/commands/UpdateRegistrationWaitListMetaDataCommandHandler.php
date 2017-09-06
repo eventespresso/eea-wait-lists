@@ -82,10 +82,14 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
                     $this
                 );
                 add_filter(
-                    'FHEE__Registrations_Admin_Page___set_registration_status__REG_IDs',
-                    //exclude registrations that will be processed else where.
+                    'FHEE__Registrations_Admin_Page___set_registration_status_from_request__REG_IDs',
+                    //exclude these registrations from normal admin notifications when status manually changed.
+                    //notifications will be handled for these registrations by EED_Waitlist_Messages.
                     function ($registrations_ids) use ($registration) {
-                        if (false !== ($key = array_search($registration->ID(), (array) $registrations_ids, true))) {
+                        if (false !== (
+                            $key = array_search($registration->ID(), (array) $registrations_ids, true)
+                            )
+                        ) {
                             unset($registrations_ids[$key]);
                         }
                         return $registrations_ids;

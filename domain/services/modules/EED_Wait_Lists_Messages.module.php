@@ -66,7 +66,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             'AHEE__Registrations_Admin_Page___set_registration_status_from_request__end',
             array('EED_Wait_Lists_Messages', 'trigger_manually_promoted_wait_list_notifications'),
             10,
-            2
+            3
         );
     }
 
@@ -89,14 +89,18 @@ class EED_Wait_Lists_Messages extends EED_Messages
      * Used to trigger notifications for registrations manually promoted.  This is done using registrations found in the
      * manually_promoted_registrations property.
      *
-     * @param array $registration_ids
-     * @param bool  $notify
+     * @param int|array $registration_ids
+     * @param int|array $filtered_registration_ids
+     * @param bool      $notify
      * @throws InvalidArgumentException
      * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
      * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
      */
-    public static function trigger_manually_promoted_wait_list_notifications($registration_ids, $notify)
-    {
+    public static function trigger_manually_promoted_wait_list_notifications(
+        $registration_ids,
+        $filtered_registration_ids,
+        $notify
+    ) {
         if ($notify
             && self::$manually_promoted_registrations
             && EE_Registry::instance()->CAP->current_user_can(

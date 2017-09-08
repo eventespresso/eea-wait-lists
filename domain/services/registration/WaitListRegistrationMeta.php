@@ -57,7 +57,7 @@ class WaitListRegistrationMeta
     public function addRegistrationPromoted(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Domain::REG_PROMOTED_META_KEY,
+            Domain::META_KEY_WAIT_LIST_REG_PROMOTED,
             current_time('mysql', true)
         );
     }

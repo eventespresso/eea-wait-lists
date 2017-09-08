@@ -68,7 +68,7 @@ class Domain extends DomainBase
     /**
      * Registration Meta Key used for tracking when a registrant was moved from wait list to a reg status that can pay
      */
-    const REG_PROMOTED_META_KEY = 'ee_wait_list_reg_promoted';
+    const META_KEY_WAIT_LIST_REG_PROMOTED = 'ee_wait_list_reg_promoted';
 
     /**
      * Registration Meta Key used for tracking when a registrant was moved from another reg status BACK to the  wait list

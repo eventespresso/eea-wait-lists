@@ -194,7 +194,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             // $ticket->increase_sold();
             if ($reg_status === EEM_Registration::status_id_wait_list) {
                 $registrations[$x]->add_extra_meta(
-                    Domain::REG_SIGNED_UP_META_KEY,
+                    Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP,
                     current_time('mysql', true),
                     true
                 );

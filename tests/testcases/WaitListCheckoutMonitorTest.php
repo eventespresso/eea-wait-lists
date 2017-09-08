@@ -60,7 +60,7 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
         $this->assertFalse($this->wait_list_checkout_monitor->allowRegPayment(false, $registration));
         // now add meta data to indicate that this guy was on the waitlist
         $registration->add_extra_meta(
-            Domain::REG_SIGNED_UP_META_KEY,
+            Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP,
             current_time('mysql', true),
             true
         );

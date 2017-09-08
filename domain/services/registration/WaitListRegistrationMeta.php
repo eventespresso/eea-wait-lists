@@ -28,7 +28,7 @@ class WaitListRegistrationMeta
      */
     public function getRegistrationSignedUp(EE_Registration $registration)
     {
-        return $registration->get_extra_meta(Domain::REG_SIGNED_UP_META_KEY, true);
+        return $registration->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP, true);
     }
 
 
@@ -41,7 +41,7 @@ class WaitListRegistrationMeta
     public function addRegistrationSignedUp(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Domain::REG_SIGNED_UP_META_KEY,
+            Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP,
             current_time('mysql', true),
             true
         );

@@ -63,7 +63,7 @@ class Domain extends DomainBase
      * Registration Meta Key used for tracking when a registrant first signed up for the wait list
      * which is then also used as a flag to identify all registrants that have been on a wait list
      */
-    const REG_SIGNED_UP_META_KEY = 'ee_wait_list_reg_signed_up';
+    const META_KEY_WAIT_LIST_REG_SIGNED_UP = 'ee_wait_list_reg_signed_up';
 
     /**
      * Registration Meta Key used for tracking when a registrant was moved from wait list to a reg status that can pay

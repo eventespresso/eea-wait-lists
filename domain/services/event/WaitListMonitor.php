@@ -8,6 +8,7 @@ use EE_Event;
 use EE_Registration;
 use EE_Wait_Lists;
 use EEM_Registration;
+use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -182,16 +183,21 @@ class WaitListMonitor
      * @param EE_Registration  $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
+     * @param Context|null     $context
      * @throws EE_Error
      * @throws EntityNotFoundException
      */
-    public function registrationStatusUpdate(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
-    {
+    public function registrationStatusUpdate(
+        EE_Registration $registration,
+        $old_STS_ID,
+        $new_STS_ID,
+        Context $context = null
+    ) {
         $event = $registration->event();
         $this->command_bus->execute(
             $this->loader->getNew(
                 'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommand',
-                array($event, $registration, $old_STS_ID, $new_STS_ID)
+                array($event, $registration, $old_STS_ID, $new_STS_ID, $context)
             )
         );
     }

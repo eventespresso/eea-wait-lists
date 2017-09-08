@@ -2,11 +2,13 @@
 
 namespace EventEspresso\WaitList\domain\services\commands;
 
+use DomainException;
 use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EEM_Registration;
 use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
@@ -51,8 +53,8 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
      * @return bool
      * @throws EE_Error
      * @throws InvalidEntityException
-     * @throws \DomainException
-     * @throws \EventEspresso\core\exceptions\UnexpectedEntityException
+     * @throws DomainException
+     * @throws UnexpectedEntityException
      */
     public function handle(CommandInterface $command)
     {
@@ -79,6 +81,7 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
                     'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
                     $registration,
                     $event,
+                    $command->getContext(),
                     $this
                 );
                 add_filter(
@@ -110,6 +113,7 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
                     'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
                     $registration,
                     $event,
+                    $command->getContext(),
                     $this
                 );
             } else {

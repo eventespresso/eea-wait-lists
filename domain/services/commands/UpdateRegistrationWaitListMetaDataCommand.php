@@ -4,6 +4,7 @@ namespace EventEspresso\WaitList\domain\services\commands;
 
 use EE_Event;
 use EE_Registration;
+use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\services\commands\Command;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -41,21 +42,33 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     private $new_Status_Id;
 
 
+    /**
+     * @var Context|null
+     */
+    private $context;
+
 
     /**
      * UpdateRegistrationWaitListMetaDataCommand constructor.
      *
      * @param EE_Event        $event
      * @param EE_Registration $registration
-     * @param string $old_Status_Id
+     * @param string          $old_Status_Id
      * @param string          $new_Status_Id
+     * @param Context|null    $context
      */
-    public function __construct(EE_Event $event, EE_Registration $registration, $old_Status_Id, $new_Status_Id)
-    {
+    public function __construct(
+        EE_Event $event,
+        EE_Registration $registration,
+        $old_Status_Id,
+        $new_Status_Id,
+        Context $context = null
+    ) {
         $this->event = $event;
         $this->registration = $registration;
         $this->old_Status_Id = $old_Status_Id;
         $this->new_Status_Id = $new_Status_Id;
+        $this->context = $context;
     }
 
 
@@ -96,6 +109,15 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     public function getNewStatusId()
     {
         return $this->new_Status_Id;
+    }
+
+
+    /**
+     * @return Context|null
+     */
+    public function getContext()
+    {
+        return $this->context;
     }
 
 

@@ -1,5 +1,6 @@
 <?php
 
+use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -233,7 +234,7 @@ class EED_Wait_Lists extends EED_Module
         add_action(
             'AHEE__EE_Registration__set_status__after_update',
             array('EED_Wait_Lists', 'registration_status_update'),
-            10, 3
+            10, 4
         );
         add_filter(
             'FHEE_EE_Event__spaces_remaining',
@@ -407,22 +408,27 @@ class EED_Wait_Lists extends EED_Module
     /**************************** SPLIT FUNCTIONALITY ***************************/
 
 
-
     /**
      * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
      *
-     * @param EE_Registration  $registration
-     * @param                  $old_STS_ID
-     * @param                  $new_STS_ID
+     * @param EE_Registration $registration
+     * @param                 $old_STS_ID
+     * @param                 $new_STS_ID
+     * @param Context|null    $context
      * @throws Exception
      */
-    public static function registration_status_update(EE_Registration $registration, $old_STS_ID, $new_STS_ID)
-    {
+    public static function registration_status_update(
+        EE_Registration $registration,
+        $old_STS_ID,
+        $new_STS_ID,
+        Context $context = null
+    ) {
         try {
             EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate(
                 $registration,
                 $old_STS_ID,
-                $new_STS_ID
+                $new_STS_ID,
+                $context
             );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);

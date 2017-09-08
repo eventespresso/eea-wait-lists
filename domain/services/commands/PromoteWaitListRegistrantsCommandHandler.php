@@ -10,6 +10,7 @@ use EE_Registration;
 use EED_Wait_Lists;
 use EEM_Change_Log;
 use EEM_Registration;
+use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
@@ -169,7 +170,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     }
 
 
-
     /**
      * @param EE_Event $event
      * @param int      $regs_to_promote
@@ -177,6 +177,11 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @return int
      * @throws EE_Error
      * @throws RuntimeException
+     * @throws \EventEspresso\core\exceptions\EntityNotFoundException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {
@@ -211,7 +216,17 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             if (! $registration instanceof EE_Registration) {
                 continue;
             }
-            $registration->set_status($event->default_registration_status());
+            $registration->set_status(
+                $event->default_registration_status(),
+                false,
+                new Context(
+                    Domain::AUTO_PROMOTE_FROM_WAITLIST_CONTEXT,
+                    esc_html__(
+                        'Executed when a registration on the wait-list was auto-promoted.',
+                        'event_espresso'
+                    )
+                )
+            );
             $message = sprintf(
                 esc_html__(
                     'The registration status for "%1$s" %2$s(ID:%3$d)%4$s has been successfully updated to "%5$s". They were previously on the Wait List for "%6$s".'

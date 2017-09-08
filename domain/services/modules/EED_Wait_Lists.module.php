@@ -100,7 +100,7 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array',
             array('EED_Wait_Lists', 'reg_status_actions'),
-            10, 3
+            10
         );
         add_action(
             'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
@@ -553,11 +553,9 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * @param array $reg_status_actions
-     * @param array $active_mts
-     * @param bool  $can_send
      * @return array
      */
-    public static function reg_status_actions($reg_status_actions = array(), $active_mts = array(), $can_send = false)
+    public static function reg_status_actions($reg_status_actions = array())
     {
         $reg_status_actions['wait_list_registrations'] = esc_html__(
             'Move Registrations to Wait List',

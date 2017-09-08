@@ -220,7 +220,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 $event->default_registration_status(),
                 false,
                 new Context(
-                    Domain::CONTEXT_AUTO_PROMOTE_FROM_WAITLIST_REGISTRATION_STATUS,
+                    Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAITLIST_AUTO_PROMOTE,
                     esc_html__(
                         'Executed when a registration on the wait-list was auto-promoted.',
                         'event_espresso'

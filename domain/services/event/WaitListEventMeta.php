@@ -252,7 +252,7 @@ class WaitListEventMeta
     public function getPerformSoldOutStatusCheck(EE_Event $event)
     {
         return $event->get_extra_meta(
-            Domain::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
+            Domain::META_KEY_WAIT_LIST_PERFORM_SOLD_OUT_STATUS_CHECK,
             true,
             true
         );
@@ -268,7 +268,7 @@ class WaitListEventMeta
     public function updatePerformSoldOutStatusCheck(EE_Event $event, $perform_sold_out_status_check)
     {
         return $event->update_extra_meta(
-            Domain::PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY,
+            Domain::META_KEY_WAIT_LIST_PERFORM_SOLD_OUT_STATUS_CHECK,
             filter_var(
                 $perform_sold_out_status_check,
                 FILTER_VALIDATE_BOOLEAN

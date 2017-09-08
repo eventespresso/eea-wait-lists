@@ -57,7 +57,7 @@ class Domain extends DomainBase
     /**
      * Event Meta Key used for tracking whether or not to perform a sold out status check for the event
      */
-    const PERFORM_SOLD_OUT_STATUS_CHECK_META_KEY = 'ee_wait_list_perform_sold_out_status_check';
+    const META_KEY_WAIT_LIST_PERFORM_SOLD_OUT_STATUS_CHECK = 'ee_wait_list_perform_sold_out_status_check';
 
     /**
      * Registration Meta Key used for tracking when a registrant first signed up for the wait list

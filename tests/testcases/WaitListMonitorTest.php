@@ -114,7 +114,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
                 // add wait list details to event
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, $x);
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, false);
-                $events[$x]->add_extra_meta(Domain::MANUAL_CONTROL_SPACES_META_KEY, 0);
+                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES, 0);
                 $events[$x]->add_extra_meta(Domain::REG_COUNT_META_KEY, 0);
             }
         }

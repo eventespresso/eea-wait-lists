@@ -220,7 +220,7 @@ class WaitListEventMeta
     {
        return absint(
            $event->get_extra_meta(
-               Domain::MANUAL_CONTROL_SPACES_META_KEY,
+               Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
                true,
                0
            )
@@ -237,7 +237,7 @@ class WaitListEventMeta
     public function updateManualControlSpaces(EE_Event $event, $manual_control_spaces)
     {
        return $event->update_extra_meta(
-           Domain::MANUAL_CONTROL_SPACES_META_KEY,
+           Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
            absint($manual_control_spaces)
        );
     }

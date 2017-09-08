@@ -37,7 +37,7 @@ class Domain extends DomainBase
     /**
      * Event Meta Key used for tracking how many Wait List registrations are under manual control
      */
-    const MANUAL_CONTROL_SPACES_META_KEY = 'ee_wait_list_manual_control_spaces';
+    const META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES = 'ee_wait_list_manual_control_spaces';
 
     /**
      * Event Meta Key used for tracking number of registrants signed up for the wait list

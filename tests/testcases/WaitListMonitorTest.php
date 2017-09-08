@@ -115,7 +115,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, $x);
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, false);
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES, 0);
-                $events[$x]->add_extra_meta(Domain::REG_COUNT_META_KEY, 0);
+                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, 0);
             }
         }
         return $events;
@@ -147,7 +147,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             // now turn on auto promote for this event
             $event_with_wait_list->update_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, true);
         }
-        $reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+        $reg_count = $event_with_wait_list->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
         $this->assertEquals(0, $reg_count);
         return $event_with_wait_list;
     }
@@ -202,9 +202,9 @@ class WaitListMonitorTest extends EE_UnitTestCase
         }
         $this->assertEquals($x, $qty);
         if ($reg_status === EEM_Registration::status_id_wait_list) {
-            $reg_count = $event->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $reg_count = $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
             $event->update_extra_meta(
-                Domain::REG_COUNT_META_KEY,
+                Domain::META_KEY_WAIT_LIST_REG_COUNT,
                 $reg_count + $qty
             );
         }
@@ -255,7 +255,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             // add a wait list registrations for that event
             $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
             $this->assertCount($reg_count, $registrations);
-            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
             // now pretend that registrations were promoted to Pending Payment
             foreach ($registrations as $registration) {
                 $this->wait_list_monitor->registrationStatusUpdate(
@@ -264,7 +264,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
                     EEM_Registration::status_id_pending_payment
                 );
             }
-            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
             $this->assertEquals(
                 $event_reg_count - $reg_count,
                 $new_reg_count,
@@ -288,12 +288,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
             // add a wait list registrations for that event
             $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
             $this->assertCount($reg_count, $registrations);
-            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $event_reg_count = $event_with_wait_list->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
             // now perform sold out status check which will trigger auto promotion
             // because WaitListMonitor::promoteWaitListRegistrants() is hooked into
             // AHEE__EE_Event__perform_sold_out_status_check__end
             $event_with_wait_list->perform_sold_out_status_check();
-            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
+            $new_reg_count = $event_with_wait_list->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
             $this->assertEquals(
                 $event_reg_count - $reg_count,
                 $new_reg_count,

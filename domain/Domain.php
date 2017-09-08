@@ -42,7 +42,7 @@ class Domain extends DomainBase
     /**
      * Event Meta Key used for tracking number of registrants signed up for the wait list
      */
-    const REG_COUNT_META_KEY = 'ee_wait_list_reg_count';
+    const META_KEY_WAIT_LIST_REG_COUNT = 'ee_wait_list_reg_count';
 
     /**
      * Event Meta Key used for tracking whether or not to proceed with promoting wait list registrants

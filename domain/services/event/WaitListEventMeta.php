@@ -55,7 +55,7 @@ class WaitListEventMeta
     public function getRegCount(EE_Event $event)
     {
         return absint(
-            $event->get_extra_meta(Domain::REG_COUNT_META_KEY, true, 0)
+            $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true, 0)
         );
     }
 
@@ -70,7 +70,7 @@ class WaitListEventMeta
     public function updateRegCount(EE_Event $event, $reg_count)
     {
         return $event->update_extra_meta(
-            Domain::REG_COUNT_META_KEY,
+            Domain::META_KEY_WAIT_LIST_REG_COUNT,
             absint($reg_count)
         );
     }

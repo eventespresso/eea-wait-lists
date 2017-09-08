@@ -22,7 +22,7 @@ class EE_Waitlist_Can_Register_message_type extends EE_message_type
      */
     public function __construct()
     {
-        $this->name = Domain::MESSAGE_TYPE;
+        $this->name = Domain::MESSAGE_TYPE_WAITLIST_CAN_REGISTER;
         $this->description = esc_html__(
             'Triggered when registration is opened up for those on the waitlist and will send out notifications to all '
             . 'wait-list registrants.',

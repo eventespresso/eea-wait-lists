@@ -28,7 +28,7 @@ class EE_Messages_Email_Waitlist_Can_Register_Validator extends EE_Messages_Vali
     public function __construct($fields, $context)
     {
         $this->_m_name = 'email';
-        $this->_mt_name = Domain::MESSAGE_TYPE;
+        $this->_mt_name = Domain::MESSAGE_TYPE_WAITLIST_CAN_REGISTER;
         parent::__construct($fields, $context);
     }
 

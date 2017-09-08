@@ -88,7 +88,7 @@ class Domain extends DomainBase
     /**
      * Slug representing the Wait List Notification message type.
      */
-    const MESSAGE_TYPE = 'waitlist_can_register';
+    const MESSAGE_TYPE_WAITLIST_CAN_REGISTER = 'waitlist_can_register';
 
 
     /**

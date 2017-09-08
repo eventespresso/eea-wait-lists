@@ -61,7 +61,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
         //check context before triggering.
         if ($context instanceof Context
             && (
-                $context->slug() === Domain::AUTO_PROMOTE_FROM_WAITLIST_CONTEXT
+                $context->slug() === Domain::CONTEXT_AUTO_PROMOTE_FROM_WAITLIST_REGISTRATION_STATUS
                 || (
                     $context->slug() === CoreDomain::MANUAL_STATUS_CHANGE_FROM_REGISTRATION_ADMIN_UI_AND_NOTIFY_CONTEXT
                     && EE_Registry::instance()->CAP->current_user_can(

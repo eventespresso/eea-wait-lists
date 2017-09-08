@@ -148,7 +148,7 @@ class WaitListEventMeta
     {
         return filter_var(
             $event->get_extra_meta(
-                Domain::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
+                Domain::META_KEY_WAIT_LIST_PROMOTE_WAIT_LIST_REGISTRANTS,
                 true,
                 true
             ),
@@ -167,7 +167,7 @@ class WaitListEventMeta
     public function updatePromoteWaitListRegistrants(EE_Event $event, $promote_wait_list_registrants)
     {
         return $event->update_extra_meta(
-            Domain::PROMOTE_WAIT_LIST_REGISTRANTS_META_KEY,
+            Domain::META_KEY_WAIT_LIST_PROMOTE_WAIT_LIST_REGISTRANTS,
             filter_var(
                 $promote_wait_list_registrants,
                 FILTER_VALIDATE_BOOLEAN

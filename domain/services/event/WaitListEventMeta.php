@@ -185,7 +185,7 @@ class WaitListEventMeta
     public function getAutoPromote(EE_Event $event)
     {
         return filter_var(
-            $event->get_extra_meta(Domain::AUTO_PROMOTE_META_KEY, true, false),
+            $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, true, false),
             FILTER_VALIDATE_BOOLEAN
         );
     }
@@ -201,7 +201,7 @@ class WaitListEventMeta
     public function updateAutoPromote(EE_Event $event, $auto_promote_registrants)
     {
         return $event->update_extra_meta(
-            Domain::AUTO_PROMOTE_META_KEY,
+            Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE,
             filter_var(
                 $auto_promote_registrants,
                 FILTER_VALIDATE_BOOLEAN

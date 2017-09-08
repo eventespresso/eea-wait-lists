@@ -113,7 +113,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             if ($x % 2 === 0) {
                 // add wait list details to event
                 $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, $x);
-                $events[$x]->add_extra_meta(Domain::AUTO_PROMOTE_META_KEY, false);
+                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, false);
                 $events[$x]->add_extra_meta(Domain::MANUAL_CONTROL_SPACES_META_KEY, 0);
                 $events[$x]->add_extra_meta(Domain::REG_COUNT_META_KEY, 0);
             }
@@ -145,7 +145,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
         $this->assertEquals(0, $datetime->sold());
         if ($auto_promote) {
             // now turn on auto promote for this event
-            $event_with_wait_list->update_extra_meta(Domain::AUTO_PROMOTE_META_KEY, true);
+            $event_with_wait_list->update_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, true);
         }
         $reg_count = $event_with_wait_list->get_extra_meta(Domain::REG_COUNT_META_KEY, true);
         $this->assertEquals(0, $reg_count);

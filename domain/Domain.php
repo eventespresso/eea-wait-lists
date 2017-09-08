@@ -32,7 +32,7 @@ class Domain extends DomainBase
     /**
      * Event Meta Key used for tracking whether or not to automatically promote RWL registrants to RPP
      */
-    const AUTO_PROMOTE_META_KEY = 'ee_wait_list_auto_promote';
+    const META_KEY_WAIT_LIST_AUTO_PROMOTE = 'ee_wait_list_auto_promote';
 
     /**
      * Event Meta Key used for tracking how many Wait List registrations are under manual control

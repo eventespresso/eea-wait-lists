@@ -61,9 +61,9 @@ class EED_Wait_Lists_Messages extends EED_Messages
         //check context before triggering.
         if ($context instanceof Context
             && (
-                $context->slug() === Domain::AUTO_PROMOTE_FROM_WAITLIST_CONTEXT
+                $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAITLIST_AUTO_PROMOTE
                 || (
-                    $context->slug() === CoreDomain::MANUAL_STATUS_CHANGE_FROM_REGISTRATION_ADMIN_UI_AND_NOTIFY_CONTEXT
+                    $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                     && EE_Registry::instance()->CAP->current_user_can(
                         'ee_send_message',
                         'triggering_waitlist_promotion_notification'
@@ -74,7 +74,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             try {
                 self::trigger_wait_list_notifications(array($registration));
                 if ($context->slug() ===
-                    CoreDomain::MANUAL_STATUS_CHANGE_FROM_REGISTRATION_ADMIN_UI_AND_NOTIFY_CONTEXT
+                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_success(
                         esc_html__(
@@ -85,7 +85,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
                 }
             } catch (Exception $e) {
                 if ($context->slug() ===
-                    CoreDomain::MANUAL_STATUS_CHANGE_FROM_REGISTRATION_ADMIN_UI_AND_NOTIFY_CONTEXT
+                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
                 }

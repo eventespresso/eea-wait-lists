@@ -78,7 +78,7 @@ class Domain extends DomainBase
     /**
      * Registration Meta Key used for tracking when a registrant was removed completely from wait list to a "closed" reg status
      */
-    const REG_REMOVED_META_KEY = 'ee_wait_list_reg_removed';
+    const META_KEY_WAIT_LIST_REG_REMOVED = 'ee_wait_list_reg_removed';
 
     /**
      * value to be used for the LOG_type field in the esp_log table

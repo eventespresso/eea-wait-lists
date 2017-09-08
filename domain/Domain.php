@@ -27,7 +27,7 @@ class Domain extends DomainBase
      * Event Meta Key used for tracking the number of spaces allocated for Wait List Registrations,
      * ie: the number of registrants that can sign up for the Wait List
      */
-    const SPACES_META_KEY = 'ee_wait_list_spaces';
+    const META_KEY_WAIT_LIST_SPACES = 'ee_wait_list_spaces';
 
     /**
      * Event Meta Key used for tracking whether or not to automatically promote RWL registrants to RPP

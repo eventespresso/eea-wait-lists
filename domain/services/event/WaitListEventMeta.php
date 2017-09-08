@@ -30,7 +30,7 @@ class WaitListEventMeta
      */
     public function getWaitListSpaces(EE_Event $event)
     {
-        return absint($event->get_extra_meta(Domain::SPACES_META_KEY, true));
+        return absint($event->get_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, true));
     }
 
 
@@ -43,7 +43,7 @@ class WaitListEventMeta
      */
     public function updateWaitListSpaces(EE_Event $event, $wait_list_spaces)
     {
-        return $event->update_extra_meta(Domain::SPACES_META_KEY, absint($wait_list_spaces));
+        return $event->update_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, absint($wait_list_spaces));
     }
 
 

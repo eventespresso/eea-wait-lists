@@ -52,7 +52,7 @@ class Domain extends DomainBase
     /**
      * Event Meta Key used for tracking IDs of registrants promoted from the wait list to pending payment
      */
-    const PROMOTED_REG_IDS_META_KEY = 'ee_wait_list_promoted_reg_IDs';
+    const META_KEY_WAIT_LIST_PROMOTED_REG_IDS = 'ee_wait_list_promoted_reg_IDs';
 
     /**
      * Event Meta Key used for tracking whether or not to perform a sold out status check for the event

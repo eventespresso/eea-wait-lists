@@ -85,7 +85,7 @@ class WaitListEventMeta
     public function getPromotedRegIdsArray(EE_Event $event)
     {
         $promoted_reg_ids = $event->get_extra_meta(
-            Domain::PROMOTED_REG_IDS_META_KEY, false, array(array())
+            Domain::META_KEY_WAIT_LIST_PROMOTED_REG_IDS, false, array(array())
         );
         return reset($promoted_reg_ids);
     }
@@ -101,7 +101,7 @@ class WaitListEventMeta
     public function updatePromotedRegIdsArray(EE_Event $event, array $promoted_reg_ids)
     {
         return $event->update_extra_meta(
-            Domain::PROMOTED_REG_IDS_META_KEY,
+            Domain::META_KEY_WAIT_LIST_PROMOTED_REG_IDS,
             $promoted_reg_ids
         );
     }

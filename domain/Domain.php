@@ -91,6 +91,12 @@ class Domain extends DomainBase
     const MESSAGE_TYPE = 'waitlist_can_register';
 
 
+    /**
+     * Slug representing the context where a registration is auto promoted from the waitlist.
+     */
+    const AUTO_PROMOTE_FROM_WAITLIST_CONTEXT = 'auto_promoted_from_waitlist';
+
+
 }
 // End of file Constants.php
 // Location: /domain/Domain.php

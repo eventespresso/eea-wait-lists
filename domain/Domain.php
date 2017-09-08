@@ -83,7 +83,7 @@ class Domain extends DomainBase
     /**
      * value to be used for the LOG_type field in the esp_log table
      */
-    const LOG_TYPE = 'wait_list';
+    const LOG_TYPE_WAIT_LIST = 'wait_list';
 
     /**
      * Slug representing the Wait List Notification message type.

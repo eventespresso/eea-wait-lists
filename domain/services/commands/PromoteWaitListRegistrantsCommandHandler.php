@@ -238,7 +238,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 $registration->pretty_status(),
                 $event->name()
             );
-            $this->change_log->log(Domain::LOG_TYPE, $message, $event);
+            $this->change_log->log(Domain::LOG_TYPE_WAIT_LIST, $message, $event);
             if (
             $this->capabilities->current_user_can(
                 'ee_edit_registrations',

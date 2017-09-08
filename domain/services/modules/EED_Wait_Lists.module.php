@@ -645,7 +645,7 @@ class EED_Wait_Lists extends EED_Module
         );
         if(WP_DEBUG){
             EEM_Change_Log::instance()->log(
-                Domain::LOG_TYPE,
+                Domain::LOG_TYPE_WAIT_LIST,
                 "Wait List Checkout URL: {$checkout_url}",
                 $registration
             );
@@ -725,7 +725,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function register_wait_list_log_type($log_type_labels = array())
     {
-        $log_type_labels[Domain::LOG_TYPE] = esc_html__('Wait List', 'event_espresso');
+        $log_type_labels[Domain::LOG_TYPE_WAIT_LIST] = esc_html__('Wait List', 'event_espresso');
         return $log_type_labels;
     }
 

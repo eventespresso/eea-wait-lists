@@ -72,7 +72,7 @@ class WaitListRegistrationMeta
     public function addRegistrationDemoted(EE_Registration $registration)
     {
         return $registration->add_extra_meta(
-            Domain::REG_DEMOTED_META_KEY,
+            Domain::META_KEY_WAIT_LIST_REG_DEMOTED,
             current_time('mysql', true)
         );
     }

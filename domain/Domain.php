@@ -73,7 +73,7 @@ class Domain extends DomainBase
     /**
      * Registration Meta Key used for tracking when a registrant was moved from another reg status BACK to the  wait list
      */
-    const REG_DEMOTED_META_KEY = 'ee_wait_list_reg_demoted';
+    const META_KEY_WAIT_LIST_REG_DEMOTED = 'ee_wait_list_reg_demoted';
 
     /**
      * Registration Meta Key used for tracking when a registrant was removed completely from wait list to a "closed" reg status

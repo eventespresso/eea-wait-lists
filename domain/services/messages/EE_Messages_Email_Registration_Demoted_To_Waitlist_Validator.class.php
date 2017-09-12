@@ -28,7 +28,7 @@ class EE_Messages_Email_Registration_Demoted_To_Waitlist_Validator extends EE_Me
     public function __construct($fields, $context)
     {
         $this->_m_name = 'email';
-        $this->_mt_name = Domain::MESSAGE_TYPE_WAITLIST_DEMOTION;
+        $this->_mt_name = Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION;
         parent::__construct($fields, $context);
     }
 

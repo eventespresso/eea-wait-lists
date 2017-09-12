@@ -572,7 +572,7 @@ class EED_Wait_Lists extends EED_Module
         );
         if ($can_send
             && in_array(
-                Domain::MESSAGE_TYPE_WAITLIST_DEMOTION,
+                Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION,
                 $active_message_types,
                 true
             )

@@ -22,7 +22,7 @@ class EE_Waitlist_Can_Register_message_type extends EE_Waitlist_Message_Type_Bas
      */
     public function __construct()
     {
-        $this->name = Domain::MESSAGE_TYPE_WAITLIST_PROMOTION;
+        $this->name = Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION;
         $this->description = esc_html__(
             'Triggered for registrations are promoted from a wait-list and are able to finalize their registration for the event.',
             'event_espresso'

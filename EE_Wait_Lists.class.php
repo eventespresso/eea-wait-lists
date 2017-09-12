@@ -87,7 +87,7 @@ Class  EE_Wait_Lists extends EE_Addon
                     Domain::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
                 'message_types'    => array(
-                    Domain::MESSAGE_TYPE_WAITLIST_PROMOTION => array(
+                    Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION => array(
                         'mtfilename'                                       =>
                             'EE_Waitlist_Can_Register_message_type.class.php',
                         'autoloadpaths'                                    => array(
@@ -101,7 +101,7 @@ Class  EE_Wait_Lists extends EE_Addon
                         'base_path_for_default_templates'                  => Domain::pluginPath()
                                                                               . 'views/messages/templates/',
                     ),
-                    Domain::MESSAGE_TYPE_WAITLIST_DEMOTION  => array(
+                    Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION  => array(
                         'mtfilename' => 'EE_Registration_Demoted_To_Waitlist_message_type.class.php',
                         'autoloadpaths' => array(
                             Domain::pluginPath() . 'domain/services/messages/',

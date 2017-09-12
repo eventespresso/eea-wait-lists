@@ -83,7 +83,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
         //check context before triggering.
         if ($context instanceof Context
             && (
-                $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAITLIST_AUTO_PROMOTE
+                $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE
                 || (
                     $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                     && EE_Registry::instance()->CAP->current_user_can(
@@ -148,7 +148,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             try {
                 self::trigger_wait_list_notifications(
                     array($registration),
-                    Domain::MESSAGE_TYPE_WAITLIST_DEMOTION
+                    Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION
                 );
                 if ($context->slug() ===
                     CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
@@ -180,7 +180,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
      */
     protected static function trigger_wait_list_notifications(
         $registrations,
-        $message_type_slug = Domain::MESSAGE_TYPE_WAITLIST_PROMOTION
+        $message_type_slug = Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION
     ) {
         self::_load_controller();
         if ($registrations) {

@@ -11,7 +11,7 @@ class EE_Registration_Demoted_To_Waitlist_message_type extends EE_Waitlist_Messa
      */
     public function __construct()
     {
-        $this->name = Domain::MESSAGE_TYPE_WAITLIST_DEMOTION;
+        $this->name = Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION;
         $this->description = esc_html__(
             'Triggered when a registration is automatically demoted to wait-list.',
             'event_espresso'

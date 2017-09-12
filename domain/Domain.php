@@ -89,19 +89,19 @@ class Domain extends DomainBase
     /**
      * Slug representing the Wait List Promotion Notification message type.
      */
-    const MESSAGE_TYPE_WAITLIST_PROMOTION = 'waitlist_can_register';
+    const MESSAGE_TYPE_WAIT_LIST_PROMOTION = 'waitlist_can_register';
 
 
     /**
      * Slug representing the Wait List Demotion Notification message type.
      */
-    const MESSAGE_TYPE_WAITLIST_DEMOTION = 'registration_demoted_to_waitlist';
+    const MESSAGE_TYPE_WAIT_LIST_DEMOTION = 'registration_demoted_to_waitlist';
 
 
     /**
      * Slug representing the context where a registration is auto promoted from the waitlist.
      */
-    const CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAITLIST_AUTO_PROMOTE = 'auto_promoted_from_waitlist';
+    const CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE = 'auto_promoted_from_waitlist';
 
 
 }

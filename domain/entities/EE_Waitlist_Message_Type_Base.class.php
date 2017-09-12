@@ -48,6 +48,16 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
     }
 
 
+    /**
+     * @see parent::get_priority() for documentation
+     * @return int
+     */
+    public function get_priority()
+    {
+        return EEM_Message::priority_medium;
+    }
+
+
 
     /**
      * sets any properties on whether a message type or messenger interface shows up on a ee administration page.

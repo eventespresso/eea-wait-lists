@@ -68,12 +68,14 @@ class EED_Wait_Lists_Messages extends EED_Messages
     /**
      * Callback on AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted.
      * This gets called when a registration status changes from RWL to a registration status allowing payments.
+     *
      * @param EE_Registration $registration
      * @param EE_Event        $event
      * @param Context|null    $context
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
+     * @throws EE_Error
      */
     public static function trigger_wait_list_promotion_notifications(
         EE_Registration $registration,
@@ -113,6 +115,10 @@ class EED_Wait_Lists_Messages extends EED_Messages
                 }
             }
         }
+        if (is_admin()) {
+            //if called from admin, let's exclude this registration from being processed by the admin.
+            self::exclude_processing_notification_by_admin($registration);
+        }
     }
 
 
@@ -120,12 +126,14 @@ class EED_Wait_Lists_Messages extends EED_Messages
      * Callback for AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted
      * This will fire whenever a registration is demoted from a status that allowsw payments to the RWL registration
      * status.
+     *
      * @param EE_Registration $registration
      * @param EE_Event        $event
      * @param Context|null    $context
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
+     * @throws EE_Error
      */
     public static function trigger_wait_list_demotion_notifications(
         EE_Registration $registration,
@@ -168,6 +176,11 @@ class EED_Wait_Lists_Messages extends EED_Messages
                 }
             }
         }
+
+        if (is_admin()) {
+            self::exclude_processing_notification_by_admin($registration);
+        }
+    }
     }
 
 
@@ -189,5 +202,31 @@ class EED_Wait_Lists_Messages extends EED_Messages
                 (array) $registrations
             );
         }
+    }
+
+
+    /**
+     * Used to set a filter for excluding the given registration from being processed by the admin when its included
+     * in a registration changing status.
+     *
+     * @param EE_Registration $registration
+     * @throws EE_Error
+     */
+    protected static function exclude_processing_notification_by_admin(EE_Registration $registration)
+    {
+        add_filter(
+            'FHEE__Registrations_Admin_Page___set_registration_status_from_request__REG_IDs',
+            //exclude these registrations from normal admin notifications when status manually changed.
+            //notifications will be handled for these registrations by EED_Waitlist_Messages.
+            function ($registrations_ids) use ($registration) {
+                if (false !== (
+                    $key = array_search($registration->ID(), (array) $registrations_ids, true)
+                    )
+                ) {
+                    unset($registrations_ids[$key]);
+                }
+                return $registrations_ids;
+            }
+        );
     }
 }

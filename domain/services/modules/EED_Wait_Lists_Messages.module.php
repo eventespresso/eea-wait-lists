@@ -101,8 +101,10 @@ class EED_Wait_Lists_Messages extends EED_Messages
      * @param EE_Registration[] $registrations
      * @param string            $message_type_slug
      */
-    protected static function trigger_wait_list_notifications($registrations, $message_type_slug = Domain::MESSAGE_TYPE_WAITLIST_CAN_REGISTER)
-    {
+    protected static function trigger_wait_list_notifications(
+        $registrations,
+        $message_type_slug = Domain::MESSAGE_TYPE_WAITLIST_PROMOTION
+    ) {
         self::_load_controller();
         if ($registrations) {
             self::$_MSG_PROCESSOR->generate_for_all_active_messengers(

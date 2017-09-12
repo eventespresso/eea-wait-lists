@@ -71,12 +71,13 @@ class Domain extends DomainBase
     const META_KEY_WAIT_LIST_REG_PROMOTED = 'ee_wait_list_reg_promoted';
 
     /**
-     * Registration Meta Key used for tracking when a registrant was moved from another reg status BACK to the  wait list
+     * Registration Meta Key used for tracking when a registrant was moved from another reg status BACK to the wait list
      */
     const META_KEY_WAIT_LIST_REG_DEMOTED = 'ee_wait_list_reg_demoted';
 
     /**
-     * Registration Meta Key used for tracking when a registrant was removed completely from wait list to a "closed" reg status
+     * Registration Meta Key used for tracking when a registrant was removed completely from wait list to a "closed"
+     * reg status
      */
     const META_KEY_WAIT_LIST_REG_REMOVED = 'ee_wait_list_reg_removed';
 
@@ -86,9 +87,15 @@ class Domain extends DomainBase
     const LOG_TYPE_WAIT_LIST = 'wait_list';
 
     /**
-     * Slug representing the Wait List Notification message type.
+     * Slug representing the Wait List Promotion Notification message type.
      */
-    const MESSAGE_TYPE_WAITLIST_CAN_REGISTER = 'waitlist_can_register';
+    const MESSAGE_TYPE_WAITLIST_PROMOTION = 'waitlist_can_register';
+
+
+    /**
+     * Slug representing the Wait List Demotion Notification message type.
+     */
+    const MESSAGE_TYPE_WAITLIST_DEMOTION = 'registration_demoted_to_waitlist';
 
 
     /**

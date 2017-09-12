@@ -41,40 +41,33 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
     }
 
 
-
     /**
      * Parser for shortcode
      *
      * @param string $shortcode Shortcode being parsed
-     * @return string            Results of parser.
+     * @return string Results of parser.
      * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
      */
     protected function _parser($shortcode)
     {
-        //make sure we end up with the EE_Messages_Addressee object
-        $this->_recipient = $this->_data instanceof EE_Messages_Addressee ? $this->_data : null;
-        $this->_recipient = ! $this->_recipient instanceof EE_Messages_Addressee
-                            && is_array($this->_data)
-                            && isset($this->_data['data'])
-                            && $this->_data['data'] instanceof EE_Messages_Addressee
-            ? $this->_data['data']
-            : $this->_recipient;
-        $this->_recipient = ! $this->_recipient instanceof EE_Messages_Addressee
-                            && ! empty($this->_extra_data['data'])
-                            && $this->_extra_data['data'] instanceof EE_Messages_Addressee
-            ? $this->_extra_data['data']
-            : $this->_recipient;
-        if (! $this->_recipient instanceof EE_Messages_Addressee) {
+        //make sure we end up with a registration object.
+        $messages_addressee = $this->_data instanceof EE_Messages_Addressee ? $this->_data : null;
+        $messages_addressee = $this->_extra_data instanceof EE_Messages_Addressee
+            ? $this->_extra_data
+            : $messages_addressee;
+        $registration = $messages_addressee instanceof EE_Messages_Addressee
+            && $messages_addressee->reg_obj instanceof EE_Registration
+            ? $messages_addressee->reg_obj
+            : null;
+        if (! $registration instanceof EE_Registration) {
             return '';
         }
         switch ($shortcode) {
             case '[RECIPIENT_WAITLIST_REGISTRATION_URL]':
-                if (! $this->_recipient->reg_obj instanceof EE_Registration) {
-                    return '';
-                }
-                return EED_Wait_Lists::wait_list_checkout_url(
-                    $this->_recipient->reg_obj->get_primary_registration()
-                );
+                return EED_Wait_Lists::wait_list_checkout_url($registration);
         }
         return '';
     }

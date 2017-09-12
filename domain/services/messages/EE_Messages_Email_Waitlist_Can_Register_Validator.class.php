@@ -39,13 +39,30 @@ class EE_Messages_Email_Waitlist_Can_Register_Validator extends EE_Messages_Vali
      */
     protected function _modify_validator()
     {
-        if ($this->_context === 'attendee') {
-            $this->_valid_shortcodes_modifier[$this->_context]['from'] = array(
-                'recipient_details',
-                'email',
-                'organization',
-            );
-        }
+        $new_config = $this->_MSGR->get_validator_config();
+        $new_config['datetime_list']['shortcodes'] =  array('datetime');
+        $new_config['content']['shortcodes'] = array(
+            'recipient_waitlist',
+            'organization',
+            'primary_registration_list',
+            'primary_registration_details',
+            'email',
+            'transaction',
+            'payment_list',
+            'venue',
+            'event',
+            'messenger',
+            'ticket',
+            'recipient_details',
+        );
+        $new_config['subject']['shortcodes'] = array(
+            'organization',
+            'primary_registration_details',
+            'email',
+            'event',
+            'transaction'
+        );
+        $this->_MSGR->set_validator_config($new_config);
         $this->_specific_shortcode_excludes = array('[DISPLAY_PDF_URL]', '[DISPLAY_PDF_BUTTON]');
     }
 }

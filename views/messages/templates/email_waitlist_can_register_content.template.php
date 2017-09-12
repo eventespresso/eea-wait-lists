@@ -60,9 +60,8 @@
                                 <strong><?php esc_html_e('Details about your selection:', 'event_espresso'); ?></strong>
                             </p>
                             <p>
-                                <?php esc_html_e('Ticket Selection:', 'event_espresso'); ?><br>
+                                <?php esc_html_e('Your Ticket Selection: ', 'event_espresso'); ?> [TICKET_NAME]
                             </p>
-                            <ul>[TICKET_LIST]</ul>
                             <p>
                                 <?php
                                     esc_html_e(

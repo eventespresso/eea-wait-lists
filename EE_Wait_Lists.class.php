@@ -123,12 +123,6 @@ Class  EE_Wait_Lists extends EE_Addon
     public function after_registration()
     {
         $this->_register_custom_shortcode_library();
-        add_filter(
-            'FHEE__EE_Messages_Base__get_valid_shortcodes',
-            array($this, 'modify_valid_shortcodes'),
-            10,
-            2
-        );
     }
 
 
@@ -150,7 +144,6 @@ Class  EE_Wait_Lists extends EE_Addon
                     array(
                         'name'                    => 'recipient_waitlist',
                         'autoloadpaths'           => Domain::pluginPath() . 'domain/services/messages/',
-                        'msgr_validator_callback' => array($this, 'messenger_validator_callback'),
                     )
                 );
             },
@@ -166,72 +159,6 @@ Class  EE_Wait_Lists extends EE_Addon
             }
         );
     }
-
-
-
-    /**
-     * Callback on `FHEE__EE_Messages_Base__get_valid_shortcodes` that is used to ensure the new shortcode library is
-     * registered with the appropriate message type as a valid library.
-     * Also using this to remove shortcodes we don't want exposed for the new message type.
-     *
-     * @param array           $valid_shortcodes Existing array of valid shortcodes
-     * @param EE_message_type $message_type
-     * @return array
-     */
-    public function modify_valid_shortcodes($valid_shortcodes, $message_type)
-    {
-        if ($message_type instanceof EE_WaitList_Can_Register_message_type) {
-            $valid_shortcodes['attendee'][] = 'recipient_waitlist';
-            $shortcode_libraries_to_remove = array(
-                'primary_registration_details',
-                'primary_registration_list',
-                'question_list',
-                'attendee_list',
-                'attendee',
-                'event_list',
-            );
-            array_walk(
-                $shortcode_libraries_to_remove,
-                function ($shortcode_library_to_remove) use (&$valid_shortcodes) {
-                    $key_to_remove = array_search(
-                        $shortcode_library_to_remove,
-                        $valid_shortcodes['attendee'],
-                        true
-                    );
-                    if ($key_to_remove !== false) {
-                        unset($valid_shortcodes['attendee'][$key_to_remove]);
-                    }
-                }
-            );
-        }
-        return $valid_shortcodes;
-    }
-
-
-
-    /**
-     * Callback set (on registering a shortcode library) that handles the validation of this new library.
-     *
-     * @param array        $validator_config
-     * @param EE_messenger $messenger
-     * @return array
-     */
-    public function messenger_validator_callback($validator_config, EE_messenger $messenger)
-    {
-        if ($messenger->name !== 'email') {
-            return $validator_config;
-        }
-        array_push(
-            $validator_config['content']['shortcodes'],
-            'recipient_waitlist',
-            'event',
-            'event_meta',
-            'ticket_list'
-        );
-        return $validator_config;
-    }
-
-
 }
 // End of file EE_Wait_Lists.class.php
 // Location: wp-content/plugins/eea-wait-lists/EE_Wait_Lists.class.php

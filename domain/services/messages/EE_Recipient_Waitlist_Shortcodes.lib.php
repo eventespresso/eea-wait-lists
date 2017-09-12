@@ -37,6 +37,10 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
                 'This returns the generated url for the wait-list registrant to complete the sign-up process.',
                 'event_espresso'
             ),
+            '[RECIPIENT_WAITLIST_CONFIRMATION_URL]' => esc_html(
+                'This returns the generated url for a registrant to confirm being added to a waitlist.',
+                'event_espresso'
+            )
         );
     }
 
@@ -68,6 +72,9 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
         switch ($shortcode) {
             case '[RECIPIENT_WAITLIST_REGISTRATION_URL]':
                 return EED_Wait_Lists::wait_list_checkout_url($registration);
+            case '[RECIPIENT_WAITLIST_CONFIRMATION_URL]':
+                //@todo add logic here for obtaining the confirmation url once that's done.
+                return '';
         }
         return '';
     }

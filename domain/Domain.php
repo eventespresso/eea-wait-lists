@@ -99,6 +99,12 @@ class Domain extends DomainBase
 
 
     /**
+     * Slug representing the message type for when registrations are added to the wait-ist (not demoted).
+     */
+    const MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST = 'registration_added_to_waitlist';
+
+
+    /**
      * Slug representing the context where a registration is auto promoted from the waitlist.
      */
     const CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE = 'auto_promoted_from_waitlist';

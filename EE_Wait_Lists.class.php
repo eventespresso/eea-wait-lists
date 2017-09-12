@@ -86,33 +86,16 @@ Class  EE_Wait_Lists extends EE_Addon
                     Domain::pluginPath() . 'domain/services/modules/EED_Wait_Lists.module.php',
                     Domain::pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
-                'message_types'    => array(
-                    Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION => array(
-                        'mtfilename'                                       =>
-                            'EE_Waitlist_Can_Register_message_type.class.php',
-                        'autoloadpaths'                                    => array(
-                            Domain::pluginPath() . 'domain/services/messages/',
-                            Domain::pluginPath() . 'domain/entities'
-                        ),
-                        'messengers_to_activate_with'                      => array('email'),
-                        'messengers_to_validate_with'                      => array('email'),
-                        'force_activation'                                 => true,
-                        'messengers_supporting_default_template_pack_with' => array('email'),
-                        'base_path_for_default_templates'                  => Domain::pluginPath()
-                                                                              . 'views/messages/templates/',
+                'message_types' => array_merge(
+                    self::get_message_type_registration_options_for(),
+                    self::get_message_type_registration_options_for(
+                        Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION,
+                        'EE_Registration_Demoted_To_Waitlist_message_type.class.php'
                     ),
-                    Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION  => array(
-                        'mtfilename' => 'EE_Registration_Demoted_To_Waitlist_message_type.class.php',
-                        'autoloadpaths' => array(
-                            Domain::pluginPath() . 'domain/services/messages/',
-                            Domain::pluginPath() . 'domain/entities',
-                        ),
-                        'messengers_to_activate_with' => array('email'),
-                        'messengers_to_validate_with' => array('email'),
-                        'force_activation' => true,
-                        'messengers_supporting_default_template_pack_with' => array('email'),
-                        'base_path_for_default_templates' => Domain::pluginPath() . 'views/messages/templates/',
-                    ),
+                    self::get_message_type_registration_options_for(
+                        Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST,
+                        'EE_Registration_Added_To_Waitlist_message_type.class.php'
+                    )
                 ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
                 'pue_options'      => array(
@@ -121,6 +104,37 @@ Class  EE_Wait_Lists extends EE_Addon
                     'checkPeriod'     => '24',
                     'use_wp_update'   => false,
                 ),
+            )
+        );
+    }
+
+
+    /**
+     * Returns the message type options array for registering the message type.
+     *
+     * @param string $message_type
+     * @param string $message_type_filename
+     * @return array
+     * @throws DomainException
+     */
+    public static function get_message_type_registration_options_for(
+        $message_type = Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION,
+        $message_type_filename = 'EE_Waitlist_Can_Register_message_type.class.php'
+    ) {
+        return array(
+            $message_type => array(
+                'mtfilename'                                       =>
+                    $message_type_filename,
+                'autoloadpaths'                                    => array(
+                    Domain::pluginPath() . 'domain/services/messages/',
+                    Domain::pluginPath() . 'domain/entities'
+                ),
+                'messengers_to_activate_with'                      => array('email'),
+                'messengers_to_validate_with'                      => array('email'),
+                'force_activation'                                 => true,
+                'messengers_supporting_default_template_pack_with' => array('email'),
+                'base_path_for_default_templates'                  => Domain::pluginPath()
+                                                                      . 'views/messages/templates/',
             )
         );
     }

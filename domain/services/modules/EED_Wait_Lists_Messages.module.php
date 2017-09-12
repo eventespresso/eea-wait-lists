@@ -54,7 +54,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
-        //notification triggers demotion to waitlist.
+        //notification triggers on demotion to waitlist.
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_demotion_notifications'),
@@ -62,6 +62,18 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
+        //notification triggers adding to waitlist (not demoted).
+        add_action(
+            'FHEE__EEH_MSG_Template__reg_status_to_message_type_array',
+            array(
+                'EED_Wait_Lists_Messages',
+                'register_add_registration_to_waitlist_message_type_with_registration_status_map'
+            )
+        );
+        add_action(
+            'AHEE__EventEspresso_WaitList_domain_services_commands_CreateWaitListRegistrationsCommandHandler__createRegistrations',
+            array('EED_Wait_Lists_Messages', 'trigger_registration_add_to_waitlist_messages')
+        );
     }
 
 
@@ -181,6 +193,41 @@ class EED_Wait_Lists_Messages extends EED_Messages
             self::exclude_processing_notification_by_admin($registration);
         }
     }
+
+
+
+    public static function register_add_registration_to_waitlist_message_type_with_registration_status_map(
+        $registration_status_to_message_type_map
+    ) {
+        $registration_status_to_message_type_map[EEM_Registration::status_id_wait_list] =
+            Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST;
+        return $registration_status_to_message_type_map;
+    }
+
+
+
+    /**
+     * Callback on AHEE__EventEspresso_WaitList_domain_services_commands_CreateWaitListRegistrationsCommandHandler__createRegistrations.
+     *
+     * @param $registrations_added_to_waitlist
+     */
+    public static function trigger_registration_add_to_waitlist_messages($registrations_added_to_waitlist)
+    {
+        try {
+            //grab one of the registrations to get the transaction
+            $registration = reset($registrations_added_to_waitlist);
+            $transaction = $registration instanceof EE_Registration ? $registration->transaction() : null;
+            $messages_to_generate = self::$_MSG_PROCESSOR->setup_mtgs_for_all_active_messengers(
+                Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST,
+                array($transaction)
+            );
+            self::$_MSG_PROCESSOR->batch_queue_for_generation_and_persist($messages_to_generate);
+            self::$_MSG_PROCESSOR->get_queue()->initiate_request_by_priority();
+        } catch (Exception $e) {
+            if (WP_DEBUG) {
+                EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+            }
+        }
     }
 
 

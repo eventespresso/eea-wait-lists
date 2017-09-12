@@ -184,6 +184,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $quantity
     ) {
         $attendee = null;
+        $registrations_created = array();
         for ($x = 1; $x <= $quantity; $x++) {
             /** @var \EE_Registration $registration */
             $registration = $this->commandBus()->execute(
@@ -215,7 +216,13 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
             $registration->update_cache_after_object_save('Attendee', $attendee);
             $this->registration_meta->addRegistrationSignedUp($registration);
             $registration->save();
+            $registrations_created[] = $registration;
         }
+        do_action(
+            'AHEE__EventEspresso_WaitList_domain_services_commands_CreateWaitListRegistrationsCommandHandler__createRegistrations',
+            $registrations_created,
+            $attendee
+        );
         return $attendee;
     }
 

@@ -2,6 +2,8 @@
 
 use EventEspresso\core\domain\Domain as CoreDomain;
 use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
@@ -43,6 +45,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
      */
     protected static function _set_shared_hooks()
     {
+
         //notification triggers on promotion from waitlist
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
@@ -50,9 +53,28 @@ class EED_Wait_Lists_Messages extends EED_Messages
             10,
             3
         );
+
+        //notification triggers demotion to waitlist.
+        add_action(
+            'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
+            array('EED_Wait_Lists_Messages', 'trigger_wait_list_demotion_notifications'),
+            10,
+            3
+        );
+
     }
 
 
+    /**
+     * Callback on AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted.
+     * This gets called when a registration status changes from RWL to a registration status allowing payments.
+     * @param EE_Registration $registration
+     * @param EE_Event        $event
+     * @param Context|null    $context
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     */
     public static function trigger_wait_list_promotion_notifications(
         EE_Registration $registration,
         EE_Event $event,
@@ -73,6 +95,61 @@ class EED_Wait_Lists_Messages extends EED_Messages
         ) {
             try {
                 self::trigger_wait_list_notifications(array($registration));
+                if ($context->slug() ===
+                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+                ) {
+                    EE_Error::add_success(
+                        esc_html__(
+                            'Messages have been successfully queued for generation and sending.',
+                            'event_espresso'
+                        )
+                    );
+                }
+            } catch (Exception $e) {
+                if ($context->slug() ===
+                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+                ) {
+                    EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Callback for AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted
+     * This will fire whenever a registration is demoted from a status that allowsw payments to the RWL registration
+     * status.
+     * @param EE_Registration $registration
+     * @param EE_Event        $event
+     * @param Context|null    $context
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     */
+    public static function trigger_wait_list_demotion_notifications(
+        EE_Registration $registration,
+        EE_Event $event,
+        Context $context = null
+    ) {
+        //check context before triggering.
+        if ($context instanceof Context
+            && (
+                $context->slug() === null
+                || (
+                    $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+                    && EE_Registry::instance()->CAP->current_user_can(
+                        'ee_send_message',
+                        'triggering_waitlist_demotion_notification'
+                    )
+                )
+            )
+        ) {
+            try {
+                self::trigger_wait_list_notifications(
+                    array($registration),
+                    Domain::MESSAGE_TYPE_WAITLIST_DEMOTION
+                );
                 if ($context->slug() ===
                     CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {

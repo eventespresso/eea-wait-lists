@@ -100,7 +100,8 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array',
             array('EED_Wait_Lists', 'reg_status_actions'),
-            10
+            10,
+            3
         );
         add_action(
             'AHEE__Events_Admin_Page___generate_publish_box_extra_content__event_editor_overview_add',
@@ -546,21 +547,41 @@ class EED_Wait_Lists extends EED_Module
             'capability' => 'ee_edit_registrations',
             'args'       => array('wait_list'),
         );
+        $page_routes['wait_list_and_notify_registrations'] = array(
+            'func'       => 'bulk_action_on_registrations',
+            'noheader'   => true,
+            'capability' => 'ee_edit_registrations',
+            'args'       => array('wait_list', true),
+        );
         return $page_routes;
     }
 
 
-
     /**
+     * Callback for FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array
      * @param array $reg_status_actions
+     * @param array $active_message_types  Array of slugs for message types that are active.
+     * @param bool  $can_send              Whether the user has the capability to send messages or not.
      * @return array
      */
-    public static function reg_status_actions($reg_status_actions = array())
+    public static function reg_status_actions($reg_status_actions = array(), $active_message_types, $can_send)
     {
         $reg_status_actions['wait_list_registrations'] = esc_html__(
             'Move Registrations to Wait List',
             'event_espresso'
         );
+        if ($can_send
+            && in_array(
+                Domain::MESSAGE_TYPE_WAITLIST_DEMOTION,
+                $active_message_types,
+                true
+            )
+        ) {
+            $reg_status_actions['wait_list_and_notify_registrations'] = esc_html__(
+                'Move Registrations to Wait List and Notify',
+                'event_espresso'
+            );
+        }
         return $reg_status_actions;
     }
 

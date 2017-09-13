@@ -94,4 +94,34 @@ class WaitListRegistrationMeta
 
 
 
+    /**
+     * @param EE_Registration $registration
+     * @return bool
+     * @throws EE_Error
+     */
+    public function confirmWaitListSpace(EE_Registration $registration)
+    {
+        return $registration->add_extra_meta(
+            Domain::META_KEY_WAIT_LIST_SPACE_CONFIRMED,
+            current_time('mysql', true)
+        );
+    }
+
+
+
+    /**
+     * @param EE_Registration $registration
+     * @return string|null
+     * @throws EE_Error
+     */
+    public function isConfirmed(EE_Registration $registration)
+    {
+        return $registration->get_extra_meta(
+            Domain::META_KEY_WAIT_LIST_SPACE_CONFIRMED,
+            true
+        );
+    }
+
+
+
 }

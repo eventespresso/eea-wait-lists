@@ -4,7 +4,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
 /**
- * Shortcode library for registration waitlist message types
+ * Shortcode library for registration wait list message types
  *
  * @package    EventEspresso\Waitlists
  * @subpackage messages
@@ -27,18 +27,18 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
      */
     protected function _init_props()
     {
-        $this->label = esc_html__('Recipient Waitlist Shortcodes', 'event_espresso');
+        $this->label = esc_html__('Recipient Wait List Shortcodes', 'event_espresso');
         $this->description = esc_html__(
-            'These are shortcodes that are specific to the Waitlist message type.',
+            'These are shortcodes that are specific to the Wait List message types.',
             'event_espresso'
         );
         $this->_shortcodes = array(
             '[RECIPIENT_WAITLIST_REGISTRATION_URL]' => esc_html__(
-                'This returns the generated url for the wait-list registrant to complete the sign-up process.',
+                'This returns the generated url for the wait list registrant to complete the sign-up process.',
                 'event_espresso'
             ),
             '[RECIPIENT_WAITLIST_CONFIRMATION_URL]' => esc_html(
-                'This returns the generated url for a registrant to confirm being added to a waitlist.',
+                'This returns the generated url for a registrant to confirm being added to a wait list.',
                 'event_espresso'
             )
         );

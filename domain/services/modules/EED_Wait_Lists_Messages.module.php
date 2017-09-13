@@ -46,7 +46,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     protected static function _set_shared_hooks()
     {
 
-        //notification triggers on promotion from waitlist
+        //notification triggers on promotion from wait list
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_promotion_notifications'),
@@ -54,7 +54,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
-        //notification triggers on demotion to waitlist.
+        //notification triggers on demotion to wait list.
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_demotion_notifications'),
@@ -62,7 +62,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
-        //notification triggers adding to waitlist (not demoted).
+        //notification triggers adding to wait list (not demoted).
         add_action(
             'FHEE__EEH_MSG_Template__reg_status_to_message_type_array',
             array(
@@ -233,7 +233,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
 
 
     /**
-     * Method used to trigger waitlist notifications for the given registrations and message type.
+     * Method used to trigger wait list notifications for the given registrations and message type.
      *
      * @param EE_Registration[] $registrations
      * @param string            $message_type_slug

@@ -7,7 +7,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
 /**
- * Message type for handling notifications to those on a waitlist when there are registrations available.
+ * Message type for handling notifications to those on a wait list when there are registrations available.
  *
  * @package    EventEspresso\Waitlists
  * @subpackage messages

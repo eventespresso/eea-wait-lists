@@ -35,7 +35,7 @@
                                 <?php
                                 printf(
                                     esc_html__(
-                                        'Unfortunately an %1$sevent%2$s you are considering is available on waitlist only.',
+                                        'Unfortunately an %1$sevent%2$s you are considering is available on wait list only.',
                                         'event_espresso'
                                     ),
                                     '<a href="[EVENT_URL]">',
@@ -46,7 +46,7 @@
                             <p>
                                 <?php
                                 esc_html_e(
-                                    'Since a payment wasn\'t received toward your ticket purchase, your ticket has been turned over to another party and you have been automatically added to the waiting list for the following event. You will need to confirm your response below.',
+                                    'Since a payment wasn\'t received toward your ticket purchase, your ticket has been turned over to another party and you have been automatically added to the wait list for the following event. You will need to confirm your response below.',
                                     'event_espresso'
                                 );
                                 ?>
@@ -67,7 +67,7 @@
                                 <?php
                                 printf(
                                     esc_html__(
-                                        '%1$sConfirm Your Spot in the Waitlist Now%2$s!',
+                                        '%1$sConfirm Your Spot in the Wait List Now%2$s!',
                                         'event_espresso'
                                     ),
                                     '<a href="[RECIPIENT_WAITLIST_CONFIRMATION_URL]">',

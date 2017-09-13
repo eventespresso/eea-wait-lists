@@ -7,7 +7,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
 
 /**
- * Base Message Type for waitlist message types to inherit from.
+ * Base Message Type for wait list message types to inherit from.
  *
  * @package    EventEspresso\Waitlists
  * @subpackage messages
@@ -122,7 +122,7 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
             'registrant' => array(
                 'label'       => esc_html__('Registrant', 'event_espresso'),
                 'description' => esc_html__(
-                    'This template goes to individual registrations promoted from the waitlist.',
+                    'This template goes to individual registrations promoted from the wait list.',
                     'event_espresso'
                 ),
             ),

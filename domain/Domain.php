@@ -105,7 +105,7 @@ class Domain extends DomainBase
 
 
     /**
-     * Slug representing the context where a registration is auto promoted from the waitlist.
+     * Slug representing the context where a registration is auto promoted from the wait list.
      */
     const CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE = 'auto_promoted_from_waitlist';
 

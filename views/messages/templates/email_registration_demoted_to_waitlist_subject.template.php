@@ -1,2 +1,2 @@
 <?php
-esc_html_e('Response Required: Waitlist Confirmation', 'event_espresso');
+esc_html_e('Response Required: Wait List Confirmation', 'event_espresso');

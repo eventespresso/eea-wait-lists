@@ -1,5 +1,6 @@
 <?php
 use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\loaders\LoaderInterface;
@@ -145,10 +146,126 @@ Class  EE_Wait_Lists extends EE_Addon
      * Register things that have to happen early in loading.
      *
      * @throws DomainException
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
      */
     public function after_registration()
     {
+        $this->register_dependencies();
         $this->_register_custom_shortcode_library();
+    }
+
+
+
+    /**
+     * @return void
+     * @throws DomainException
+     * @throws InvalidInterfaceException
+     * @throws InvalidEntityException
+     * @throws EE_Error
+     */
+    protected function register_dependencies()
+    {
+        EE_Dependency_Map::instance()->add_alias(
+            'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection',
+            'EventEspresso\core\services\collections\Collection',
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor'
+        );
+        EE_Dependency_Map::register_class_loader(
+            'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection',
+            function ()
+            {
+                return new \EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection();
+            }
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor',
+            array(
+                'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection' =>
+                    EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta'              => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandBusInterface'                    => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\loaders\LoaderInterface'                         => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\notices\NoticeConverterInterface'                => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor',
+            array(
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommandHandler',
+            array(
+                'EEM_Registration'                                               => EE_Dependency_Map::load_from_cache,
+                'EE_Capabilities'                                                => EE_Dependency_Map::load_from_cache,
+                'EEM_Change_Log'                                                 => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\notices\NoticesContainerInterface'  => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommandHandler',
+            array(
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta'               => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
+                'EEM_Registration'                                                             => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandBusInterface'                     => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\commands\CommandFactoryInterface'                 => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\core\services\notices\NoticesContainerInterface'                => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommandHandler',
+            array(
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta'               => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\CalculateEventSpacesAvailableCommandHandler',
+            array(
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
+            array(
+                null,
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+                'EEM_Registration'                                               => EE_Dependency_Map::load_from_cache,
+                'EE_Registry'                                                    => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\forms\WaitListForm',
+            array(
+                null,
+                null,
+                'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+            )
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
+            array(null, 'EE_Registry' => EE_Dependency_Map::load_from_cache)
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\commands\CreateWaitListRegistrationsCommand',
+            array(null, null, null, null, 'EEM_Ticket' => EE_Dependency_Map::load_from_cache)
+        );
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation',
+            array(
+                'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' =>
+                    EE_Dependency_Map::load_from_cache,
+                'EE_Request' => EE_Dependency_Map::load_from_cache,
+            )
+        );
     }
 
 

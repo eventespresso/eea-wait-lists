@@ -214,6 +214,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     public static function trigger_registration_add_to_waitlist_messages($registrations_added_to_waitlist)
     {
         try {
+            self::_load_controller();
             //grab one of the registrations to get the transaction
             $registration = reset($registrations_added_to_waitlist);
             $transaction = $registration instanceof EE_Registration ? $registration->transaction() : null;

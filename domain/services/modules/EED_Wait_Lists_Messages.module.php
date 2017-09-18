@@ -153,11 +153,10 @@ class EED_Wait_Lists_Messages extends EED_Messages
         Context $context = null
     ) {
         //check context before triggering.
-        if ($context instanceof Context
-            && (
-                $context->slug() === null
-                || (
-                    $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+        if ($context === null
+            || (
+                $context instanceof Context
+                && ($context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                     && EE_Registry::instance()->CAP->current_user_can(
                         'ee_send_message',
                         'triggering_waitlist_demotion_notification'
@@ -170,8 +169,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     array($registration),
                     Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION
                 );
-                if ($context->slug() ===
-                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+                if ($context instanceof Context
+                    && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_success(
                         esc_html__(
@@ -181,8 +180,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     );
                 }
             } catch (Exception $e) {
-                if ($context->slug() ===
-                    CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
+                if ($context instanceof Context
+                    && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
                 }

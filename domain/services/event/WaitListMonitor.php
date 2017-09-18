@@ -162,15 +162,26 @@ class WaitListMonitor
     public function processWaitListFormForEvent($event_id)
     {
         $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
+        if(!$event_id) {
+            throw new DomainException(
+                esc_html__(
+                    'The Wait List form can not be processed because an invalid or missing Event ID was supplied.',
+                    'event_espresso'
+                )
+            );
+        }
         if ($this->wait_list_events->has($event_id)) {
             /** @var EE_Event $event */
             $event = $this->wait_list_events->get($event_id);
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
-            if(isset($_REQUEST['event_wait_list']) && is_array($_REQUEST['event_wait_list'])) {
-                $inputs = reset($_REQUEST['event_wait_list']);
-                $referrer = ! empty($inputs['referrer']) ? $inputs['referrer'] : $referrer;
-            }
+            $referrer = isset(
+                $_REQUEST['event_wait_list'],
+                $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"],
+                $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"]['referrer']
+            )
+                ? $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"]['referrer']
+                : $referrer;
         }
         return $referrer;
     }

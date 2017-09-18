@@ -220,8 +220,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         }
         do_action(
             'AHEE__EventEspresso_WaitList_domain_services_commands_CreateWaitListRegistrationsCommandHandler__createRegistrations',
-            $registrations_created,
-            $attendee
+            array($registrations_created, $attendee)
         );
         return $attendee;
     }

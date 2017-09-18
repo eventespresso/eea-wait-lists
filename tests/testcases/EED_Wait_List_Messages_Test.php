@@ -134,6 +134,60 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
         //verify the to field is correct
         $this->assertEquals('john.smith@gmail.com', $message->to());
     }
+    
+
+
+    public function testWaitlistDemotionNotifications()
+    {
+        $registrations = $this->getRegistrationsForTest();
+
+        //this message type is triggered for each registration. Even though we have three registrations, we only need
+        // one of them for our tests.
+        /** @var EE_Registration $registration */
+        $registration = reset($registrations);
+        $event = $registration->event_obj();
+
+        //The callback we're testing has various conditions on it so we'll first test conditions where the registration
+        //should NOT get processed.
+
+        //$context with none of the matching slugs should get processed
+        $context = new Context(
+            'test_slug',
+            'testing'
+        );
+        EED_Wait_Lists_Messages::trigger_wait_list_demotion_notifications($registration, $event, $context);
+        $messages_processor = EED_Wait_Lists_Messages_Mock::get_processor();
+        //there shouldn't even be a messages processor yet.
+        $this->assertNull($messages_processor);
+
+        //$context with correct admin context slug, but the user doesn't have access.
+        $context = new Context(
+            CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY,
+            'testing'
+        );
+        EED_Wait_Lists_Messages::trigger_wait_list_demotion_notifications($registration, $event, $context);
+        $messages_processor = EED_Wait_Lists_Messages_Mock::get_processor();
+        //there shouldn't even be a messages processor yet.
+        $this->assertNull($messages_processor);
+
+        //okay let's test a valid context that should trigger the message
+        // (in this case no context provided should trigger)
+        EED_Wait_Lists_Messages::trigger_wait_list_demotion_notifications($registration, $event);
+        $messages_processor = EED_Wait_Lists_Messages_Mock::get_processor();
+        //trigger generation.
+        $queue = $messages_processor->batch_generate_from_queue();
+        //verify there's a queue
+        $this->assertInstanceOf('EE_Messages_Queue', $queue);
+        //there should only be one message.
+        $this->assertEquals(1, $queue->get_message_repository()->count());
+        //get the message from the queue for verification of generation.
+        $queue->get_message_repository()->rewind();
+        $message = $queue->get_message_repository()->current();
+
+        //verify the subject is correct
+        $this->assertEquals('Response Required: Wait List Confirmation', $message->subject());
+        //verify the content only has ONE ticket name mentioned in it.
+        $this->assertEquals(1, substr_count($message->content(), 'TKT_name'));
         //verify the to field is correct
         $this->assertEquals('john.smith@gmail.com', $message->to());
     }

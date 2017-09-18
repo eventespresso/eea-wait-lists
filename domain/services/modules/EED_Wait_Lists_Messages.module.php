@@ -208,9 +208,9 @@ class EED_Wait_Lists_Messages extends EED_Messages
     /**
      * Callback on AHEE__EventEspresso_WaitList_domain_services_commands_CreateWaitListRegistrationsCommandHandler__createRegistrations.
      *
-     * @param $registrations_added_to_waitlist
+     * @param EE_Registration[] $registrations_added_to_waitlist
      */
-    public static function trigger_registration_add_to_waitlist_messages($registrations_added_to_waitlist)
+    public static function trigger_registration_add_to_waitlist_messages(array $registrations_added_to_waitlist)
     {
         try {
             self::_load_controller();

@@ -192,4 +192,36 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
         $this->assertEquals('john.smith@gmail.com', $message->to());
     }
 
+
+
+    public function testTriggerRegistrationAddToWaitlistMessages()
+    {
+        $registrations = $this->getRegistrationsForTest();
+
+        //this message type is triggered for a registration group and it is expected that the only messages coming into
+        //this callback all belong to the same transaction (by virtue of the action the callback is hooked into).
+        //so for our test we'll use all the registrations generated.
+
+        //okay let's test a valid context that should trigger the message
+        // (in this case no context provided should trigger)
+        EED_Wait_Lists_Messages::trigger_registration_add_to_waitlist_messages($registrations);
+        $messages_processor = EED_Wait_Lists_Messages_Mock::get_processor();
+        //trigger generation.
+        $queue = $messages_processor->batch_generate_from_queue();
+        //verify there's a queue
+        $this->assertInstanceOf('EE_Messages_Queue', $queue);
+        //there should only be one message.
+        $this->assertEquals(1, $queue->get_message_repository()->count());
+        //get the message from the queue for verification of generation.
+        $queue->get_message_repository()->rewind();
+        $message = $queue->get_message_repository()->current();
+
+        //verify the subject is correct
+        $this->assertEquals('You\'re on the Wait List!', $message->subject());
+        //verify the content only has THREE ticket names mentioned in it (one for each registration on this attendee)
+        $this->assertEquals(3, substr_count($message->content(), 'TKT_name'));
+        //verify the to field is correct
+        $this->assertEquals('john.smith@gmail.com', $message->to());
+    }
+
 }

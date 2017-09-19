@@ -136,7 +136,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
 
     /**
      * Callback for AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted
-     * This will fire whenever a registration is demoted from a status that allowsw payments to the RWL registration
+     * This will fire whenever a registration is demoted from a status that allows payments to the RWL registration
      * status.
      *
      * @param EE_Registration $registration

@@ -249,11 +249,9 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             }
             $promoted++;
         }
-        do_action(
-            'AHEE__EventEspresso_WaitList_WaitListMonitor__promoteWaitListRegistrants__after_registrations_promoted',
-            $registrations,
-            $event,
-            $this
+        do_action_ref_array(
+            'AHEE__EventEspresso_WaitList_domain_services_commands_PromoteWaitListRegistrantsCommandHandler__autoPromoteRegistrations',
+            array($registrations, $event, $this)
         );
         $this->eventMeta()->updatePerformSoldOutStatusCheck($event, true);
         return $promoted;

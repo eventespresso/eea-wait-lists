@@ -90,6 +90,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
     /**
      * @param CommandInterface $command
      * @return NoticesContainerInterface
+     * @throws \RuntimeException
      * @throws InvalidStatusException
      * @throws UnexpectedEntityException
      * @throws InvalidEntityException
@@ -175,6 +176,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
+     * @throws \RuntimeException
      */
     private function createRegistrations(
         EE_Transaction $transaction,
@@ -238,14 +240,16 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         $registrant_name,
         $registrant_email
     ) {
-        $registrant_name = explode(' ', $registrant_name);
+        $registrant_names = explode(' ', $registrant_name);
+        // remove any empty elements
+        $registrant_names = array_filter($registrant_names);
         return $this->commandBus()->execute(
             new CreateAttendeeCommand(
                 array(
                     // grab first string from registrant name array
-                    'ATT_fname' => array_shift($registrant_name),
+                    'ATT_fname' => array_shift($registrant_names),
                     // join rest of array back together for rest of name
-                    'ATT_lname' => implode(' ', $registrant_name),
+                    'ATT_lname' => implode(' ', $registrant_names),
                     'ATT_email' => $registrant_email,
                 ),
                 $registration

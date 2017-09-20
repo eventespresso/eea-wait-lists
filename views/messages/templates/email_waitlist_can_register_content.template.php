@@ -35,7 +35,7 @@
                                 <?php
                                 printf(
                                     esc_html__(
-                                        'Congratulations! A spot has opened up for you at the %1$s%2$s%3$s.',
+                                        'A spot has opened up for you at: %1$s%2$s%3$s.',
                                         'event_espresso'
                                     ),
                                     '<a href="[EVENT_URL]">',
@@ -48,7 +48,7 @@
                                 <?php
                                     printf(
                                         esc_html__(
-                                            '%1$sFinalize Your Registration Now%2$s',
+                                            '%1$sClick Here to Finalize Your Registration Now%2$s',
                                             'event_espresso'
                                         ),
                                         '<a href="[RECIPIENT_WAITLIST_REGISTRATION_URL]">',
@@ -60,13 +60,12 @@
                                 <strong><?php esc_html_e('Details about your selection:', 'event_espresso'); ?></strong>
                             </p>
                             <p>
-                                <?php esc_html_e('Your Ticket Selection: ', 'event_espresso'); ?> [TICKET_NAME]
+                                [TICKET_NAME]
                             </p>
                             <p>
                                 <?php
                                     esc_html_e(
-                                        'Please, remember you have a limited time to sign up. If you have any '
-                                        . 'questions, or no longer wish to register please contact us.',
+                                        'Please remember you have a limited time to sign up! If you have any questions, or no longer wish to register, then please reply to get in touch.',
                                         'event_espresso'
                                     );
                                 ?>

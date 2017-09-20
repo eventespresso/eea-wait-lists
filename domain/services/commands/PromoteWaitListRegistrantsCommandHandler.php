@@ -155,7 +155,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             $this->notices->addAttention(
                 sprintf(
                     esc_html__(
-                        'There is %1$d space(s) available for "%2$s", with %3$d space(s) under manual control, and %4$d registrant(s) on the Wait List for that event. %6$s Please click here to view a list of %5$s and select those you wish to offer a space to by updating their reg status accordingly.'
+                        'There is %1$d space(s) available for "%2$s", with %3$d space(s) under manual control, and %4$d registrant(s) on the Wait List for that event. %6$s View a list of %5$s and select those you wish to offer a space to by updating their registration status accordingly.'
                     ),
                     $spaces_remaining,
                     $event->name(),

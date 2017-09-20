@@ -210,7 +210,7 @@ class WaitListForm extends EE_Form_Section_Proper
                             'quantity'              => new EE_Integer_Input(
                                 array(
                                     'html_label_text'  => esc_html__(
-                                        'Number of Tickets',
+                                        'Qty',
                                         'event_espresso'
                                     ),
                                     'html_label_class' => 'small-text grey-text',

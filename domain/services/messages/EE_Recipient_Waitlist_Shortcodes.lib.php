@@ -37,10 +37,11 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
                 'This returns the generated url for the wait list registrant to complete the sign-up process.',
                 'event_espresso'
             ),
-            '[RECIPIENT_WAITLIST_CONFIRMATION_URL]' => esc_html__(
-                'This returns the generated url for a registrant to confirm being added to a wait list.',
-                'event_espresso'
-            )
+            //@todo commented out for now because doesn't work.
+            // '[RECIPIENT_WAITLIST_CONFIRMATION_URL]' => esc_html__(
+            //     'This returns the generated url for a registrant to confirm being added to a wait list.',
+            //     'event_espresso'
+            // )
         );
     }
 

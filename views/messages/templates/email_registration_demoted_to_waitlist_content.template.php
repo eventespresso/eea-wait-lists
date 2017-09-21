@@ -35,7 +35,7 @@
                                 <?php
                                 printf(
                                     esc_html__(
-                                        'Unfortunately an %1$sevent%2$s you are considering is available on wait list only.',
+                                        'Unfortunately, an %1$sevent%2$s you are considering is available on wait list only.',
                                         'event_espresso'
                                     ),
                                     '<a href="[EVENT_URL]">',
@@ -45,9 +45,13 @@
                             </p>
                             <p>
                                 <?php
-                                esc_html_e(
-                                    'Since a payment wasn\'t received toward your ticket purchase, your ticket has been turned over to another party and you have been automatically added to the wait list for the following event. You will need to confirm your response below.',
-                                    'event_espresso'
+                                printf(
+                                    esc_html__(
+                                        'Your registration was not completed in time and your spot was opened up for another attendee. You are now on the wait list for %1$s[EVENT_NAME]%2$s',
+                                        'event_espresso'
+                                    ),
+                                    '<a href="[EVENT_URL]">',
+                                    '</a>'
                                 );
                                 ?>
                             </p>
@@ -55,32 +59,14 @@
                                 <strong><?php esc_html_e('Details about your selection:', 'event_espresso'); ?></strong>
                             </p>
                             <p>
-                                <?php esc_html_e('Event Name: ', 'event_espresso'); ?><a href="[EVENT_URL]">[EVENT_NAME]</a>
+                                [TICKET_NAME]
                             </p>
-                            <p>
-                                <?php esc_html_e('Location: ', 'event_espresso'); ?><a href="[VENUE_URL]" target=""_blank" rel="noopener">[VENUE_TITLE]</a> ([VENUE_CITY], [VENUE_STATE])
-                            </p>
-                            <p>
-                                <?php esc_html_e('Your Ticket Selection: ', 'event_espresso'); ?>[TICKET_NAME]
-                            </p>
-                            <h3>
-                                <?php
-                                printf(
-                                    esc_html__(
-                                        '%1$sConfirm Your Spot in the Wait List Now%2$s!',
-                                        'event_espresso'
-                                    ),
-                                    '<a href="[RECIPIENT_WAITLIST_CONFIRMATION_URL]">',
-                                    '</a>'
-                                );
-                                ?>
-                            </h3>
                             <p>
                                 <?php
                                 esc_html_e(
-                                    'Please, remember you will have a limited time to sign up and pay if another ticket becomes available. If you have any questions, or no longer wish to register please contact us.',
+                                    'If you have any questions, or no longer wish to register, then please reply to get in touch.',
                                     'event_espresso'
-                                )
+                                );
                                 ?>
                             </p>
                         </td>

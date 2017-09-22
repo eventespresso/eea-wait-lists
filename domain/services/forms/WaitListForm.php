@@ -53,7 +53,7 @@ class WaitListForm extends EE_Form_Section_Proper
         $this->event_meta = $event_meta;
         $wait_list_spaces_left = $this->calculateWaitListSpacesRemaining($event);
         $form_options = $wait_list_spaces_left === 0
-            ? $this->emptyFormOptions()
+            ? $this->emptyFormOptions($event)
             : $this->waitListFormOptions($event, $tickets, $wait_list_spaces_left);
         $form_options['subsections'] += $this->hiddenInputs($event);
         parent::__construct($form_options);
@@ -102,14 +102,16 @@ class WaitListForm extends EE_Form_Section_Proper
 
 
     /**
+     * @param EE_Event $event
      * @return array
      * @throws EE_Error
      */
-    private function emptyFormOptions()
+    private function emptyFormOptions(EE_Event $event)
     {
         return array(
             'name'            => 'event_wait_list',
-            'html_id'         => 'event_wait_list',
+            'html_id'         => "event-wait-list-{$event->ID()}",
+            'html_class'      => 'event-wait-list-form',
             'layout_strategy' => new EE_Div_Per_Section_Layout(),
             'subsections'     => array()
         );
@@ -122,27 +124,29 @@ class WaitListForm extends EE_Form_Section_Proper
      * @param array    $tickets
      * @param int      $wait_list_spaces_left
      * @return array
-     * @throws EE_Error
+     * @throws \EE_Error
      */
     private function waitListFormOptions(EE_Event $event, array $tickets, $wait_list_spaces_left = 10)
     {
         return array(
             'name'            => 'event_wait_list',
-            'html_id'         => 'event_wait_list',
+            'html_id'         => "event-wait-list-{$event->ID()}",
+            'html_class'      => 'event-wait-list-form',
             'layout_strategy' => new EE_Div_Per_Section_Layout(),
             'subsections'     => array(
                 'join_wait_list_btn'            => new EE_Submit_Input(
                     array(
                         'html_class'            => 'ee-join-wait-list-btn float-right',
-                        'other_html_attributes' => ' data-inputs="event_wait_list-hidden-inputs-'
-                                                   . $event->ID() . '"',
+                        'other_html_attributes' => ' data-inputs="event-wait-list-'
+                                                   . $event->ID()
+                                                   . '-hidden-inputs"',
                         'default'               => esc_html__(
                             'Sign Up For The Wait List',
                             'event_espresso'
                         ),
                     )
                 ),
-                'hidden_inputs-' . $event->ID() => new EE_Form_Section_Proper(
+                'hidden_inputs' => new EE_Form_Section_Proper(
                     array(
                         'layout_strategy' => new EE_Div_Per_Section_Layout(),
                         'html_class'      => 'event_wait_list-hidden-inputs',
@@ -238,9 +242,9 @@ class WaitListForm extends EE_Form_Section_Proper
                                         esc_html__('cancel', 'event_espresso'),
                                         '', '',
                                         'ee-wait-list-cancel-lnk small-text lt-grey-text', '',
-                                        ' data-inputs="event_wait_list-hidden-inputs-'
+                                        ' data-inputs="event-wait-list-'
                                         . $event->ID()
-                                        . '"'
+                                        . '-hidden-inputs"'
                                     ),
                                     '', 'ee-wait-list-cancel-dv'
                                 )

@@ -1,4 +1,4 @@
-#event_wait_list-frm {
+.event-wait-list-form {
     clear: both;
     margin: 1.5em 0;
     position: relative;
@@ -48,7 +48,7 @@
     text-align: right;
 }
 
-#event_wait_list-frm .ee-wait-list-cancel-lnk {
+.event-wait-list-form .ee-wait-list-cancel-lnk {
     box-shadow: none;
     cursor: pointer;
 }

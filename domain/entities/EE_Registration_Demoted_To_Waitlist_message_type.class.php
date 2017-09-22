@@ -13,12 +13,12 @@ class EE_Registration_Demoted_To_Waitlist_message_type extends EE_Waitlist_Messa
     {
         $this->name = Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION;
         $this->description = esc_html__(
-            'Triggered when a registration is automatically demoted to wait-list.',
+            'Triggered when an attendee is automatically or manually demoted to a wait list.',
             'event_espresso'
         );
         $this->label = array(
-            'singular' => esc_html__('registration demoted to wait-list notification', 'event_espresso'),
-            'plural'   => esc_html__('registration demoted to wait-list notifications', 'event_espresso'),
+            'singular' => esc_html__('registration demoted to wait list notification', 'event_espresso'),
+            'plural'   => esc_html__('registration demoted to wait list notifications', 'event_espresso'),
         );
         $this->_master_templates = array(
             'email' => 'registration',
@@ -38,7 +38,7 @@ class EE_Registration_Demoted_To_Waitlist_message_type extends EE_Waitlist_Messa
             'registrant' => array(
                 'label'       => esc_html__('Registrant', 'event_espresso'),
                 'description' => esc_html__(
-                    'This template goes to registrations that were automatically demoted to the wait-list.',
+                    'This template goes to registrations that were automatically demoted to the wait list.',
                     'event_espresso'
                 ),
             ),

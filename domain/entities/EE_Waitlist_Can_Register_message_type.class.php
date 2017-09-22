@@ -24,12 +24,12 @@ class EE_Waitlist_Can_Register_message_type extends EE_Waitlist_Message_Type_Bas
     {
         $this->name = Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION;
         $this->description = esc_html__(
-            'Triggered for registrations are promoted from a wait-list and are able to finalize their registration for the event.',
+            'Triggered when an attendee is promoted from a wait list and has the option to finalize their registration for an event.',
             'event_espresso'
         );
         $this->label = array(
-            'singular' => esc_html__('registration promoted to wait-list notification', 'event_espresso'),
-            'plural'   => esc_html__('registration promoted to wait-list notifications', 'event_espresso'),
+            'singular' => esc_html__('registration promoted to wait list notification', 'event_espresso'),
+            'plural'   => esc_html__('registration promoted to wait list notifications', 'event_espresso'),
         );
         $this->_master_templates = array(
             'email' => 'registration',

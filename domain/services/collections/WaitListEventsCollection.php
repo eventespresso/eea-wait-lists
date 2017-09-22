@@ -4,9 +4,11 @@ namespace EventEspresso\WaitList\domain\services\collections;
 use EE_Error;
 use EE_Event;
 use EEM_Event;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\collections\Collection;
+use InvalidArgumentException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -24,11 +26,13 @@ class WaitListEventsCollection extends Collection
 {
 
     /**
-     * ProgressStepCollection constructor.
+     * WaitListEventsCollection constructor.
      *
      * @throws InvalidInterfaceException
      * @throws EE_Error
      * @throws InvalidEntityException
+     * @throws InvalidDataTypeException
+     * @throws InvalidArgumentException
      */
     public function __construct()
     {

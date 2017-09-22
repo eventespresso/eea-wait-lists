@@ -47,7 +47,7 @@
                                 <?php
                                 printf(
                                     esc_html__(
-                                        'Your registration was not completed in time and your spot was opened up for another attendee. You are now on the wait list for %1$s[EVENT_NAME]%2$s',
+                                        'Your registration was not completed in time and your spot was opened up for another attendee. You are now on the wait list for %1$s[EVENT_NAME]%2$s.',
                                         'event_espresso'
                                     ),
                                     '<a href="[EVENT_URL]">',

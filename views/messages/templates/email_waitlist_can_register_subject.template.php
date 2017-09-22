@@ -1,2 +1,2 @@
 <?php
-esc_html_e('Registration is Available! Complete your registration now.', 'event_espresso');
+esc_html_e('Registration is available! Complete your registration now', 'event_espresso');

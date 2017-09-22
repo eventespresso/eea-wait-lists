@@ -7,20 +7,22 @@ use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EE_Wait_Lists;
-use EEM_Registration;
 use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
-use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
+use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
+use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
 use InvalidArgumentException;
 use LogicException;
+use ReflectionException;
 use RuntimeException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -50,6 +52,11 @@ class WaitListMonitor
     private $wait_list_event_meta;
 
     /**
+     * @param WaitListFormHandlerCollection $wait_list_forms
+     */
+    private $wait_list_form_handlers;
+
+    /**
      * @var CommandBusInterface $command_bus
      */
     private $command_bus;
@@ -69,24 +76,27 @@ class WaitListMonitor
     /**
      * WaitListMonitor constructor.
      *
-     * @param WaitListEventsCollection $wait_list_events
-     * @param WaitListEventMeta        $wait_list_event_meta
-     * @param CommandBusInterface      $command_bus
-     * @param LoaderInterface          $loader
-     * @param NoticeConverterInterface $notice_converter
+     * @param WaitListEventsCollection      $wait_list_events
+     * @param WaitListEventMeta             $wait_list_event_meta
+     * @param WaitListFormHandlerCollection $wait_list_forms
+     * @param CommandBusInterface           $command_bus
+     * @param LoaderInterface               $loader
+     * @param NoticeConverterInterface      $notice_converter
      */
     public function __construct(
         WaitListEventsCollection $wait_list_events,
         WaitListEventMeta $wait_list_event_meta,
+        WaitListFormHandlerCollection $wait_list_forms,
         CommandBusInterface $command_bus,
         LoaderInterface $loader,
         NoticeConverterInterface $notice_converter
     ) {
-        $this->wait_list_events = $wait_list_events;
-        $this->wait_list_event_meta = $wait_list_event_meta;
-        $this->command_bus = $command_bus;
-        $this->loader = $loader;
-        $this->notice_converter = $notice_converter;
+        $this->wait_list_events        = $wait_list_events;
+        $this->wait_list_event_meta    = $wait_list_event_meta;
+        $this->wait_list_form_handlers = $wait_list_forms;
+        $this->command_bus             = $command_bus;
+        $this->loader                  = $loader;
+        $this->notice_converter        = $notice_converter;
     }
 
 
@@ -115,14 +125,38 @@ class WaitListMonitor
 
     /**
      * @param EE_Event $event
-     * @return \EventEspresso\WaitList\domain\services\forms\WaitListFormHandler
+     * @return WaitListFormHandler
+     * @throws \DomainException
+     * @throws InvalidEntityException
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
      */
     public function waitListFormForEvent(EE_Event $event)
     {
-        return EE_Wait_Lists::loader()->getShared(
+        if($this->wait_list_form_handlers->has($event->ID())) {
+            return $this->wait_list_form_handlers->get($event->ID());
+        }
+        $wait_list_form_handler = EE_Wait_Lists::loader()->getNew(
             'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
-            array($event)
+            array(
+                $event,
+                EE_Wait_Lists::loader()->getNew('EE_Registry')
+            )
         );
+        if(! $this->wait_list_form_handlers->add($wait_list_form_handler, $event->ID())) {
+            throw new DomainException(
+                sprintf(
+                    esc_html__(
+                        'The Wait List form handler for event "%1$s" could not be added to the WaitListFormHandlerCollection.',
+                        'event_espresso'
+                    ),
+                    $event->name()
+                )
+            );
+        }
+        return $wait_list_form_handler;
     }
 
 
@@ -130,6 +164,8 @@ class WaitListMonitor
     /**
      * @param EE_Event $event
      * @return string
+     * @throws InvalidEntityException
+     * @throws InvalidInterfaceException
      * @throws LogicException
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
@@ -149,7 +185,8 @@ class WaitListMonitor
     /**
      * @param int $event_id
      * @return string
-     * @throws \ReflectionException
+     * @throws InvalidInterfaceException
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws DomainException

@@ -6,6 +6,7 @@ use DomainException;
 use EE_Attendee;
 use EE_Error;
 use EE_Event;
+use EE_Form_Section_Proper;
 use EE_Registry;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -67,9 +68,10 @@ class WaitListFormHandler extends FormHandler
     /**
      * creates and returns the actual form
      *
-     * @return void
-     * @throws ReflectionException
+     * @return EE_Form_Section_Proper
+     * @throws DomainException
      * @throws EE_Error
+     * @throws ReflectionException
      */
     public function generate()
     {
@@ -77,11 +79,9 @@ class WaitListFormHandler extends FormHandler
         foreach ($tickets as $TKT_ID => $ticket) {
             $tickets[$TKT_ID] = $ticket->name_and_info();
         }
-        $this->setForm(
-            $this->registry->create(
-                'EventEspresso\WaitList\domain\services\forms\WaitListForm',
-                array($this->event, $tickets)
-            )
+        return $this->registry->create(
+            'EventEspresso\WaitList\domain\services\forms\WaitListForm',
+            array($this->event, $tickets)
         );
     }
 
@@ -107,7 +107,7 @@ class WaitListFormHandler extends FormHandler
         if (empty($valid_data)) {
             throw new InvalidFormSubmissionException($this->formName());
         }
-        $wait_list_form_inputs = (array)$valid_data["hidden_inputs-{$this->event->ID()}"];
+        $wait_list_form_inputs = (array)$valid_data['hidden_inputs'];
         if (empty($wait_list_form_inputs)) {
             throw new InvalidFormSubmissionException($this->formName());
         }

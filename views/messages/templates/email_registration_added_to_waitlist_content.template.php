@@ -33,15 +33,13 @@
                         <td>
                             <h2><?php printf(esc_html__( 'Hello, %s:', 'event_espresso' ), '[RECIPIENT_FNAME]' ); ?></h2>
                             <p class="lead"><?php esc_html_e( "This confirms you've been added to the wait list. If a spot opens up, then we'll follow up through email so you can complete your registration.", 'event_espresso' ); ?></p>
+                            <p><?php esc_html_e('You are on the wait list for the following event(s):', 'event_espresso'); ?></p>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div>
-                <p>
-                    <?php esc_html_e('You are on the wait list for the following event(s):', 'event_espresso'); ?>
-                </p>
                 [EVENT_LIST]
             </div>
         </td>

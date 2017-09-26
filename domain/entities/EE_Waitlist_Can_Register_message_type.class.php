@@ -28,8 +28,8 @@ class EE_Waitlist_Can_Register_message_type extends EE_Waitlist_Message_Type_Bas
             'event_espresso'
         );
         $this->label = array(
-            'singular' => esc_html__('registration promoted to wait list notification', 'event_espresso'),
-            'plural'   => esc_html__('registration promoted to wait list notifications', 'event_espresso'),
+            'singular' => esc_html__('registration promoted from wait list notification', 'event_espresso'),
+            'plural'   => esc_html__('registration promoted from wait list notifications', 'event_espresso'),
         );
         $this->_master_templates = array(
             'email' => 'registration',

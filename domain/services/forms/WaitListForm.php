@@ -159,7 +159,7 @@ class WaitListForm extends EE_Form_Section_Proper
                                 )
                                 . EEH_HTML::p(
                                     esc_html__(
-                                        'If you would like to be added to the waiting list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
+                                        'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
                                         'event_espresso'
                                     ),
                                     '', 'small-text ee-wait-list-notice-pg'

@@ -1,10 +1,12 @@
 <?php
 namespace EventEspresso\WaitList\domain\services\checkout;
 
+use DomainException;
 use EE_Checkout;
 use EE_Error;
 use EE_Registration;
 use EEM_Registration;
+use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -47,6 +49,9 @@ class WaitListCheckoutMonitor
      *
      * @param EE_Checkout $checkout
      * @throws EE_Error
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \InvalidArgumentException
      */
     public function loadAndInstantiateRegSteps(EE_Checkout $checkout)
     {
@@ -117,10 +122,20 @@ class WaitListCheckoutMonitor
      * @param bool            $allow_payment
      * @param EE_Registration $registration
      * @return bool
+     * @throws UnexpectedEntityException
+     * @throws DomainException
      * @throws EE_Error
      */
     public function allowRegPayment($allow_payment, EE_Registration $registration)
     {
+        $event = $registration->event_obj();
+        if(! $event instanceof \EE_Event) {
+            throw new DomainException();
+        }
+        $spaces_remaining = $event->spaces_remaining(array(), false);
+        if((int)$spaces_remaining < 1) {
+            return false;
+        }
         if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {
             return true;
         }

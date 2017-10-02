@@ -7,6 +7,7 @@ use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EE_Wait_Lists;
+use EEH_HTML;
 use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
@@ -310,6 +311,54 @@ class WaitListMonitor
         if ($notices instanceof NoticesContainerInterface) {
             $this->notice_converter->process($notices);
         }
+    }
+
+
+    /**
+     * returns HTML for what appears to be the Wait List sign up form button,
+     * but this button only opens the event in a new window/tab,
+     * and should only be used if the Ticket Selector is detected within an iFrame
+     *
+     * @param EE_Event $event
+     * @return string
+     * @throws EE_Error
+     */
+    public function getWaitListLinkForEvent(EE_Event $event)
+    {
+        $EVT_ID = $event->ID();
+        $wait_list_form_html = '';
+        $wait_list_form_html .= EEH_HTML::div(
+            '',
+            '',
+            'event-wait-list-form'
+        );
+        $wait_list_form_html .= EEH_HTML::div(
+            '',
+            "event-wait-list-{$EVT_ID}-join-wait-list-btn-submit-dv",
+            'ee-join-wait-list-btn float-right-submit-dv ee-submit-input-dv'
+        );
+        $wait_list_form_html .= '<input name="event_wait_list[join_wait_list_btn]"';
+        $wait_list_form_html .= ' value="' . esc_html__('Join The Wait List', 'event_espresso') . '"';
+        $wait_list_form_html .= ' id="event-wait-list-' . $EVT_ID . '-join-wait-list-btn-submit"';
+        $wait_list_form_html .= ' class="ee-join-wait-list-btn float-right button button-primary"';
+        $wait_list_form_html .= ' type="submit" />';
+        $wait_list_form_html .= EEH_HTML::divx(
+            "event-wait-list-{$EVT_ID}-join-wait-list-btn-submit-dv",
+            'ee-join-wait-list-btn float-right-submit-dv ee-submit-input-dv'
+        );
+        $wait_list_form_html .= '
+    <script type="text/javascript">
+        document.getElementById("event-wait-list-' . $EVT_ID . '-join-wait-list-btn-submit").onclick = function () {
+            window.open("' . $event->get_permalink() . '");
+        };
+    </script>';
+        $wait_list_form_html .= EEH_HTML::div(
+            EEH_HTML::br(),
+            '',
+            'clear'
+        );
+        $wait_list_form_html .= EEH_HTML::divx('', 'event-wait-list-form');
+        return $wait_list_form_html;
     }
 
 

@@ -157,8 +157,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
                     '<br />',
                     $event->name()
                 )
-            ),
-            __FILE__, __FUNCTION__, __LINE__
+            )
         );
         return $this->notices;
     }

@@ -246,7 +246,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 'espresso_view_wait_list_update_notice'
             )
             ) {
-                $this->notices->addSuccess($message, __FILE__, __FUNCTION__, __LINE__);
+                $this->notices->addSuccess($message);
             }
             $promoted++;
         }

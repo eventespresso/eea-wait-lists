@@ -269,14 +269,16 @@ class EED_Wait_Lists extends EED_Module
      * @return string
      * @throws Exception
      */
-    public static function add_wait_list_form_for_event($html = '', EE_Event $event, DisplayTicketSelector $ticket_selector)
-    {
+    public static function add_wait_list_form_for_event(
+        $html = '',
+        EE_Event $event,
+        DisplayTicketSelector $ticket_selector
+    ) {
         try {
-            $wait_list_monitor = EED_Wait_Lists::getWaitListMonitor();
-            $wait_list_form_html = $ticket_selector->isIframe()
-                ? $wait_list_monitor->getWaitListLinkForEvent($event)
-                : $wait_list_monitor->getWaitListFormForEvent($event);
-            return $html . $wait_list_form_html;
+            return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent(
+                $event,
+                $ticket_selector
+            );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }

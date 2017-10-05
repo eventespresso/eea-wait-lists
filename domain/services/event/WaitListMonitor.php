@@ -18,6 +18,7 @@ use EventEspresso\core\services\commands\CommandBusInterface;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
+use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
 use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
@@ -163,20 +164,23 @@ class WaitListMonitor
 
 
     /**
-     * @param EE_Event $event
+     * @param EE_Event              $event
+     * @param DisplayTicketSelector $ticket_selector
      * @return string
+     * @throws DomainException
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
      * @throws InvalidEntityException
      * @throws InvalidInterfaceException
      * @throws LogicException
-     * @throws InvalidArgumentException
-     * @throws InvalidDataTypeException
-     * @throws DomainException
-     * @throws EE_Error
      */
-    public function getWaitListFormForEvent(EE_Event $event)
+    public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector)
     {
         if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
-            return $this->waitListFormForEvent($event)->display();
+            return $ticket_selector->isIframe()
+                ? $this->getWaitListLinkForEvent($event)
+                : $this->waitListFormForEvent($event)->display();
         }
         return '';
     }
@@ -346,10 +350,14 @@ class WaitListMonitor
             "event-wait-list-{$EVT_ID}-join-wait-list-btn-submit-dv",
             'ee-join-wait-list-btn float-right-submit-dv ee-submit-input-dv'
         );
+        $event_link = add_query_arg(
+            array('display-wait-list' => 'true'),
+            $event->get_permalink()
+        );
         $wait_list_form_html .= '
     <script type="text/javascript">
         document.getElementById("event-wait-list-' . $EVT_ID . '-join-wait-list-btn-submit").onclick = function () {
-            window.open("' . $event->get_permalink() . '");
+            window.open("' . $event_link . '");
         };
     </script>';
         $wait_list_form_html .= EEH_HTML::div(

@@ -1,5 +1,8 @@
 <?php
+
+use EventEspresso\WaitList\tests\mocks\WaitListCheckoutMonitorMock;
 use EventEspresso\WaitList\domain\Domain;
+use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -19,7 +22,7 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
 {
 
     /**
-     * @var \EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor $wait_list_checkout_monitor
+     * @var WaitListCheckoutMonitorMock $wait_list_checkout_monitor
     */
     protected $wait_list_checkout_monitor;
 
@@ -31,8 +34,8 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->wait_list_checkout_monitor = EE_Registry::instance()->create(
-            'EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor'
+        $this->wait_list_checkout_monitor = new WaitListCheckoutMonitorMock(
+            new WaitListRegistrationMeta()
         );
     }
 
@@ -42,13 +45,11 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
      * @throws EE_Error
      * @throws PHPUnit_Framework_AssertionFailedError
      */
-    public function testAllowRegPayment()
+    public function testAllowRegPaymentWithInvalidEvent()
     {
-        /** @var EE_Event $event */
-        $event = $this->factory->event->create();
         $registration = EE_Registration::new_instance(
             array(
-              'EVT_ID'          => $event->ID(),
+              'EVT_ID'          => 1,
               'TKT_ID'          => 2,
               'TXN_ID'          => 3,
               'STS_ID'          => EEM_Registration::status_id_pending_payment,
@@ -59,7 +60,46 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
         );
         $registration->save();
         //first confirm that this guy can't pay
-        $this->assertFalse($this->wait_list_checkout_monitor->allowRegPayment(false, $registration));
+        $this->setExceptionExpected('DomainException');
+        $this->wait_list_checkout_monitor->allowRegPayment(false, $registration);
+
+    }
+
+
+    /**
+     * @throws EE_Error
+     * @throws PHPUnit_Framework_AssertionFailedError
+     */
+    public function testAllowRegPayment()
+    {
+        $ticket = $this->new_ticket();
+        $registration = EE_Registration::new_instance(
+            array(
+              'EVT_ID'          => $ticket->get_event_ID(),
+              'TKT_ID'          => $ticket->ID(),
+              'TXN_ID'          => 3,
+              'STS_ID'          => EEM_Registration::status_id_pending_payment,
+              'REG_count'       => 1,
+              'REG_group_size'  => 1,
+              'REG_final_price' => $ticket->price(),
+            )
+        );
+        $registration->save();
+        $event = $ticket->get_related_event();
+        //event should have infinite spaces because we did not set any datetime reg limit
+        $this->assertInfinite(
+            $event->spaces_remaining(array(), false)
+        );
+        // and registration has not yet signed up
+        $this->assertNull(
+            $this->wait_list_checkout_monitor->getRegistrationMeta()->getRegistrationSignedUp(
+                $registration
+            )
+        );
+        // so first confirm that this guy can't pay
+        $this->assertFalse(
+            $this->wait_list_checkout_monitor->allowRegPayment(false, $registration)
+        );
         // now add meta data to indicate that this guy was on the waitlist
         $registration->add_extra_meta(
             Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP,
@@ -67,7 +107,20 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
             true
         );
         // then try again
-        $this->assertTrue($this->wait_list_checkout_monitor->allowRegPayment(false, $registration));
+        $this->assertTrue(
+            $this->wait_list_checkout_monitor->allowRegPayment(false, $registration)
+        );
+        // now let's set the datetime reg limit to zero to simulate no spaces available
+        $datetime = $ticket->first_datetime();
+        $datetime->set_reg_limit(0);
+        $this->assertEquals(
+            0,
+            $event->spaces_remaining(array(), false)
+        );
+        // payment should not be allowed now
+        $this->assertFalse(
+            $this->wait_list_checkout_monitor->allowRegPayment(false, $registration)
+        );
     }
 
 }

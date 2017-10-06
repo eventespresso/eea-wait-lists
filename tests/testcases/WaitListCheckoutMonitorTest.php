@@ -13,6 +13,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * @package Event Espresso
  * @author  Brent Christensen
  * @group   WaitList
+ * @group   WaitListCheckoutMonitor
  */
 class WaitListCheckoutMonitorTest extends EE_UnitTestCase
 {
@@ -38,22 +39,23 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group WaitListCheckoutMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_AssertionFailedError
      */
     public function testAllowRegPayment()
     {
+        /** @var EE_Event $event */
+        $event = $this->factory->event->create();
         $registration = EE_Registration::new_instance(
-          array(
-              'EVT_ID'          => 1,
+            array(
+              'EVT_ID'          => $event->ID(),
               'TKT_ID'          => 2,
               'TXN_ID'          => 3,
               'STS_ID'          => EEM_Registration::status_id_pending_payment,
               'REG_count'       => 1,
               'REG_group_size'  => 1,
               'REG_final_price' => 10.00,
-          )
+            )
         );
         $registration->save();
         //first confirm that this guy can't pay

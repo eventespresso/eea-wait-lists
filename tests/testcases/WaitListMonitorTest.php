@@ -86,7 +86,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
             $args = array(
                 'status' => 'publish',
             );
-            // for factors of 3
+            // for factors of 2
             if ($x % 2 === 0) {
                 $args['EVT_allow_overflow'] = true;
             }
@@ -136,7 +136,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
     private function getSoldOutEventWithEmptyWaitList($number = 1, $auto_promote = false)
     {
         $number *= 2;
-        // events whose key is a factor of 3 have wait lists, let's get one
+        // events whose key is a factor of 2 have wait lists, let's get one
         $event_with_wait_list = $this->events[$number];
         $this->assertInstanceOf('EE_Event', $event_with_wait_list);
         $event_with_wait_list->set_status(EEM_Event::sold_out);

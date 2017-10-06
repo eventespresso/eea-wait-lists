@@ -128,7 +128,7 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
         $message = $queue->get_message_repository()->current();
 
         //verify the subject is correct
-        $this->assertEquals('Registration is Available!', $message->subject());
+        $this->assertEquals('Registration is available! Complete your registration now', $message->subject());
         //verify the content only has ONE ticket name mentioned in it.
         $this->assertEquals(1, substr_count($message->content(), 'TKT_name'));
         //verify the to field is correct
@@ -185,7 +185,7 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
         $message = $queue->get_message_repository()->current();
 
         //verify the subject is correct
-        $this->assertEquals('Response Required: Wait List Confirmation', $message->subject());
+        $this->assertEquals('You\'re on the Wait List!', $message->subject());
         //verify the content only has ONE ticket name mentioned in it.
         $this->assertEquals(1, substr_count($message->content(), 'TKT_name'));
         //verify the to field is correct

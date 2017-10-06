@@ -1,4 +1,6 @@
 <?php
+
+use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
@@ -14,6 +16,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * @package Event Espresso
  * @author  Brent Christensen
  * @group   WaitList
+ * @group WaitListMonitor
  */
 class WaitListMonitorTest extends EE_UnitTestCase
 {
@@ -215,7 +218,6 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group WaitListMonitor
      * @throws DomainException
      * @throws EE_Error
      * @throws InvalidArgumentException
@@ -231,19 +233,24 @@ class WaitListMonitorTest extends EE_UnitTestCase
         $this->assertTrue($event_with_wait_list->allow_overflow());
         $this->assertFalse($event_with_wait_list->is_sold_out());
         // event is not sold out so there should not be a wait list form
-        $wait_list_form_for_event = $this->wait_list_monitor->getWaitListFormForEvent($event_with_wait_list);
+        $wait_list_form_for_event = $this->wait_list_monitor->getWaitListFormForEvent(
+            $event_with_wait_list,
+            new DisplayTicketSelector()
+        );
         $this->assertEmpty($wait_list_form_for_event);
         // now mark the event as being sold out
         $event_with_wait_list->set_status(EEM_Event::sold_out);
         $this->assertTrue($event_with_wait_list->is_sold_out());
-        $wait_list_form_for_event = $this->wait_list_monitor->getWaitListFormForEvent($event_with_wait_list);
+        $wait_list_form_for_event = $this->wait_list_monitor->getWaitListFormForEvent(
+            $event_with_wait_list,
+            new DisplayTicketSelector()
+        );
         $this->assertNotEmpty($wait_list_form_for_event);
     }
 
 
 
     /**
-     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      * @throws \EventEspresso\core\exceptions\EntityNotFoundException
@@ -276,7 +283,6 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      * @throws \EventEspresso\core\exceptions\EntityNotFoundException
@@ -305,7 +311,6 @@ class WaitListMonitorTest extends EE_UnitTestCase
 
 
     /**
-     * @group WaitListMonitor
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
      */

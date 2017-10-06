@@ -88,7 +88,7 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
         $event = $ticket->get_related_event();
         //event should have infinite spaces because we did not set any datetime reg limit
         $this->assertEquals(
-            INF,
+            EE_INF,
             $event->spaces_remaining(array(), false)
         );
         // and registration has not yet signed up

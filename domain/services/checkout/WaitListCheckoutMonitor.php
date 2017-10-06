@@ -142,7 +142,7 @@ class WaitListCheckoutMonitor
             );
         }
         $spaces_remaining = $event->spaces_remaining(array(), false);
-        if ($spaces_remaining !== INF && (int)$spaces_remaining < 1) {
+        if ($spaces_remaining !== EE_INF && (int)$spaces_remaining < 1) {
             return false;
         }
         if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {

@@ -1,4 +1,5 @@
 <?php
+
 namespace EventEspresso\WaitList\domain\services\checkout;
 
 use DomainException;
@@ -28,7 +29,7 @@ class WaitListCheckoutMonitor
     /**
      * @var WaitListRegistrationMeta $event_meta
      */
-    private $registration_meta;
+    protected $registration_meta;
 
 
 
@@ -94,14 +95,14 @@ class WaitListCheckoutMonitor
     {
         $reg_steps = $checkout->transaction->reg_steps();
         if (empty($reg_steps)) {
-            $registrations = $checkout->transaction->registrations();
+            $registrations                = $checkout->transaction->registrations();
             $checkout->total_ticket_count = count($registrations);
             $checkout->transaction->set_reg_steps(
                 $checkout->initialize_txn_reg_steps_array()
             );
             $checkout->transaction->save();
         }
-        $checkout->revisit = false;
+        $checkout->revisit         = false;
         $checkout->primary_revisit = false;
         return $checkout;
     }
@@ -129,11 +130,19 @@ class WaitListCheckoutMonitor
     public function allowRegPayment($allow_payment, EE_Registration $registration)
     {
         $event = $registration->event_obj();
-        if(! $event instanceof \EE_Event) {
-            throw new DomainException();
+        if (! $event instanceof \EE_Event) {
+            throw new DomainException(
+                sprintf(
+                    esc_html__(
+                        'The related Event for the supplied Registration (ID:%1$d) is either missing or invalid.',
+                        'event_espresso'
+                    ),
+                    $registration->ID()
+                )
+            );
         }
         $spaces_remaining = $event->spaces_remaining(array(), false);
-        if((int)$spaces_remaining < 1) {
+        if ($spaces_remaining !== INF && (int)$spaces_remaining < 1) {
             return false;
         }
         if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {

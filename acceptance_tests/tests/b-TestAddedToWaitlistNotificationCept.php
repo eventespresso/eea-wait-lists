@@ -10,7 +10,7 @@ use Page\WaitListsGeneral;
  * This test covers testing the promotion waitlist notification.
  */
 $I = new EventEspressoAddonAcceptanceTester($scenario, WaitListsGeneral::ADDDON_SLUG_FOR_WP_PLUGIN_PAGE, false);
-$I->wantTo('Test functionality of the "Registration Promoted To Wait-list Notification" message type.');
+$I->wantTo('Test functionality of the "Registration Promoted From Wait List Notification" message type.');
 
 $I->amGoingTo('Setup an event with a waitlist for testing with.');
 $I->loginAsAdmin();
@@ -59,9 +59,9 @@ $I->see('Ticket A');
 $I->selectOption(TicketSelector::ticketOptionByEventIdSelector($event_id), '5');
 $I->click(TicketSelector::ticketSelectionSubmitSelectorByEventId($event_id));
 $I->waitForText('Personal Information');
-$I->fillOutFirstNameFieldForAttendee('Tester');
-$I->fillOutLastNameFieldForAttendee('Guy');
-$I->fillOutEmailFieldForAttendee('dude+registrationgroup1@example.org');
+$I->fillOutFirstNameFieldForAttendee('Group');
+$I->fillOutLastNameFieldForAttendee('A');
+$I->fillOutEmailFieldForAttendee('dude+groupa@example.org');
 $I->goToNextRegistrationStep();
 //payment options step
 $I->selectPaymentOptionFor(); //defaults to invoice
@@ -83,8 +83,8 @@ $I->amOnUrl($event_link);
 $I->see('Sold Out');
 $I->fillOutAndSubmitWaitListFormForEvent(
     $event_id,
-    'Tester WaitlistGuy',
-    'dude+testerwaitlistguy@example.org',
+    'Group B',
+    'dude+groupb@example.org',
     'Ticket A',
     5
 );
@@ -95,7 +95,7 @@ $I->amOnMessagesActivityListTablePage(
     '&ee_message_type_filter_by=' . WaitListsGeneral::MESSAGE_TYPE_SLUG_REGISTRATION_ADDED_TO_WAIT_LIST
 );
 $I->see(
-    'dude+testerwaitlistguy@example.org',
+    'dude+groupb@example.org',
     MessagesAdmin::messagesActivityListTableCellSelectorFor(
         'to',
         'Registration Added To Wait List Notification',
@@ -106,7 +106,7 @@ $I->see(
 );
 $I->verifyMatchingCountofTextInMessageActivityListTableFor(
     1,
-    'dude+testerwaitlistguy@example.org',
+    'dude+groupb@example.org',
     'to',
     'Registration Added To Wait List Notification',
     MessagesAdmin::MESSAGE_STATUS_SENT,

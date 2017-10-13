@@ -16,7 +16,7 @@ $I->loginAsAdmin();
 $I->amGoingTo('Confirm expected message types for the add-on are active.');
 $I->amOnDefaultMessageTemplateListTablePage();
 $I->click(CoreAdmin::ADMIN_LIST_TABLE_NEXT_PAGE_CLASS);
-$I->see('Registration Promoted To Wait List Notification');
+$I->see('Registration Promoted From Wait List Notification');
 $I->see('Registration Demoted To Wait List Notification');
 $I->see('Registration Added To Wait List Notification');
 

@@ -189,21 +189,20 @@ class WaitListMonitor
 
     /**
      * @param int $event_id
-     * @return string
-     * @throws InvalidInterfaceException
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
-     * @throws InvalidDataTypeException
+     * @return void
      * @throws DomainException
      * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
      * @throws InvalidEntityException
      * @throws InvalidFormSubmissionException
+     * @throws InvalidInterfaceException
      * @throws LogicException
+     * @throws ReflectionException
      * @throws RuntimeException
      */
     public function processWaitListFormForEvent($event_id)
     {
-        $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         if(!$event_id) {
             throw new DomainException(
                 esc_html__(
@@ -217,15 +216,7 @@ class WaitListMonitor
             $event = $this->wait_list_events->get($event_id);
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
-            $referrer = isset(
-                $_REQUEST['event_wait_list'],
-                $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"],
-                $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"]['referrer']
-            )
-                ? $_REQUEST['event_wait_list']["hidden_inputs-{$event_id}"]['referrer']
-                : $referrer;
         }
-        return $referrer;
     }
 
 

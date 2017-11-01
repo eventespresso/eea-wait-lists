@@ -294,22 +294,23 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function process_wait_list_form_for_event()
     {
-        $referrer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
+        $event_id = isset($_REQUEST['event_wait_list'], $_REQUEST['event_wait_list']['event_id'])
+            ? absint($_REQUEST['event_wait_list']['event_id'])
+            : 0;
         try {
-            $event_id = isset($_REQUEST['event_wait_list'], $_REQUEST['event_wait_list']['event_id'])
-                ? absint($_REQUEST['event_wait_list']['event_id'])
-                : 0;
-            $referrer = EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+            EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
+        EE_Error::get_notices(false, true);
         // todo submit form via AJAX and process return here
         if (defined('DOING_AJAX') && DOING_AJAX) {
-            echo 'AJAX';
             exit();
         }
-        EE_Error::get_notices(false, true);
-        wp_safe_redirect($referrer);
+        $referrer = $event_id === 0
+            ? filter_input(INPUT_SERVER, 'HTTP_REFERER')
+            : get_permalink($event_id);
+        wp_safe_redirect(trailingslashit($referrer));
         exit();
     }
 

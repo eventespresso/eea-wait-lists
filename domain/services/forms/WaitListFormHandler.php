@@ -57,7 +57,7 @@ class WaitListFormHandler extends FormHandler
             esc_html__('Event Wait List', 'event_espresso'),
             esc_html__('Event Wait List', 'event_espresso'),
             'event_wait_list',
-            site_url(),
+            trailingslashit(site_url()),
             FormHandler::ADD_FORM_TAGS_ONLY,
             $registry
         );

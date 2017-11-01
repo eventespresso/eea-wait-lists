@@ -310,7 +310,7 @@ class EED_Wait_Lists extends EED_Module
         $referrer = $event_id === 0
             ? filter_input(INPUT_SERVER, 'HTTP_REFERER')
             : get_permalink($event_id);
-        wp_safe_redirect($referrer);
+        wp_safe_redirect(trailingslashit($referrer));
         exit();
     }
 

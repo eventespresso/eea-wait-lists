@@ -37,6 +37,8 @@
  * ------------------------------------------------------------------------
  */
 // define versions and this file
+use EventEspresso\core\services\loaders\LoaderFactory;
+
 define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.071');
 define('EE_WAIT_LISTS_PLUGIN_FILE', __FILE__);
 /**
@@ -63,19 +65,30 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
 function load_espresso_wait_lists()
 {
     if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\DomainBase')) {
-        espresso_load_required(
-            'EventEspresso\WaitList\domain\Domain',
-            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . 'domain/Domain.php'
+        EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);
+        /** @var EventEspresso\WaitList\domain\Domain $domain */
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\WaitList',
+            array(
+                'EventEspresso\WaitList\domain\Domain' => EE_Dependency_Map::load_from_cache,
+                'EE_Dependency_Map'                    => EE_Dependency_Map::load_from_cache,
+            )
         );
-        EventEspresso\WaitList\domain\Domain::init(
-            EE_WAIT_LISTS_PLUGIN_FILE,
-            EE_WAIT_LISTS_VERSION
+        /** @var EventEspresso\WaitList\domain\WaitList $wait_list_addon */
+        $wait_list_addon = LoaderFactory::getLoader()->getShared(
+            'EventEspresso\WaitList\domain\WaitList',
+            array(
+                LoaderFactory::getLoader()->getShared(
+                    'EventEspresso\WaitList\domain\Domain',
+                    array(
+                        EE_WAIT_LISTS_PLUGIN_FILE,
+                        EE_WAIT_LISTS_VERSION
+                    )
+                ),
+                'EE_Registry::create(addon)' => true
+            )
         );
-        espresso_load_required(
-            'EE_Wait_Lists',
-            EventEspresso\WaitList\domain\Domain::pluginPath() . 'EE_Wait_Lists.class.php'
-        );
-        EE_Wait_Lists::register_addon();
+        $wait_list_addon->register();
     } else {
         add_action('admin_notices', 'espresso_wait_lists_activation_error');
     }
@@ -106,7 +119,7 @@ function espresso_wait_lists_activation_error()
 {
     unset($_GET['activate'], $_REQUEST['activate']);
     if (! function_exists('deactivate_plugins')) {
-        require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
     deactivate_plugins(plugin_basename(EE_WAIT_LISTS_PLUGIN_FILE));
     ?>

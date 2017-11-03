@@ -6,7 +6,6 @@ use DomainException;
 use EE_Error;
 use EE_Event;
 use EE_Registration;
-use EE_Wait_Lists;
 use EEH_HTML;
 use EventEspresso\core\domain\entities\Context;
 use EventEspresso\core\exceptions\EntityNotFoundException;
@@ -15,6 +14,7 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\commands\CommandBusInterface;
+use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
@@ -140,11 +140,11 @@ class WaitListMonitor
         if($this->wait_list_form_handlers->has($event->ID())) {
             return $this->wait_list_form_handlers->get($event->ID());
         }
-        $wait_list_form_handler = EE_Wait_Lists::loader()->getNew(
+        $wait_list_form_handler = LoaderFactory::getLoader()->getNew(
             'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
             array(
                 $event,
-                EE_Wait_Lists::loader()->getNew('EE_Registry')
+                LoaderFactory::getLoader()->getNew('EE_Registry')
             )
         );
         if(! $this->wait_list_form_handlers->add($wait_list_form_handler, $event->ID())) {

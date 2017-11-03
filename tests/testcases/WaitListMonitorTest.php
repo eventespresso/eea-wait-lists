@@ -1,9 +1,12 @@
 <?php
 
+use EventEspresso\core\exceptions\EntityNotFoundException;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
+use PHPUnit\Framework\Exception;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -131,7 +134,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      * @param bool $auto_promote
      * @return EE_Event
      * @throws EE_Error
-     * @throws PHPUnit_Framework_Exception
+     * @throws Exception
      */
     private function getSoldOutEventWithEmptyWaitList($number = 1, $auto_promote = false)
     {
@@ -224,7 +227,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
      * @throws LogicException
      * @throws PHPUnit_Framework_AssertionFailedError
      * @throws PHPUnit_Framework_Exception
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws InvalidDataTypeException
      */
     public function test_getWaitListFormForEvent()
     {
@@ -253,12 +256,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
     /**
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
-     * @throws \EventEspresso\core\exceptions\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function test_registrationStatusUpdate()
     {
         for($reg_count = 1; $reg_count < 4; $reg_count++) {
-            $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList(1);
+            $event_with_wait_list = $this->getSoldOutEventWithEmptyWaitList();
             // add a wait list registrations for that event
             $registrations = $this->registerForWaitListEvent($event_with_wait_list, $reg_count);
             $this->assertCount($reg_count, $registrations);
@@ -285,7 +288,7 @@ class WaitListMonitorTest extends EE_UnitTestCase
     /**
      * @throws EE_Error
      * @throws PHPUnit_Framework_Exception
-     * @throws \EventEspresso\core\exceptions\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function test_registrationStatusUpdateWithAutoPromote()
     {

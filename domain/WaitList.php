@@ -13,6 +13,7 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use InvalidArgumentException;
+use ReflectionException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit();
 
@@ -62,6 +63,10 @@ Class  WaitList extends EE_Addon
      *
      * @throws EE_Error
      * @throws DomainException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function register()
     {

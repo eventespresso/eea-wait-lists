@@ -11,6 +11,7 @@ use EE_Registry;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use InvalidArgumentException;
 use LogicException;
@@ -46,9 +47,8 @@ class WaitListFormHandler extends FormHandler
      * @param EE_Event    $event
      * @param EE_Registry $registry
      * @throws DomainException
-     * @throws InvalidDataTypeException
      * @throws InvalidArgumentException
-     * @throws EE_Error
+     * @throws InvalidDataTypeException
      */
     public function __construct(EE_Event $event, EE_Registry $registry)
     {
@@ -69,16 +69,24 @@ class WaitListFormHandler extends FormHandler
      * creates and returns the actual form
      *
      * @return EE_Form_Section_Proper
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      * @throws DomainException
      * @throws EE_Error
      * @throws ReflectionException
      */
     public function generate()
     {
-        $tickets = $this->event->tickets();
+        $tickets = $this->event->active_tickets();
         foreach ($tickets as $TKT_ID => $ticket) {
             $tickets[$TKT_ID] = $ticket->name_and_info();
         }
+        $tickets = (array) apply_filters(
+            'FHEE__EventEspresso_WaitList_domain_services_forms__WaitListFormHandler__generate__tickets',
+            $tickets,
+            $this->event
+        );
         return $this->registry->create(
             'EventEspresso\WaitList\domain\services\forms\WaitListForm',
             array($this->event, $tickets)

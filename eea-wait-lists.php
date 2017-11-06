@@ -77,7 +77,7 @@ function load_espresso_wait_lists()
         $wait_list_addon = $loader->getShared(
             'EventEspresso\WaitList\domain\WaitList',
             array(
-                $loader->getShared(
+                EventEspresso\core\domain\DomainFactory::create(
                     'EventEspresso\WaitList\domain\Domain',
                     array(
                         EE_WAIT_LISTS_PLUGIN_FILE,

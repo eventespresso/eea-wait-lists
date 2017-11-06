@@ -37,8 +37,6 @@
  * ------------------------------------------------------------------------
  */
 // define versions and this file
-use EventEspresso\core\services\loaders\LoaderFactory;
-
 define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.071');
 define('EE_WAIT_LISTS_PLUGIN_FILE', __FILE__);
 /**
@@ -74,11 +72,12 @@ function load_espresso_wait_lists()
                 'EE_Dependency_Map'                    => EE_Dependency_Map::load_from_cache,
             )
         );
+        $loader = EventEspresso\core\services\loaders\LoaderFactory::getLoader();
         /** @var EventEspresso\WaitList\domain\WaitList $wait_list_addon */
-        $wait_list_addon = LoaderFactory::getLoader()->getShared(
+        $wait_list_addon = $loader->getShared(
             'EventEspresso\WaitList\domain\WaitList',
             array(
-                LoaderFactory::getLoader()->getShared(
+                $loader->getShared(
                     'EventEspresso\WaitList\domain\Domain',
                     array(
                         EE_WAIT_LISTS_PLUGIN_FILE,

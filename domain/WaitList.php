@@ -8,6 +8,8 @@ use EE_Dependency_Map;
 use EE_Error;
 use EE_Register_Addon;
 use EE_Register_Messages_Shortcode_Library;
+use EventEspresso\core\domain\DomainInterface;
+use EventEspresso\core\domain\RequiresDependencyMapInterface;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
@@ -25,7 +27,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit();
  * @subpackage            eea-wait-lists
  * @author                Brent Christensen
  */
-Class  WaitList extends EE_Addon
+Class  WaitList extends EE_Addon implements RequiresDependencyMapInterface
 {
 
 
@@ -43,14 +45,23 @@ Class  WaitList extends EE_Addon
 
 
     /**
-     * @param Domain            $domain
+     * @param DomainInterface   $domain
      * @param EE_Dependency_Map $dependency_map
      */
-    public function __construct(Domain $domain, EE_Dependency_Map $dependency_map)
+    public function __construct(DomainInterface $domain, EE_Dependency_Map $dependency_map)
     {
         $this->domain         = $domain;
-        $this->dependency_map = $dependency_map;
+        $this->setDependencyMap($dependency_map);
         parent::__construct();
+    }
+
+
+    /**
+     * @param EE_Dependency_Map $dependency_map
+     */
+    public function setDependencyMap($dependency_map)
+    {
+        $this->dependency_map = $dependency_map;
     }
 
 

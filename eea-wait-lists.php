@@ -63,31 +63,25 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
 function load_espresso_wait_lists()
 {
     if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\DomainBase')) {
+        // register namespace
         EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);
-        /** @var EventEspresso\WaitList\domain\Domain $domain */
+        // register dependencies for main Addon class
         EE_Dependency_Map::register_dependencies(
             'EventEspresso\WaitList\domain\WaitList',
             array(
-                'EventEspresso\WaitList\domain\Domain' => EE_Dependency_Map::load_from_cache,
                 'EE_Dependency_Map'                    => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\Domain' => EE_Dependency_Map::load_from_cache,
             )
         );
-        $loader = EventEspresso\core\services\loaders\LoaderFactory::getLoader();
-        /** @var EventEspresso\WaitList\domain\WaitList $wait_list_addon */
-        $wait_list_addon = $loader->getShared(
-            'EventEspresso\WaitList\domain\WaitList',
-            array(
-                EventEspresso\core\domain\DomainFactory::create(
-                    'EventEspresso\WaitList\domain\Domain',
-                    array(
-                        EE_WAIT_LISTS_PLUGIN_FILE,
-                        EE_WAIT_LISTS_VERSION
-                    )
-                ),
-                'EE_Registry::create(addon)' => true
+        EventEspresso\WaitList\domain\WaitList::registerAddon(
+            EventEspresso\core\domain\DomainFactory::create(
+                'EventEspresso\WaitList\domain\Domain',
+                array(
+                    EE_WAIT_LISTS_PLUGIN_FILE,
+                    EE_WAIT_LISTS_VERSION
+                )
             )
         );
-        $wait_list_addon->register();
     } else {
         add_action('admin_notices', 'espresso_wait_lists_activation_error');
     }

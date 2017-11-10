@@ -114,6 +114,8 @@ class WaitListCheckoutMonitorTest extends EE_UnitTestCase
         // now let's set the datetime reg limit to zero to simulate no spaces available
         $datetime = $ticket->first_datetime();
         $datetime->set_reg_limit(0);
+        // now clear any cached values for spaces remaining
+        $event->getAvailableSpacesCalculator()->clearResults();
         $this->assertEquals(
             0,
             $event->spaces_remaining(array(), false)

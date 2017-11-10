@@ -74,11 +74,13 @@ function load_espresso_wait_lists()
             )
         );
         EventEspresso\WaitList\domain\WaitList::registerAddon(
-            EventEspresso\core\domain\DomainFactory::create(
-                'EventEspresso\WaitList\domain\Domain',
+            EventEspresso\core\domain\DomainFactory::getShared(
+                new EventEspresso\core\domain\values\FullyQualifiedName(
+                    'EventEspresso\WaitList\domain\Domain'
+                ),
                 array(
-                    EE_WAIT_LISTS_PLUGIN_FILE,
-                    EE_WAIT_LISTS_VERSION
+                    new EventEspresso\core\domain\values\FilePath(EE_WAIT_LISTS_PLUGIN_FILE),
+                    EventEspresso\core\domain\values\Version::fromString(EE_WAIT_LISTS_VERSION)
                 )
             )
         );

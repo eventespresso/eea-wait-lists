@@ -18,6 +18,7 @@ use ReflectionException;
 defined('EVENT_ESPRESSO_VERSION') || exit();
 
 
+
 /**
  * Class  WaitListAddon
  *
@@ -25,7 +26,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit();
  * @subpackage            eea-wait-lists
  * @author                Brent Christensen
  */
-Class  WaitList extends EE_Addon
+class WaitList extends EE_Addon
 {
 
     /**
@@ -58,7 +59,7 @@ Class  WaitList extends EE_Addon
                     $domain->pluginPath() . 'domain/services/modules/EED_Wait_Lists.module.php',
                     $domain->pluginPath() . 'domain/services/modules/EED_Wait_Lists_Messages.module.php',
                 ),
-                'message_types' => array_merge(
+                'message_types'    => array_merge(
                     WaitList::messageTypeRegistrationOptions(
                         Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION,
                         'EE_Waitlist_Can_Register_message_type.class.php',
@@ -90,8 +91,8 @@ Class  WaitList extends EE_Addon
     /**
      * Returns the message type options array for registering the message type.
      *
-     * @param string          $message_type
-     * @param string          $message_type_filename
+     * @param string $message_type
+     * @param string $message_type_filename
      * @param Domain $domain
      * @return array
      */
@@ -105,7 +106,7 @@ Class  WaitList extends EE_Addon
                 'mtfilename'                                       => $message_type_filename,
                 'autoloadpaths'                                    => array(
                     $domain->pluginPath() . 'domain/services/messages/',
-                    $domain->pluginPath() . 'domain/entities'
+                    $domain->pluginPath() . 'domain/entities',
                 ),
                 'messengers_to_activate_with'                      => array('email'),
                 'messengers_to_validate_with'                      => array('email'),
@@ -113,7 +114,7 @@ Class  WaitList extends EE_Addon
                 'messengers_supporting_default_template_pack_with' => array('email'),
                 'base_path_for_default_templates'                  => $domain->pluginPath()
                                                                       . 'views/messages/templates/',
-            )
+            ),
         );
     }
 
@@ -241,7 +242,7 @@ Class  WaitList extends EE_Addon
             'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation',
             array(
                 'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta' => EE_Dependency_Map::load_from_cache,
-                'EE_Request' => EE_Dependency_Map::load_from_cache,
+                'EE_Request'                                                                   => EE_Dependency_Map::load_from_cache,
             )
         );
     }
@@ -259,7 +260,8 @@ Class  WaitList extends EE_Addon
         //facility for deregistering via the provided api.  This forces client code to use that api.
         add_action(
             'EE_Brewing_Regular___messages_caf',
-            function () {
+            function ()
+            {
                 EE_Register_Messages_Shortcode_Library::register(
                     'recipient_waitlist_shortcode_library',
                     array(
@@ -273,7 +275,8 @@ Class  WaitList extends EE_Addon
         //make sure the shortcode library is deregistered if this add-on is deregistered.
         add_action(
             'AHEE__EE_Register_Addon__deregister__after',
-            function ($addon_name) {
+            function ($addon_name)
+            {
                 if ($addon_name === 'Wait_Lists') {
                     EE_Register_Messages_Shortcode_Library::deregister('recipient_waitlist_shortcode_library');
                 }

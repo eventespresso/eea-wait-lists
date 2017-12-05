@@ -124,7 +124,7 @@ function espresso_wait_lists_activation_error()
                     'Event Espresso Wait Lists could not be activated. Please ensure that Event Espresso version %1$s or higher is running',
                     'event_espresso'
                 ),
-                '4.9.39.p'
+                '4.9.54.p'
             );
             ?></p>
     </div>

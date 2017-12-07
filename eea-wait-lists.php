@@ -3,7 +3,7 @@
   Plugin Name: Event Espresso - Wait Lists (EE4.9+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Wait Lists Addon maximizes event sales by allowing attendees to partially register for a datetime or ticket that has sold out, but then complete the registration process later after spaces have become available due to venue change, additional tickets, non-payment, cancellation, etc.
-  Version: 1.0.0.rc.072
+  Version: 1.0.0.rc.073
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
   Copyright 2014 Event Espresso (email : support@eventespresso.com)
@@ -37,7 +37,7 @@
  * ------------------------------------------------------------------------
  */
 // define versions and this file
-define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.072');
+define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.073');
 define('EE_WAIT_LISTS_PLUGIN_FILE', __FILE__);
 /**
  *    captures plugin activation errors for debugging
@@ -58,11 +58,18 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
 
 
 /**
- *    registers addon with EE core
+ * registers addon with EE core
+ *
+ * @throws DomainException
+ * @throws EE_Error
  */
 function load_espresso_wait_lists()
 {
-    if (class_exists('EE_Addon') && class_exists('EventEspresso\core\domain\DomainBase')) {
+    if (
+            class_exists('EE_Addon')
+            && class_exists('EventEspresso\core\domain\DomainBase')
+            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.54.rc.007', '>')
+    ) {
         // register namespace
         EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);
         // register dependencies for main Addon class

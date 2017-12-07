@@ -1,6 +1,5 @@
 <?php
 
-use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 
@@ -16,14 +15,6 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
  */
 class EE_Waitlist_Message_Type_Base extends EE_message_type
 {
-
-    /**
-     * EE_Waitlist_Message_Type_Base constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
 
 
@@ -98,7 +89,7 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
      *                                      guessing a url).
      * @param int             $id           Optional. Integer corresponding to the value for the primary key of a
      *                                      EE_Base_Class_Object
-     * @return EE_Registration[]
+     * @return EE_Registration
      */
     protected function _get_data_for_context($context, EE_Registration $registration, $id)
     {

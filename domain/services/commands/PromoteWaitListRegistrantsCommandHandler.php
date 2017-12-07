@@ -11,11 +11,16 @@ use EED_Wait_Lists;
 use EEM_Change_Log;
 use EEM_Registration;
 use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\exceptions\EntityNotFoundException;
+use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
+use InvalidArgumentException;
+use ReflectionException;
 use RuntimeException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -87,6 +92,11 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @throws EE_Error
      * @throws InvalidEntityException
      * @throws RuntimeException
+     * @throws EntityNotFoundException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function handle(CommandInterface $command)
     {
@@ -178,11 +188,11 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @return int
      * @throws EE_Error
      * @throws RuntimeException
-     * @throws \EventEspresso\core\exceptions\EntityNotFoundException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws EntityNotFoundException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {

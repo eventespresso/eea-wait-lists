@@ -237,6 +237,11 @@ class EED_Wait_Lists_Messages extends EED_Messages
      *
      * @param EE_Registration[] $registrations
      * @param string            $message_type_slug
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
+     * @throws ReflectionException
      */
     protected static function trigger_wait_list_notifications(
         $registrations,

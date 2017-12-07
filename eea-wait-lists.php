@@ -68,21 +68,29 @@ function load_espresso_wait_lists()
     if (
             class_exists('EE_Addon')
             && class_exists('EventEspresso\core\domain\DomainBase')
-            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.54.rc.007', '<=')
+            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.54.rc.007', '>')
     ) {
-        espresso_load_required(
-            'EventEspresso\WaitList\domain\Domain',
-            plugin_dir_path(EE_WAIT_LISTS_PLUGIN_FILE) . 'domain/Domain.php'
+        // register namespace
+        EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);
+        // register dependencies for main Addon class
+        EE_Dependency_Map::register_dependencies(
+            'EventEspresso\WaitList\domain\WaitList',
+            array(
+                'EE_Dependency_Map'                    => EE_Dependency_Map::load_from_cache,
+                'EventEspresso\WaitList\domain\Domain' => EE_Dependency_Map::load_from_cache,
+            )
         );
-        EventEspresso\WaitList\domain\Domain::init(
-            EE_WAIT_LISTS_PLUGIN_FILE,
-            EE_WAIT_LISTS_VERSION
+        EventEspresso\WaitList\domain\WaitList::registerAddon(
+            EventEspresso\core\domain\DomainFactory::getShared(
+                new EventEspresso\core\domain\values\FullyQualifiedName(
+                    'EventEspresso\WaitList\domain\Domain'
+                ),
+                array(
+                    new EventEspresso\core\domain\values\FilePath(EE_WAIT_LISTS_PLUGIN_FILE),
+                    EventEspresso\core\domain\values\Version::fromString(EE_WAIT_LISTS_VERSION)
+                )
+            )
         );
-        espresso_load_required(
-            'EE_Wait_Lists',
-            EventEspresso\WaitList\domain\Domain::pluginPath() . 'EE_Wait_Lists.class.php'
-        );
-        EE_Wait_Lists::register_addon();
     } else {
         add_action('admin_notices', 'espresso_wait_lists_activation_error');
     }
@@ -113,7 +121,7 @@ function espresso_wait_lists_activation_error()
 {
     unset($_GET['activate'], $_REQUEST['activate']);
     if (! function_exists('deactivate_plugins')) {
-        require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
     deactivate_plugins(plugin_basename(EE_WAIT_LISTS_PLUGIN_FILE));
     ?>

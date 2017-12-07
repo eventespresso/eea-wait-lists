@@ -6,6 +6,7 @@ use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\exceptions\InvalidStatusException;
+use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler;
 use EventEspresso\WaitList\domain\Domain;
@@ -192,7 +193,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListMonitor()
     {
-        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\domain\services\event\WaitListMonitor');
+        return LoaderFactory::getLoader()->getShared('EventEspresso\WaitList\domain\services\event\WaitListMonitor');
     }
 
 
@@ -205,7 +206,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListCheckoutMonitor()
     {
-        return EE_Wait_Lists::loader()->load('\EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor');
+        return LoaderFactory::getLoader()->getShared('EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor');
     }
 
 
@@ -220,8 +221,8 @@ class EED_Wait_Lists extends EED_Module
     public static function getEventEditorWaitListMetaBoxForm($event = null)
     {
         $event = $event instanceof EE_Event ? $event : EED_Wait_Lists::$admin_page->get_event_object();
-        return EE_Wait_Lists::loader()->load(
-            '\EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
+        return LoaderFactory::getLoader()->getShared(
+            'EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormHandler',
             array($event)
         );
     }
@@ -229,21 +230,22 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** FRONTEND FUNCTIONALITY ***************************/
-
-
-
     /**
      * enqueue_styles_and_scripts
      *
      * @return void
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
      * @throws DomainException
      */
     public static function enqueue_styles_and_scripts()
     {
+        $domain = LoaderFactory::getLoader()->getShared('EventEspresso\WaitList\domain\Domain');
         // load css
         wp_register_style(
             'wait_list',
-            EventEspresso\WaitList\domain\Domain::pluginUrl() . 'assets/wait_list.css',
+            $domain->pluginUrl() . 'assets/wait_list.css',
             array(),
             EE_WAIT_LISTS_VERSION
         );
@@ -252,7 +254,7 @@ class EED_Wait_Lists extends EED_Module
         add_filter('FHEE_load_jquery_validate', '__return_true');
         wp_register_script(
             'wait_list',
-            EventEspresso\WaitList\domain\Domain::pluginUrl() . 'assets/wait_list.js',
+            $domain->pluginUrl() . 'assets/wait_list.js',
             array('espresso_core', 'jquery-validate'),
             EE_WAIT_LISTS_VERSION,
             true
@@ -294,7 +296,7 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function process_wait_list_form_for_event()
     {
-        $event_id = isset($_REQUEST['event_wait_list'], $_REQUEST['event_wait_list']['event_id'])
+        $event_id = isset($_REQUEST['event_wait_list']['event_id'])
             ? absint($_REQUEST['event_wait_list']['event_id'])
             : 0;
         try {
@@ -327,7 +329,7 @@ class EED_Wait_Lists extends EED_Module
     public static function wait_list_confirmation_url(EE_Registration $registration)
     {
         /** @var EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation $confirmation */
-        $confirmation = EE_Wait_Lists::loader()->getShared(
+        $confirmation = LoaderFactory::getLoader()->getShared(
             'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation'
         );
         return $confirmation->url($registration);
@@ -347,7 +349,7 @@ class EED_Wait_Lists extends EED_Module
     public static function wait_list_confirmation()
     {
         /** @var EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation $confirmation */
-        $confirmation = EE_Wait_Lists::loader()->getShared(
+        $confirmation = LoaderFactory::getLoader()->getShared(
             'EventEspresso\WaitList\domain\services\registration\WaitListRegistrationConfirmation'
         );
         $confirmation->routeHandler();
@@ -487,7 +489,7 @@ class EED_Wait_Lists extends EED_Module
      * @param array $page_routes
      * @return array
      */
-    public static function reg_admin_page_routes($page_routes = array())
+    public static function reg_admin_page_routes(array $page_routes = array())
     {
         $page_routes['wait_list_registrations'] = array(
             'func'       => 'bulk_action_on_registrations',
@@ -512,7 +514,7 @@ class EED_Wait_Lists extends EED_Module
      * @param bool  $can_send              Whether the user has the capability to send messages or not.
      * @return array
      */
-    public static function reg_status_actions($reg_status_actions = array(), $active_message_types, $can_send)
+    public static function reg_status_actions(array $reg_status_actions = array(), $active_message_types, $can_send)
     {
         $reg_status_actions['wait_list_registrations'] = esc_html__(
             'Move Registrations to Wait List',
@@ -693,7 +695,7 @@ class EED_Wait_Lists extends EED_Module
      * @return array
      * @throws EE_Error
      */
-    public static function register_wait_list_log_type($log_type_labels = array())
+    public static function register_wait_list_log_type(array $log_type_labels = array())
     {
         $log_type_labels[Domain::LOG_TYPE_WAIT_LIST] = esc_html__('Wait List', 'event_espresso');
         return $log_type_labels;

@@ -1,6 +1,6 @@
 <?php
 
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\ContextInterface;
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -365,14 +365,14 @@ class EED_Wait_Lists extends EED_Module
      * @param EE_Registration $registration
      * @param                 $old_STS_ID
      * @param                 $new_STS_ID
-     * @param Context|null    $context
+     * @param ContextInterface|null    $context
      * @throws Exception
      */
     public static function registration_status_update(
         EE_Registration $registration,
         $old_STS_ID,
         $new_STS_ID,
-        Context $context = null
+        ContextInterface $context = null
     ) {
         try {
             EED_Wait_Lists::getWaitListMonitor()->registrationStatusUpdate(

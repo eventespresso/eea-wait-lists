@@ -1,7 +1,7 @@
 <?php
 
 use EventEspresso\core\domain\Domain as CoreDomain;
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\Context;
 use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
@@ -134,7 +134,7 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
         //verify the to field is correct
         $this->assertEquals('john.smith@gmail.com', $message->to());
     }
-    
+
 
 
     public function testWaitlistDemotionNotifications()

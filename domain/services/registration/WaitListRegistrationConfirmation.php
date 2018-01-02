@@ -27,7 +27,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package EventEspresso\WaitList
  * @author  Brent Christensen
- * @since   $VID:$
+ * 
  */
 class WaitListRegistrationConfirmation
 {

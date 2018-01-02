@@ -18,7 +18,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * @since         $VID:$
+ * 
  */
 class CreateWaitListRegistrationsCommand extends Command
 {

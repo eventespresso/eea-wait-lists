@@ -22,7 +22,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * @since         $VID:$
+ * 
  */
 class EventEditorWaitListMetaBoxForm extends EE_Form_Section_Proper
 {

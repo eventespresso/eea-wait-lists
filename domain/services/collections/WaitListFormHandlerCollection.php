@@ -15,7 +15,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package EventEspresso\WaitList\domain\services\collections
  * @author  Brent Christensen
- * @since   $VID:$
+ * 
  */
 class WaitListFormHandlerCollection extends Collection
 {

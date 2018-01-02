@@ -14,7 +14,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * Description
  *
  * @author  Brent Christensen
- * @since   $VID:$
+ *
  */
 class WaitListCheckoutMonitorMock extends WaitListCheckoutMonitor
 {

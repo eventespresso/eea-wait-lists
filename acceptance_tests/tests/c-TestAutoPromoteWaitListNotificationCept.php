@@ -24,7 +24,6 @@ $I->fillField(
 );
 $I->publishEvent();
 //even though the event is sold out the publish button/activity still works (it just gets switched back to sold out).
-$I->waitForText('Event published');
 
 $I->amGoingTo('Verify that 5 Wait List Promotion messages were sent out.');
 $I->amOnMessagesActivityListTablePage(

@@ -9,9 +9,7 @@ use EE_Event;
 use EE_Form_Section_Proper;
 use EE_Registry;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
-use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
-use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use InvalidArgumentException;
 use LogicException;
@@ -28,7 +26,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListFormHandler extends FormHandler
 {
@@ -69,10 +67,6 @@ class WaitListFormHandler extends FormHandler
      * creates and returns the actual form
      *
      * @return EE_Form_Section_Proper
-     * @throws InvalidArgumentException
-     * @throws InvalidInterfaceException
-     * @throws InvalidDataTypeException
-     * @throws DomainException
      * @throws EE_Error
      * @throws ReflectionException
      */
@@ -103,7 +97,6 @@ class WaitListFormHandler extends FormHandler
      * @return EE_Attendee
      * @throws ReflectionException
      * @throws RuntimeException
-     * @throws InvalidEntityException
      * @throws LogicException
      * @throws InvalidFormSubmissionException
      * @throws EE_Error

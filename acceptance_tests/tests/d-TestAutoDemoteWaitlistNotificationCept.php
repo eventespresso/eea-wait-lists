@@ -84,6 +84,7 @@ $I->waitForText('Congratulations', 15);
 $I->amGoingTo('Approve Group C Registrations');
 $I->loginAsAdmin();
 $I->amOnDefaultRegistrationsListTableAdminPage();
+$I->searchForRegistrationOnRegistrationListTableWithText('Group C');
 $I->selectBulkActionCheckboxesForRegistrationIds(array(11,12,13,14,15));
 $I->submitBulkActionOnListTable('Approve Registrations');
 $I->waitForText('Registrations have been set to approved.');

@@ -41,8 +41,7 @@ $I->seeInField(
     WaitListsGeneral::SELECTOR_EVENT_EDITOR_FIELD_WAITLIST_SPACES_MANUALLY_CONTROLLED,
     0
 );
-$I->click(EventsAdmin::EVENT_EDITOR_PUBLISH_BUTTON_SELECTOR);
-$I->waitForText('Event published');
+$I->publishEvent();
 
 $event_link = $I->observeLinkUrlAt(EventsAdmin::EVENT_EDITOR_VIEW_LINK_AFTER_PUBLISH_SELECTOR);
 $event_id = $I->observeValueFromInputAt(EventsAdmin::EVENT_EDITOR_EVT_ID_SELECTOR);
@@ -63,6 +62,7 @@ $I->fillOutFirstNameFieldForAttendee('Group');
 $I->fillOutLastNameFieldForAttendee('A');
 $I->fillOutEmailFieldForAttendee('dude+groupa@example.org');
 $I->goToNextRegistrationStep();
+$I->wait(5);
 //payment options step
 $I->selectPaymentOptionFor(); //defaults to invoice
 $I->submitPaymentOptionsRegistrationStepForm();

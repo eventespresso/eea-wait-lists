@@ -22,6 +22,7 @@ use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
 use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
+use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
@@ -38,7 +39,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListMonitor
 {
@@ -178,9 +179,29 @@ class WaitListMonitor
     public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector)
     {
         if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
-            return $ticket_selector->isIframe()
-                ? $this->getWaitListLinkForEvent($event)
-                : $this->waitListFormForEvent($event)->display();
+            if($ticket_selector->isIframe()) {
+                return $this->getWaitListLinkForEvent($event);
+            }
+            $wait_list_form =  '';
+            if (isset($_REQUEST['login_notice_id'])) {
+                $login_notice_id = $_REQUEST['login_notice_id'];
+                $login_notice = $event->get_extra_meta($login_notice_id, true);
+                if($login_notice) {
+                    $login_notice = EEH_HTML::h4(
+                        esc_html__('Login Required', 'event_espresso'),
+                            'ee-login-notice-h4-' . $event->ID(),
+                            'ee-login-notice-h4 important-notice huge-text'
+                    ). $login_notice;
+                    $wait_list_form = EEH_HTML::div(
+                        $login_notice,
+                        'ee-login-notice-id-' . $event->ID(),
+                        'ee-login-notice ee-attention'
+                    );
+                }
+                $event->delete_extra_meta($login_notice_id);
+            }
+            $wait_list_form .= $this->waitListFormForEvent($event)->display();
+            return $wait_list_form;
         }
         return '';
     }
@@ -189,7 +210,7 @@ class WaitListMonitor
 
     /**
      * @param int $event_id
-     * @return void
+     * @return array
      * @throws DomainException
      * @throws EE_Error
      * @throws InvalidArgumentException
@@ -200,6 +221,7 @@ class WaitListMonitor
      * @throws LogicException
      * @throws ReflectionException
      * @throws RuntimeException
+     * @throws WpUserLogInRequiredException
      */
     public function processWaitListFormForEvent($event_id)
     {
@@ -211,11 +233,19 @@ class WaitListMonitor
                 )
             );
         }
-        if ($this->wait_list_events->has($event_id)) {
-            /** @var EE_Event $event */
-            $event = $this->wait_list_events->get($event_id);
+        if (! $this->wait_list_events->has($event_id)) {
+            return array();
+        }
+        /** @var EE_Event $event */
+        $event = $this->wait_list_events->get($event_id);
+        try {
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
+            return array();
+        } catch (WpUserLogInRequiredException $exception) {
+            $login_notice_id = md5($event_id . $event->name() . time());
+            $event->add_extra_meta($login_notice_id, $exception->getMessage(), true);
+            return array('login_notice_id' => $login_notice_id);
         }
     }
 

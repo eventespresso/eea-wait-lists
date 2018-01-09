@@ -2,6 +2,7 @@
 
 namespace EventEspresso\WaitList\domain\services\event;
 
+use function apply_filters;
 use DomainException;
 use EE_Error;
 use EE_Event;
@@ -23,10 +24,12 @@ use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
 use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
 use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
+use Exception;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
 use RuntimeException;
+use function throwException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -182,26 +185,12 @@ class WaitListMonitor
             if($ticket_selector->isIframe()) {
                 return $this->getWaitListLinkForEvent($event);
             }
-            $wait_list_form =  '';
-            if (isset($_REQUEST['login_notice_id'])) {
-                $login_notice_id = $_REQUEST['login_notice_id'];
-                $login_notice = $event->get_extra_meta($login_notice_id, true);
-                if($login_notice) {
-                    $login_notice = EEH_HTML::h4(
-                        esc_html__('Login Required', 'event_espresso'),
-                            'ee-login-notice-h4-' . $event->ID(),
-                            'ee-login-notice-h4 important-notice huge-text'
-                    ). $login_notice;
-                    $wait_list_form = EEH_HTML::div(
-                        $login_notice,
-                        'ee-login-notice-id-' . $event->ID(),
-                        'ee-login-notice ee-attention'
-                    );
-                }
-                $event->delete_extra_meta($login_notice_id);
-            }
-            $wait_list_form .= $this->waitListFormForEvent($event)->display();
-            return $wait_list_form;
+            return apply_filters(
+                'FHEE__EventEspresso_WaitList_domain_services_event_WaitListMonitor__getWaitListFormForEvent__redirect_params',
+                $this->waitListFormForEvent($event)->display(),
+                $event,
+                $this
+            );
         }
         return '';
     }
@@ -221,7 +210,7 @@ class WaitListMonitor
      * @throws LogicException
      * @throws ReflectionException
      * @throws RuntimeException
-     * @throws WpUserLogInRequiredException
+     * @throws Exception
      */
     public function processWaitListFormForEvent($event_id)
     {
@@ -233,20 +222,33 @@ class WaitListMonitor
                 )
             );
         }
+        $redirect_params = array();
         if (! $this->wait_list_events->has($event_id)) {
-            return array();
+            return $redirect_params;
         }
         /** @var EE_Event $event */
         $event = $this->wait_list_events->get($event_id);
         try {
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
-            return array();
-        } catch (WpUserLogInRequiredException $exception) {
-            $login_notice_id = md5($event_id . $event->name() . time());
-            $event->add_extra_meta($login_notice_id, $exception->getMessage(), true);
-            return array('login_notice_id' => $login_notice_id);
+        } catch (Exception $exception) {
+            // allow other code to catch exceptions and control whether they are thrown
+            // by returning a list of query args to get added to the redirect URL
+            // ie: either return query args to indicate a redirect should occur,
+            // or the exception will get thrown
+            // (client code could decide to thrown their own exception of course)
+            $redirect_params = apply_filters(
+                'FHEE__EventEspresso_WaitList_domain_services_event_WaitListMonitor__processWaitListFormForEvent__redirect_params',
+                $redirect_params,
+                $exception,
+                $event,
+                $this
+            );
+            if(empty($redirect_params)) {
+                throw $exception;
+            }
         }
+        return $redirect_params;
     }
 
 

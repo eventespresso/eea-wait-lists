@@ -61,6 +61,15 @@ class WaitListFormHandler extends FormHandler
 
 
     /**
+     * @return EE_Event
+     */
+    public function event()
+    {
+        return $this->event;
+    }
+
+
+    /**
      * creates and returns the actual form
      *
      * @return EE_Form_Section_Proper

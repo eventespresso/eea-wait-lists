@@ -2,7 +2,6 @@
 
 namespace EventEspresso\WaitList\domain\services\event;
 
-use function apply_filters;
 use DomainException;
 use EE_Error;
 use EE_Event;
@@ -23,13 +22,11 @@ use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
 use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
-use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
 use RuntimeException;
-use function throwException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 

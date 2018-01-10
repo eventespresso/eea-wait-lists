@@ -98,7 +98,8 @@ class WaitListForm extends EE_Form_Section_Proper
             ),
             'display' => new EE_Fixed_Hidden_Input(
                 array(
-                    'default' => isset($_REQUEST['display-wait-list']) && $_REQUEST['display-wait-list'],
+                    'default' => isset($_REQUEST['display-wait-list'])
+                                 && filter_var($_REQUEST['display-wait-list'], FILTER_VALIDATE_BOOLEAN),
                     'html_class' => 'ee-display-wait-list-form',
                     'other_html_attributes' => ' data-inputs="event-wait-list-'
                                                . $event->ID()

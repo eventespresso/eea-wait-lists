@@ -28,7 +28,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListFormHandler extends FormHandler
 {
@@ -78,13 +78,15 @@ class WaitListFormHandler extends FormHandler
      */
     public function generate()
     {
-        $tickets = $this->event->active_tickets();
-        foreach ($tickets as $TKT_ID => $ticket) {
+        $tickets = array();
+        $active_tickets = $this->event->active_tickets();
+        foreach ($active_tickets as $TKT_ID => $ticket) {
             $tickets[$TKT_ID] = $ticket->name_and_info();
         }
         $tickets = (array) apply_filters(
             'FHEE__EventEspresso_WaitList_domain_services_forms__WaitListFormHandler__generate__tickets',
             $tickets,
+            $active_tickets,
             $this->event
         );
         return $this->registry->create(

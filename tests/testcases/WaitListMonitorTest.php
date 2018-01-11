@@ -2,6 +2,8 @@
 
 use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
+use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
@@ -40,9 +42,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
     private $wait_list_monitor;
 
 
-
     /**
-     *
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws ReflectionException
+     * @throws InvalidInterfaceException
      */
     public function setUp()
     {
@@ -99,8 +104,8 @@ class WaitListMonitorTest extends EE_UnitTestCase
                 'Datetime',
                 array(
                     'EVT_ID'        => $events[$x]->ID(),
-                    'DTT_EVT_start' => time() + DAY_IN_SECONDS,
-                    'DTT_EVT_end'   => time() + DAY_IN_SECONDS + HOUR_IN_SECONDS,
+                    'DTT_EVT_start' => time() + MONTH_IN_SECONDS,
+                    'DTT_EVT_end'   => time() + MONTH_IN_SECONDS + DAY_IN_SECONDS,
                     'DTT_reg_limit' => $x * 2,
                     'DTT_sold'      => 0,
                     'DTT_reserved'  => 0,
@@ -219,15 +224,15 @@ class WaitListMonitorTest extends EE_UnitTestCase
     }
 
 
-
     /**
      * @throws DomainException
      * @throws EE_Error
+     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws LogicException
-     * @throws PHPUnit_Framework_AssertionFailedError
-     * @throws PHPUnit_Framework_Exception
      * @throws InvalidDataTypeException
+     * @throws LogicException
+     * @throws \EventEspresso\core\exceptions\InvalidEntityException
+     * @throws InvalidInterfaceException
      */
     public function test_getWaitListFormForEvent()
     {
@@ -252,11 +257,11 @@ class WaitListMonitorTest extends EE_UnitTestCase
     }
 
 
-
     /**
      * @throws EE_Error
-     * @throws PHPUnit_Framework_Exception
      * @throws EntityNotFoundException
+     * @throws Exception
+     * @throws PHPUnit_Framework_Exception
      */
     public function test_registrationStatusUpdate()
     {
@@ -284,11 +289,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
     }
 
 
-
     /**
+     * @throws DomainException
      * @throws EE_Error
+     * @throws Exception
      * @throws PHPUnit_Framework_Exception
-     * @throws EntityNotFoundException
+     * @throws UnexpectedEntityException
      */
     public function test_registrationStatusUpdateWithAutoPromote()
     {
@@ -312,10 +318,12 @@ class WaitListMonitorTest extends EE_UnitTestCase
     }
 
 
-
     /**
+     * @throws DomainException
      * @throws EE_Error
+     * @throws Exception
      * @throws PHPUnit_Framework_Exception
+     * @throws UnexpectedEntityException
      */
     public function test_adjustEventSpacesAvailable()
     {

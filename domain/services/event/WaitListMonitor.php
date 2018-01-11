@@ -22,6 +22,7 @@ use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\collections\WaitListFormHandlerCollection;
 use EventEspresso\WaitList\domain\services\forms\WaitListFormHandler;
+use Exception;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
@@ -38,7 +39,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListMonitor
 {
@@ -178,9 +179,15 @@ class WaitListMonitor
     public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector)
     {
         if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
-            return $ticket_selector->isIframe()
-                ? $this->getWaitListLinkForEvent($event)
-                : $this->waitListFormForEvent($event)->display();
+            if($ticket_selector->isIframe()) {
+                return $this->getWaitListLinkForEvent($event);
+            }
+            return apply_filters(
+                'FHEE__EventEspresso_WaitList_domain_services_event_WaitListMonitor__getWaitListFormForEvent__redirect_params',
+                $this->waitListFormForEvent($event)->display(),
+                $event,
+                $this
+            );
         }
         return '';
     }
@@ -189,7 +196,7 @@ class WaitListMonitor
 
     /**
      * @param int $event_id
-     * @return void
+     * @return array
      * @throws DomainException
      * @throws EE_Error
      * @throws InvalidArgumentException
@@ -200,6 +207,7 @@ class WaitListMonitor
      * @throws LogicException
      * @throws ReflectionException
      * @throws RuntimeException
+     * @throws Exception
      */
     public function processWaitListFormForEvent($event_id)
     {
@@ -211,12 +219,33 @@ class WaitListMonitor
                 )
             );
         }
-        if ($this->wait_list_events->has($event_id)) {
-            /** @var EE_Event $event */
-            $event = $this->wait_list_events->get($event_id);
+        $redirect_params = array();
+        if (! $this->wait_list_events->has($event_id)) {
+            return $redirect_params;
+        }
+        /** @var EE_Event $event */
+        $event = $this->wait_list_events->get($event_id);
+        try {
             $notices = $this->waitListFormForEvent($event)->process($_REQUEST);
             $this->processNotices($notices);
+        } catch (Exception $exception) {
+            // allow other code to catch exceptions and control whether they are thrown
+            // by returning a list of query args to get added to the redirect URL
+            // ie: either return query args to indicate a redirect should occur,
+            // or the exception will get thrown
+            // (client code could decide to thrown their own exception of course)
+            $redirect_params = apply_filters(
+                'FHEE__EventEspresso_WaitList_domain_services_event_WaitListMonitor__processWaitListFormForEvent__redirect_params',
+                $redirect_params,
+                $exception,
+                $event,
+                $this
+            );
+            if(empty($redirect_params)) {
+                throw $exception;
+            }
         }
+        return $redirect_params;
     }
 
 

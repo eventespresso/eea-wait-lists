@@ -139,7 +139,7 @@ class WaitListForm extends EE_Form_Section_Proper
     private function waitListFormOptions(EE_Event $event, array $tickets, $wait_list_spaces_left = 10)
     {
         return apply_filters(
-            'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__subsections',
+            'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__form_options',
             array(
                 'name'            => 'event_wait_list',
                 'html_id'         => "event-wait-list-{$event->ID()}",
@@ -218,17 +218,24 @@ class WaitListForm extends EE_Form_Section_Proper
                                             'event_espresso'
                                         ),
                                         'html_label_class' => 'small-text grey-text',
-                                        'html_class'       => '',
+                                        'html_class'       => 'wait-list-ticket-selection',
                                         'default'          => '',
                                         'required'         => true,
                                     )
                                 ),
+                                'invalid_ticket_selection' => new EE_Form_Section_HTML(
+                                    '<label id="event-wait-list-'
+                                    . $event->ID()
+                                    . '-hidden-inputs-invalid-wait-list-ticket-selection-error" '
+                                    . 'class="important-notice invalid-wait-list-ticket-selection-error" for="event-wait-list-'
+                                    . $event->ID()
+                                    . '-hidden-inputs-ticket" style="display: none;">'
+                                    . esc_html__('invalid ticket selection', 'event_espresso')
+                                    . '</label>'
+                                ),
                                 'quantity'              => new EE_Integer_Input(
                                     array(
-                                        'html_label_text'  => esc_html__(
-                                            'Qty',
-                                            'event_espresso'
-                                        ),
+                                        'html_label_text'  => esc_html__('Qty','event_espresso'),
                                         'html_label_class' => 'small-text grey-text',
                                         'html_style'       => 'max-width:120px;',
                                         'default'          => 1,
@@ -273,7 +280,11 @@ class WaitListForm extends EE_Form_Section_Proper
                         EEH_HTML::div(EEH_HTML::br(), '', 'clear')
                     ),
                 )
-            )
+            ),
+            $event,
+            $tickets,
+            $wait_list_spaces_left,
+            $this
         );
     }
 

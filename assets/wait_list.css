@@ -6,7 +6,7 @@
 
 .event_wait_list-hidden-inputs {
     border            : 1px solid #DDDDDD;
-    top               : -200px;
+    top               : -225px;
     box-sizing        : border-box;
     box-shadow        : 0 25px 10px -5px rgba(0, 0, 0, .5), 0 5px 25px 5px rgba(0, 0, 0, .1);
     clear             : both;
@@ -89,7 +89,7 @@
         opacity : 0
     }
     to {
-        top     : -200px;
+        top     : -225px;
         opacity : 1
     }
 }
@@ -102,7 +102,7 @@
         opacity : 0
     }
     to {
-        top     : -200px;
+        top     : -225px;
         opacity : 1
     }
 }
@@ -115,7 +115,7 @@
         opacity : 0
     }
     to {
-        top     : -200px;
+        top     : -225px;
         opacity : 1
     }
 }
@@ -128,7 +128,7 @@
         opacity : 0
     }
     to {
-        top     : -200px;
+        top     : -225px;
         opacity : 1
     }
 }
@@ -141,7 +141,7 @@
         opacity : 0
     }
     to {
-        top     : -200px;
+        top     : -225px;
         opacity : 1
     }
 }

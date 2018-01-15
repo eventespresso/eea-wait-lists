@@ -62,7 +62,6 @@ jQuery(document).ready(function($) {
     var valid_ticket_selection = function($selector, event) {
         var id  = $selector.attr('id');
         if (id.indexOf('hidden-inputs-ticket') !== -1) {
-            var val = $selector.val();
             if ($.isNumeric($selector.val()) === false){
                 var $error = $selector.parents('form:first').find('.invalid-wait-list-ticket-selection-error');
                 $error.show();

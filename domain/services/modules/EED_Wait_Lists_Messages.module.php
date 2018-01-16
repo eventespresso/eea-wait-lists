@@ -1,7 +1,7 @@
 <?php
 
 use EventEspresso\core\domain\Domain as CoreDomain;
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\ContextInterface;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\Domain;
@@ -83,7 +83,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
      *
      * @param EE_Registration $registration
      * @param EE_Event        $event
-     * @param Context|null    $context
+     * @param ContextInterface|null    $context
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
@@ -92,10 +92,10 @@ class EED_Wait_Lists_Messages extends EED_Messages
     public static function trigger_wait_list_promotion_notifications(
         EE_Registration $registration,
         EE_Event $event,
-        Context $context = null
+        ContextInterface $context = null
     ) {
         //check context before triggering.
-        if ($context instanceof Context
+        if ($context instanceof ContextInterface
             && (
                 $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE
                 || (
@@ -141,7 +141,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
      *
      * @param EE_Registration $registration
      * @param EE_Event        $event
-     * @param Context|null    $context
+     * @param ContextInterface|null    $context
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
@@ -150,12 +150,12 @@ class EED_Wait_Lists_Messages extends EED_Messages
     public static function trigger_wait_list_demotion_notifications(
         EE_Registration $registration,
         EE_Event $event,
-        Context $context = null
+        ContextInterface $context = null
     ) {
         //check context before triggering.
         if ($context === null
             || (
-                $context instanceof Context
+                $context instanceof ContextInterface
                 && ($context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                     && EE_Registry::instance()->CAP->current_user_can(
                         'ee_send_message',
@@ -169,7 +169,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     array($registration),
                     Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION
                 );
-                if ($context instanceof Context
+                if ($context instanceof ContextInterface
                     && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_success(
@@ -180,7 +180,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     );
                 }
             } catch (Exception $e) {
-                if ($context instanceof Context
+                if ($context instanceof ContextInterface
                     && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);

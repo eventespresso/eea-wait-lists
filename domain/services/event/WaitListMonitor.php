@@ -7,7 +7,7 @@ use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EEH_HTML;
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\ContextInterface;
 use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -256,7 +256,7 @@ class WaitListMonitor
      * @param EE_Registration  $registration
      * @param                  $old_STS_ID
      * @param                  $new_STS_ID
-     * @param Context|null     $context
+     * @param ContextInterface|null     $context
      * @throws EE_Error
      * @throws EntityNotFoundException
      */
@@ -264,7 +264,7 @@ class WaitListMonitor
         EE_Registration $registration,
         $old_STS_ID,
         $new_STS_ID,
-        Context $context = null
+        ContextInterface $context = null
     ) {
         $event = $registration->event();
         $this->command_bus->execute(

@@ -1,7 +1,7 @@
 <?php
 
 use EventEspresso\core\domain\Domain as CoreDomain;
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\Context;
 use EventEspresso\WaitList\domain\Domain;
 
 defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
@@ -22,7 +22,9 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
 class EED_Wait_List_Messages_Test extends EE_UnitTestCase
 {
 
-
+    /**
+     * @throws EE_Error
+     */
     public function setUp()
     {
         parent::setUp();
@@ -39,6 +41,10 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     }
 
 
+    /**
+     * @return EE_Base_Class[]|EE_Registration[]
+     * @throws EE_Error
+     */
     protected function getRegistrationsForTest()
     {
         //let's setup some regs and register them for some tickets for testing
@@ -73,7 +79,13 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     }
 
 
-
+    /**
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \PHPUnit\Framework\Exception
+     */
     public function testTriggerWaitListPromotionNotifications()
     {
         $registrations = $this->getRegistrationsForTest();
@@ -136,7 +148,13 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     }
 
 
-
+    /**
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \PHPUnit\Framework\Exception
+     */
     public function testWaitlistDemotionNotifications()
     {
         $registrations = $this->getRegistrationsForTest();
@@ -193,7 +211,10 @@ class EED_Wait_List_Messages_Test extends EE_UnitTestCase
     }
 
 
-
+    /**
+     * @throws EE_Error
+     * @throws \PHPUnit\Framework\Exception
+     */
     public function testTriggerRegistrationAddToWaitlistMessages()
     {
         $registrations = $this->getRegistrationsForTest();

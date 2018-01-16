@@ -4,7 +4,7 @@ namespace EventEspresso\WaitList\domain\services\commands;
 
 use EE_Event;
 use EE_Registration;
-use EventEspresso\core\domain\entities\Context;
+use EventEspresso\core\domain\entities\contexts\ContextInterface;
 use EventEspresso\core\services\commands\Command;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -43,7 +43,7 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
 
 
     /**
-     * @var Context|null
+     * @var ContextInterface|null
      */
     private $context;
 
@@ -55,14 +55,14 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
      * @param EE_Registration $registration
      * @param string          $old_Status_Id
      * @param string          $new_Status_Id
-     * @param Context|null    $context
+     * @param ContextInterface|null    $context
      */
     public function __construct(
         EE_Event $event,
         EE_Registration $registration,
         $old_Status_Id,
         $new_Status_Id,
-        Context $context = null
+        ContextInterface $context = null
     ) {
         $this->event = $event;
         $this->registration = $registration;
@@ -113,7 +113,7 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
 
 
     /**
-     * @return Context|null
+     * @return ContextInterface|null
      */
     public function getContext()
     {

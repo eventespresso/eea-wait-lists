@@ -1,6 +1,7 @@
 <?php
 
 use EventEspresso\core\domain\entities\contexts\ContextInterface;
+use EventEspresso\core\exceptions\EntityNotFoundException;
 use EventEspresso\core\exceptions\ExceptionStackTraceDisplay;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidEntityException;
@@ -168,6 +169,16 @@ class EED_Wait_Lists extends EED_Module
             'FHEE__EEM_Change_Log__get_pretty_label_map_for_registered_types',
             array('EED_Wait_Lists', 'register_wait_list_log_type'),
             10
+        );
+        add_filter(
+            'FHEE__EE_Registration__edit_attendee_information_url__query_args',
+            array('EED_Wait_Lists', 'wait_list_checkout_url_query_args'),
+            10, 3
+        );
+        add_filter(
+            'FHEE__EE_Registration__payment_overview_url__query_args',
+            array('EED_Wait_Lists', 'wait_list_checkout_url_query_args'),
+            10, 3
         );
     }
 
@@ -592,14 +603,35 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
+     * @param array $query_args
      * @param EE_Registration $registration
-     * @return string
+     * @return array
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
      * @throws InvalidDataTypeException
      * @throws EE_Error
+     * @throws EntityNotFoundException
+     */
+    public static function wait_list_checkout_url_query_args(array $query_args, EE_Registration $registration)
+    {
+        // if the attendee info step has not been completed, then always go to that step
+        if($registration->transaction()->reg_step_completed('attendee_information') === false) {
+            $query_args['step'] = 'attendee_information';
+            // and also remove the 'revisit' and 'clear_session' parameters
+            unset($query_args['revisit'], $query_args['clear_session']);
+        }
+        return $query_args;
+    }
+
+
+    /**
+     * @param EE_Registration $registration
+     * @return string
+     * @throws EE_Error
+     * @throws InvalidArgumentException
+     * @throws InvalidDataTypeException
+     * @throws InvalidInterfaceException
      */
     public static function wait_list_checkout_url(EE_Registration $registration)
     {

@@ -27,7 +27,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListForm extends EE_Form_Section_Proper
 {
@@ -98,7 +98,8 @@ class WaitListForm extends EE_Form_Section_Proper
             ),
             'display' => new EE_Fixed_Hidden_Input(
                 array(
-                    'default' => isset($_REQUEST['display-wait-list']) && $_REQUEST['display-wait-list'],
+                    'default' => isset($_REQUEST['display-wait-list'])
+                                 && filter_var($_REQUEST['display-wait-list'], FILTER_VALIDATE_BOOLEAN),
                     'html_class' => 'ee-display-wait-list-form',
                     'other_html_attributes' => ' data-inputs="event-wait-list-'
                                                . $event->ID()
@@ -137,139 +138,174 @@ class WaitListForm extends EE_Form_Section_Proper
      */
     private function waitListFormOptions(EE_Event $event, array $tickets, $wait_list_spaces_left = 10)
     {
-        return array(
-            'name'            => 'event_wait_list',
-            'html_id'         => "event-wait-list-{$event->ID()}",
-            'html_class'      => 'event-wait-list-form',
-            'layout_strategy' => new EE_Div_Per_Section_Layout(),
-            'subsections'     => array(
-                'join_wait_list_btn'            => new EE_Submit_Input(
-                    array(
-                        'html_class'            => 'ee-join-wait-list-btn float-right',
-                        'other_html_attributes' => ' data-inputs="event-wait-list-'
-                                                   . $event->ID()
-                                                   . '-hidden-inputs"',
-                        'default'               => esc_html__(
-                            'Sign Up For The Wait List',
-                            'event_espresso'
-                        ),
-                    )
-                ),
-                'hidden_inputs' => new EE_Form_Section_Proper(
-                    array(
-                        'layout_strategy' => new EE_Div_Per_Section_Layout(),
-                        'html_class'      => 'event_wait_list-hidden-inputs',
-                        'html_style'      => 'display:none;',
-                        'subsections'     => array(
-                            'wait_list_form_notice' => new EE_Form_Section_HTML(
-                                EEH_HTML::h2(
-                                    esc_html__('Join Now', 'event_espresso'),
-                                    '', 'ee-wait-list-notice-hdr'
-                                )
-                                . EEH_HTML::p(
-                                    esc_html__(
-                                        'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
-                                        'event_espresso'
-                                    ),
-                                    '', 'small-text ee-wait-list-notice-pg'
-                                )
+        return apply_filters(
+            'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__form_options',
+            array(
+                'name'            => 'event_wait_list',
+                'html_id'         => "event-wait-list-{$event->ID()}",
+                'html_class'      => 'event-wait-list-form',
+                'layout_strategy' => new EE_Div_Per_Section_Layout(),
+                'subsections'     => array(
+                    'join_wait_list_btn'            => new EE_Submit_Input(
+                        array(
+                            'html_class'            => 'ee-join-wait-list-btn float-right',
+                            'other_html_attributes' => ' data-inputs="event-wait-list-'
+                                                       . $event->ID()
+                                                       . '-hidden-inputs"',
+                            'default'               => esc_html__(
+                                'Sign Up For The Wait List',
+                                'event_espresso'
                             ),
-                            'registrant_name'       => new EE_Text_Input(
-                                array(
-                                    'html_label_text'       => esc_html__('Name', 'event_espresso'),
-                                    'html_label_class'      => 'small-text grey-text',
-                                    'other_html_attributes' => ' placeholder="'
-                                                               . esc_html__(
-                                                                   'please enter your name',
-                                                                   'event_espresso'
-                                                               )
-                                                               . '"',
-                                    'html_class'            => '',
-                                    'default'               => '',
-                                    'required'              => true,
-                                )
+                        )
+                    ),
+                    'hidden_inputs' => new EE_Form_Section_Proper(
+                        array(
+                            'layout_strategy' => new EE_Div_Per_Section_Layout(),
+                            'html_class'      => 'event_wait_list-hidden-inputs',
+                            'html_style'      => 'display:none;',
+                            'subsections'     => array(
+                                'before_form' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__before_form_html',
+                                        ''
+                                    )
+                                ),
+                                'wait_list_form_notice' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__wait_list_form_notice_html',
+                                        EEH_HTML::h2(
+                                            esc_html__('Join Now', 'event_espresso'),
+                                            '', 'ee-wait-list-notice-hdr'
+                                        )
+                                        . EEH_HTML::p(
+                                            esc_html__(
+                                                'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
+                                                'event_espresso'
+                                            ),
+                                            '', 'small-text ee-wait-list-notice-pg'
+                                        )
+                                    )
+                                ),
+                                'registrant_name'       => new EE_Text_Input(
+                                    array(
+                                        'html_label_text'       => esc_html__('Name', 'event_espresso'),
+                                        'html_label_class'      => 'small-text grey-text',
+                                        'other_html_attributes' => ' placeholder="'
+                                                                   . esc_html__(
+                                                                       'please enter your name',
+                                                                       'event_espresso'
+                                                                   )
+                                                                   . '"',
+                                        'html_class'            => '',
+                                        'default'               => '',
+                                        'required'              => true,
+                                    )
+                                ),
+                                'registrant_email'      => new EE_Email_Input(
+                                    array(
+                                        'html_label_text'       => esc_html__(
+                                            'Email Address',
+                                            'event_espresso'
+                                        ),
+                                        'html_label_class'      => 'small-text grey-text',
+                                        'other_html_attributes' => ' placeholder="'
+                                                                   . esc_html__(
+                                                                       'please enter a valid email address',
+                                                                       'event_espresso'
+                                                                   )
+                                                                   . '"',
+                                        'html_class'            => '',
+                                        'default'               => '',
+                                        'required'              => true,
+                                    )
+                                ),
+                                'ticket'                => new EE_Select_Input(
+                                    $tickets,
+                                    array(
+                                        'html_label_text'  => esc_html__(
+                                            'Preferred Option',
+                                            'event_espresso'
+                                        ),
+                                        'html_label_class' => 'small-text grey-text',
+                                        'html_class'       => 'wait-list-ticket-selection',
+                                        'default'          => '',
+                                        'required'         => true,
+                                    )
+                                ),
+                                'invalid_ticket_selection' => new EE_Form_Section_HTML(
+                                    '<label id="event-wait-list-'
+                                    . $event->ID()
+                                    . '-hidden-inputs-invalid-wait-list-ticket-selection-error" '
+                                    . 'class="important-notice invalid-wait-list-ticket-selection-error" for="event-wait-list-'
+                                    . $event->ID()
+                                    . '-hidden-inputs-ticket" style="display: none;">'
+                                    . esc_html__('invalid ticket selection', 'event_espresso')
+                                    . '</label>'
+                                ),
+                                'quantity'              => new EE_Integer_Input(
+                                    array(
+                                        'html_label_text'  => esc_html__('Qty','event_espresso'),
+                                        'html_label_class' => 'small-text grey-text',
+                                        'html_style'       => 'max-width:120px;',
+                                        'default'          => 1,
+                                        'required'         => true,
+                                        'min_value'        => 1,
+                                        'max_value'        => $wait_list_spaces_left,
+                                    )
+                                ),
+                                'lb1'                   => new EE_Form_Section_HTML(EEH_HTML::br()),
+                                'before_submit' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__before_submit_html',
+                                        ''
+                                    )
+                                ),
+                                'submit'                => new EE_Submit_Input(
+                                    array(
+                                        'html_class' => 'ee-submit-wait-list-btn float-right',
+                                        'default'    => esc_html__('Join The Wait List', 'event_espresso'),
+                                    )
+                                ),
+                                'clear_submit'          => new EE_Form_Section_HTML(
+                                    EEH_HTML::div('&nbsp;', '', 'clear')
+                                ),
+                                'after_submit' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__after_submit_html',
+                                        ''
+                                    )
+                                ),
+                                'close_form'            => new EE_Form_Section_HTML(
+                                    EEH_HTML::div(
+                                        EEH_HTML::link(
+                                            '',
+                                            esc_html__('cancel', 'event_espresso'),
+                                            '', '',
+                                            'ee-wait-list-cancel-lnk small-text lt-grey-text', '',
+                                            ' data-inputs="event-wait-list-'
+                                            . $event->ID()
+                                            . '-hidden-inputs"'
+                                        ),
+                                        '', 'ee-wait-list-cancel-dv'
+                                    )
+                                ),
+                                'referrer' => new EE_Fixed_Hidden_Input(
+                                    array(
+                                        'default' => home_url(add_query_arg(null, null)),
+                                    )
+                                ),
                             ),
-                            'registrant_email'      => new EE_Email_Input(
-                                array(
-                                    'html_label_text'       => esc_html__(
-                                        'Email Address',
-                                        'event_espresso'
-                                    ),
-                                    'html_label_class'      => 'small-text grey-text',
-                                    'other_html_attributes' => ' placeholder="'
-                                                               . esc_html__(
-                                                                   'please enter a valid email address',
-                                                                   'event_espresso'
-                                                               )
-                                                               . '"',
-                                    'html_class'            => '',
-                                    'default'               => '',
-                                    'required'              => true,
-                                )
-                            ),
-                            'ticket'                => new EE_Select_Input(
-                                $tickets,
-                                array(
-                                    'html_label_text'  => esc_html__(
-                                        'Preferred Option',
-                                        'event_espresso'
-                                    ),
-                                    'html_label_class' => 'small-text grey-text',
-                                    'html_class'       => '',
-                                    'default'          => '',
-                                    'required'         => true,
-                                )
-                            ),
-                            'quantity'              => new EE_Integer_Input(
-                                array(
-                                    'html_label_text'  => esc_html__(
-                                        'Qty',
-                                        'event_espresso'
-                                    ),
-                                    'html_label_class' => 'small-text grey-text',
-                                    'html_style'       => 'max-width:120px;',
-                                    'default'          => 1,
-                                    'required'         => true,
-                                    'min_value'        => 1,
-                                    'max_value'        => $wait_list_spaces_left,
-                                )
-                            ),
-                            'lb1'                   => new EE_Form_Section_HTML(EEH_HTML::br()),
-                            'submit'                => new EE_Submit_Input(
-                                array(
-                                    'html_class' => 'ee-submit-wait-list-btn float-right',
-                                    'default'    => esc_html__('Join The Wait List', 'event_espresso'),
-                                )
-                            ),
-                            'clear_submit'          => new EE_Form_Section_HTML(
-                                EEH_HTML::div('&nbsp;', '', 'clear')
-                            ),
-                            'close_form'            => new EE_Form_Section_HTML(
-                                EEH_HTML::div(
-                                    EEH_HTML::link(
-                                        '',
-                                        esc_html__('cancel', 'event_espresso'),
-                                        '', '',
-                                        'ee-wait-list-cancel-lnk small-text lt-grey-text', '',
-                                        ' data-inputs="event-wait-list-'
-                                        . $event->ID()
-                                        . '-hidden-inputs"'
-                                    ),
-                                    '', 'ee-wait-list-cancel-dv'
-                                )
-                            ),
-                            'referrer' => new EE_Fixed_Hidden_Input(
-                                array(
-                                    'default' => home_url(add_query_arg(null, null)),
-                                )
-                            ),
-                        ),
-                    )
-                ),
-                'clear_form'                    => new EE_Form_Section_HTML(
-                    EEH_HTML::div(EEH_HTML::br(), '', 'clear')
-                ),
-            )
+                        )
+                    ),
+                    'clear_form'                    => new EE_Form_Section_HTML(
+                        EEH_HTML::div(EEH_HTML::br(), '', 'clear')
+                    ),
+                )
+            ),
+            $event,
+            $tickets,
+            $wait_list_spaces_left,
+            $this
         );
     }
 

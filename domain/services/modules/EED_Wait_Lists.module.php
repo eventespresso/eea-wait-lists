@@ -13,6 +13,7 @@ use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormH
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
+use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -310,8 +311,9 @@ class EED_Wait_Lists extends EED_Module
         $event_id = isset($_REQUEST['event_wait_list']['event_id'])
             ? absint($_REQUEST['event_wait_list']['event_id'])
             : 0;
+        $redirect_params = array();
         try {
-            EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
+            $redirect_params = EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
@@ -323,7 +325,8 @@ class EED_Wait_Lists extends EED_Module
         $referrer = $event_id === 0
             ? filter_input(INPUT_SERVER, 'HTTP_REFERER')
             : get_permalink($event_id);
-        wp_safe_redirect(trailingslashit($referrer));
+        $referrer = add_query_arg($redirect_params, trailingslashit($referrer));
+        wp_safe_redirect($referrer);
         exit();
     }
 

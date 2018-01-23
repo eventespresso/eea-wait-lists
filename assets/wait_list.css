@@ -1,105 +1,147 @@
 .event-wait-list-form {
-    clear: both;
-    margin: 1.5em 0;
-    position: relative;
+    clear    : both;
+    margin   : 1.5em 0;
+    position : relative;
 }
 
 .event_wait_list-hidden-inputs {
-    border: 1px solid #ddd;
-    bottom: -150px;
-    box-sizing: border-box;
-    box-shadow: 0 25px 10px -5px rgba(0, 0, 0, .5), 0 5px 25px 5px rgba(0, 0, 0, .1);
-    clear: both;
-    left: 0;
-    margin:0 auto 1em;
-    opacity: 1;
-    padding: 20px 20px 10px;
-    position: absolute;
-    width: 100%;
-    max-width: 480px;
-    z-index: 9999;
-    -webkit-animation-name: modal_drop;
-    -webkit-animation-duration: 0.4s;
-    animation-name: modal_drop;
-    animation-duration: 0.4s
+    border            : 1px solid #DDDDDD;
+    top               : -225px;
+    box-sizing        : border-box;
+    box-shadow        : 0 25px 10px -5px rgba(0, 0, 0, .5), 0 5px 25px 5px rgba(0, 0, 0, .1);
+    clear             : both;
+    left              : 0;
+    margin            : 0 auto 1em;
+    opacity           : 1;
+    padding           : 20px 20px 10px;
+    position          : absolute;
+    width             : 100%;
+    max-width         : 480px;
+    z-index           : 9999;
+    animation         : modal_drop .5s;
+    -moz-animation    : modal_drop .5s; /* Firefox */
+    -webkit-animation : modal_drop .5s; /* Safari and Chrome */
+    -o-animation      : modal_drop .5s; /* Opera */
+    -ms-animation     : modal_drop .5s; /* IE */
 }
 
 .event_wait_list-hidden-inputs label {
-    display: block;
-    margin: 1em 0 0;
+    display : block;
+    margin  : 1em 0 0;
 }
 
 .event_wait_list-hidden-inputs input[type="text"],
 .event_wait_list-hidden-inputs select {
-    width: 99%;
+    width : 99%;
 }
 
 .event_wait_list-hidden-inputs label.error {
-    color: #E53248;
-    font-weight: bold;
+    color       : #E53248;
+    font-weight : bold;
 }
+
 .event_wait_list-hidden-inputs input.error,
 .event_wait_list-hidden-inputs select.error {
     /*box-shadow: 0 0 3px -1px rgba(229, 50, 72, .75);*/
-    box-shadow: 0 0 5px -1px #E53248;
+    box-shadow : 0 0 5px -1px #E53248;
 }
 
 .ee-wait-list-cancel-dv {
-    text-align: right;
+    text-align : right;
 }
 
 .event-wait-list-form .ee-wait-list-cancel-lnk {
-    box-shadow: none;
-    cursor: pointer;
+    box-shadow : none;
+    cursor     : pointer;
 }
 
 .ee-icon-color-ee-purple:before {
-    color:#8A549A;
+    color : #8A549A;
 }
 
 /* Media Query for screens smaller then 768px (iPad portrait)
 ---------------------------------------------------------------------------------------------------- */
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width : 767px) {
 
 }
 
-@media only screen and (max-width: 600px) and (min-width: 481px) {
+@media only screen and (max-width : 600px) and (min-width : 481px) {
 
 }
 
-@media only screen and (max-width: 540px) and (min-width: 480px) {
+@media only screen and (max-width : 540px) and (min-width : 480px) {
 
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width : 480px) {
 
 }
 
-@media only screen and (max-width: 320px) {
+@media only screen and (max-width : 320px) {
 
 }
 
 /* Animation Effects */
-@-webkit-keyframes modal_drop {
-    from {
-        bottom: 300px;
-        opacity: 0
-    }
-    to {
-        bottom: -150px;
-        opacity: 1
-    }
-}
-
 @keyframes modal_drop {
     from {
-        bottom: 300px;
-        opacity: 0
+        top     : -600px;
+        opacity : 0
     }
     to {
-        bottom: -150px;
-        opacity: 1
+        top     : -225px;
+        opacity : 1
     }
 }
 
+/* Firefox */
+@-moz-keyframes modal_drop
+{
+    from {
+        top     : -600px;
+        opacity : 0
+    }
+    to {
+        top     : -225px;
+        opacity : 1
+    }
+}
+
+/* Safari and Chrome */
+@-webkit-keyframes modal_drop
+{
+    from {
+        top     : -600px;
+        opacity : 0
+    }
+    to {
+        top     : -225px;
+        opacity : 1
+    }
+}
+
+/* Opera */
+@-o-keyframes modal_drop
+{
+    from {
+        top     : -600px;
+        opacity : 0
+    }
+    to {
+        top     : -225px;
+        opacity : 1
+    }
+}
+
+/* IE */
+@-ms-keyframes modal_drop
+{
+    from {
+        top     : -600px;
+        opacity : 0
+    }
+    to {
+        top     : -225px;
+        opacity : 1
+    }
+}

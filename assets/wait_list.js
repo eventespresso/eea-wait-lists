@@ -46,4 +46,33 @@ jQuery(document).ready(function($) {
         }
     });
 
+    //  check form before submitting
+    $('.wait-list-ticket-selection').on('change', function(e) {
+        valid_ticket_selection($(this));
+    });
+
+    //  check form before submitting
+    $('input.ee-submit-wait-list-btn').on('click', function(event) {
+        var $inputs = $(this).parents('form:first').find(':input');
+        $inputs.each(function() {
+            valid_ticket_selection($(this), event);
+        });
+    });
+
+    var valid_ticket_selection = function($selector, event) {
+        var id  = $selector.attr('id');
+        if (id.indexOf('hidden-inputs-ticket') !== -1) {
+            if ($.isNumeric($selector.val()) === false){
+                var $error = $selector.parents('form:first').find('.invalid-wait-list-ticket-selection-error');
+                $error.show();
+                $selector.removeClass('valid').addClass('error');
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                $(this).removeClass('error').addClass('valid');
+                $('.invalid-wait-list-ticket-selection-error').hide();
+            }
+        }
+
+    }
 });

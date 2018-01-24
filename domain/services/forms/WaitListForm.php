@@ -164,17 +164,26 @@ class WaitListForm extends EE_Form_Section_Proper
                             'html_class'      => 'event_wait_list-hidden-inputs',
                             'html_style'      => 'display:none;',
                             'subsections'     => array(
-                                'wait_list_form_notice' => new EE_Form_Section_HTML(
-                                    EEH_HTML::h2(
-                                        esc_html__('Join Now', 'event_espresso'),
-                                        '', 'ee-wait-list-notice-hdr'
+                                'before_form' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__before_form_html',
+                                        ''
                                     )
-                                    . EEH_HTML::p(
-                                        esc_html__(
-                                            'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
-                                            'event_espresso'
-                                        ),
-                                        '', 'small-text ee-wait-list-notice-pg'
+                                ),
+                                'wait_list_form_notice' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__wait_list_form_notice_html',
+                                        EEH_HTML::h2(
+                                            esc_html__('Join Now', 'event_espresso'),
+                                            '', 'ee-wait-list-notice-hdr'
+                                        )
+                                        . EEH_HTML::p(
+                                            esc_html__(
+                                                'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
+                                                'event_espresso'
+                                            ),
+                                            '', 'small-text ee-wait-list-notice-pg'
+                                        )
                                     )
                                 ),
                                 'registrant_name'       => new EE_Text_Input(
@@ -245,6 +254,12 @@ class WaitListForm extends EE_Form_Section_Proper
                                     )
                                 ),
                                 'lb1'                   => new EE_Form_Section_HTML(EEH_HTML::br()),
+                                'before_submit' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__before_submit_html',
+                                        ''
+                                    )
+                                ),
                                 'submit'                => new EE_Submit_Input(
                                     array(
                                         'html_class' => 'ee-submit-wait-list-btn float-right',
@@ -253,6 +268,12 @@ class WaitListForm extends EE_Form_Section_Proper
                                 ),
                                 'clear_submit'          => new EE_Form_Section_HTML(
                                     EEH_HTML::div('&nbsp;', '', 'clear')
+                                ),
+                                'after_submit' => new EE_Form_Section_HTML(
+                                    apply_filters(
+                                        'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__after_submit_html',
+                                        ''
+                                    )
                                 ),
                                 'close_form'            => new EE_Form_Section_HTML(
                                     EEH_HTML::div(

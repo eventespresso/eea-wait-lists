@@ -80,6 +80,9 @@ class WaitListFormHandler extends FormHandler
     {
         $tickets = array();
         $active_tickets = $this->event->active_tickets();
+        $active_tickets = is_array($active_tickets)
+            ? $active_tickets
+            : array($active_tickets);
         foreach ($active_tickets as $TKT_ID => $ticket) {
             $tickets[$TKT_ID] = $ticket->name_and_info();
         }

@@ -42,22 +42,22 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     /**
      * @var EEM_Registration $registration_model
      */
-    private $registration_model;
+    protected $registration_model;
 
     /**
      * @var EE_Capabilities $capabilities
      */
-    private $capabilities;
+    protected $capabilities;
 
     /**
      * @var EEM_Change_Log $change_log
      */
-    private $change_log;
+    protected $change_log;
 
     /**
      * @var NoticesContainerInterface $notices
      */
-    private $notices;
+    protected $notices;
 
 
 
@@ -145,7 +145,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @return void
      * @throws EE_Error
      */
-    private function manuallyPromoteRegistrationsNotification(
+    protected function manuallyPromoteRegistrationsNotification(
         EE_Event $event,
         $spaces_remaining,
         $wait_list_reg_count,
@@ -194,7 +194,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
+    protected function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {
         if (! $auto_promote || $regs_to_promote < 1) {
             return 0;

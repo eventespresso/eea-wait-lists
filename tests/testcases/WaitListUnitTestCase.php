@@ -23,7 +23,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * @author  Brent Christensen
  * @since   $VID:$
  */
-class WaitListUnitTestCase extends EE_UnitTestCase
+abstract class WaitListUnitTestCase extends EE_UnitTestCase
 {
 
     /**

@@ -4,7 +4,6 @@
   "name" : "Event Espresso Wait-lists Add-on",
   "archiveBaseUrl" : "http://build.eventespresso.com/",
   "archiveBasePath" : "~/www/build/",
-  "demoee" : false,
   "srcBuildFolderName" : "eea-wait-lists",
   "textDomain" : "event_espresso",
   "releaseFilesRemove" : [
@@ -15,5 +14,8 @@
   ],
   "github" : true,
   "awsbucket" : "",
-  "awsregion" : ""
+  "awsregion" : "",
+  "remoteNamesToPushTo" : [
+    "demoee"
+  ]
 }

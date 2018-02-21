@@ -8,6 +8,7 @@ use EventEspresso\modules\ticket_selector\DisplayTicketSelector;
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
+use EventEspresso\WaitList\tests\testcases\WaitListUnitTestCase;
 use PHPUnit\Framework\Exception;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
@@ -23,7 +24,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  * @group   WaitList
  * @group WaitListMonitor
  */
-class WaitListMonitorTest extends EE_UnitTestCase
+class WaitListMonitorTest extends WaitListUnitTestCase
 {
 
     /**
@@ -91,43 +92,22 @@ class WaitListMonitorTest extends EE_UnitTestCase
     {
         $events = array();
         for ($x = 1; $x <= 18; $x++) {
-            $args = array(
-                'status' => 'publish',
+            $allow_overflow = $x % 2 === 0;
+            $reg_limit = $x * 2;
+            $ticket_price = 10;
+            $add_extra_meta = $x % 2 === 0;
+            $spaces = 100;
+            $auto_promote = false;
+            $manual_spaces = 0;
+            $events[ $x ] = $this->setupEvent(
+                $allow_overflow,
+                $reg_limit,
+                $ticket_price,
+                $add_extra_meta,
+                $spaces,
+                $auto_promote,
+                $manual_spaces
             );
-            // for factors of 2
-            if ($x % 2 === 0) {
-                $args['EVT_allow_overflow'] = true;
-            }
-            /** @var EE_Event $event */
-            $events[$x] = $this->new_model_obj_with_dependencies('Event', $args);
-            $datetime = $this->new_model_obj_with_dependencies(
-                'Datetime',
-                array(
-                    'EVT_ID'        => $events[$x]->ID(),
-                    'DTT_EVT_start' => time() + MONTH_IN_SECONDS,
-                    'DTT_EVT_end'   => time() + MONTH_IN_SECONDS + DAY_IN_SECONDS,
-                    'DTT_reg_limit' => $x * 2,
-                    'DTT_sold'      => 0,
-                    'DTT_reserved'  => 0,
-                )
-            );
-            $this->new_ticket(
-                array(
-                    'TKT_min'          => 0,
-                    'TKT_max'          => EE_INF,
-                    'TKT_sold'         => 0,
-                    'TKT_reserved'     => 0,
-                    'datetime_objects' => array($datetime),
-                )
-            );
-            // for factors of 2
-            if ($x % 2 === 0) {
-                // add wait list details to event
-                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, $x);
-                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, false);
-                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES, 0);
-                $events[$x]->add_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, 0);
-            }
         }
         return $events;
     }
@@ -163,65 +143,6 @@ class WaitListMonitorTest extends EE_UnitTestCase
         return $event_with_wait_list;
     }
 
-
-
-    /**
-     * @param EE_Event $event
-     * @param int      $qty
-     * @param string   $reg_status
-     * @return EE_Base_Class[]|EE_Registration[]
-     * @throws EE_Error
-     * @throws PHPUnit_Framework_Exception
-     */
-    private function registerForWaitListEvent(
-        EE_Event $event,
-        $qty = 1,
-        $reg_status = EEM_Registration::status_id_wait_list
-    ) {
-        $registrations = array();
-        $tickets = $event->tickets();
-        $ticket = reset($tickets);
-        $transaction = $this->new_typical_transaction(
-            array(
-                'tickets'   => array(1 => $ticket),
-                'tkt_qty'   => $qty,
-                'setup_reg' => false,
-            )
-        );
-        for($x = 0; $x < $qty; $x++) {
-            $registrations[$x] = $this->new_model_obj_with_dependencies(
-                'Registration',
-                array(
-                    'EVT_ID'          => $event->ID(),
-                    'TKT_ID'          => $ticket->ID(),
-                    'TXN_ID'          => $transaction->ID(),
-                    'STS_ID'          => $reg_status,
-                    'REG_count'       => 1,
-                    'REG_group_size'  => 1,
-                    'REG_final_price' => $ticket->price(),
-                )
-            );
-            $registrations[$x]->save();
-            // $ticket->increase_sold();
-            if ($reg_status === EEM_Registration::status_id_wait_list) {
-                $registrations[$x]->add_extra_meta(
-                    Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP,
-                    current_time('mysql', true),
-                    true
-                );
-            }
-        }
-        $this->assertEquals($x, $qty);
-        if ($reg_status === EEM_Registration::status_id_wait_list) {
-            $reg_count = $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true);
-            $event->update_extra_meta(
-                Domain::META_KEY_WAIT_LIST_REG_COUNT,
-                $reg_count + $qty
-            );
-        }
-        $ticket->save();
-        return $registrations;
-    }
 
 
     /**

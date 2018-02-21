@@ -42,22 +42,22 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     /**
      * @var EEM_Registration $registration_model
      */
-    private $registration_model;
+    protected $registration_model;
 
     /**
      * @var EE_Capabilities $capabilities
      */
-    private $capabilities;
+    protected $capabilities;
 
     /**
      * @var EEM_Change_Log $change_log
      */
-    private $change_log;
+    protected $change_log;
 
     /**
      * @var NoticesContainerInterface $notices
      */
-    private $notices;
+    protected $notices;
 
 
 
@@ -145,7 +145,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @return void
      * @throws EE_Error
      */
-    private function manuallyPromoteRegistrationsNotification(
+    protected function manuallyPromoteRegistrationsNotification(
         EE_Event $event,
         $spaces_remaining,
         $wait_list_reg_count,
@@ -194,7 +194,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    private function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
+    protected function autoPromoteRegistrations(EE_Event $event, $regs_to_promote = 0, $auto_promote = false)
     {
         if (! $auto_promote || $regs_to_promote < 1) {
             return 0;
@@ -227,8 +227,15 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             if (! $registration instanceof EE_Registration) {
                 continue;
             }
+            $new_reg_status = $event->default_registration_status();
+            // if default reg status is NOT RNA (Not Approved) and ALL of the regs on the TXN are free
+            // then set the reg status to Approved, otherwise just use the default
+            $new_reg_status = $new_reg_status !== EEM_Registration::status_id_not_approved
+                              && $registration->transaction()->is_free()
+                ? EEM_Registration::status_id_approved
+                : $new_reg_status;
             $registration->set_status(
-                $event->default_registration_status(),
+                $new_reg_status,
                 false,
                 new Context(
                     Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE,

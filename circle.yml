@@ -4,10 +4,6 @@ machine:
   timezone:
     America/Denver # Set the timezone
 
-  # Version of php to use
-  php:
-    version: 5.4.21
-
   # Add some environment variables
   environment:
     CIRCLE_ENV: test

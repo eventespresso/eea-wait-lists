@@ -54,19 +54,21 @@ function espresso_wait_lists_plugin_activation_errors()
 }
 
 add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
-
-
-
 /**
  * registers addon with EE core
  *
  * @throws DomainException
  * @throws EE_Error
+ * @throws InvalidArgumentException
+ * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+ * @throws ReflectionException
  */
 function load_espresso_wait_lists()
 {
     if (
-            class_exists('EE_Addon')
+            defined('PHP_VERSION_ID')
+            && PHP_VERSION_ID > 50600
+            && class_exists('EE_Addon')
             && class_exists('EventEspresso\core\domain\DomainBase')
             && version_compare(EVENT_ESPRESSO_VERSION, '4.9.54.rc.007', '>')
     ) {
@@ -128,10 +130,11 @@ function espresso_wait_lists_activation_error()
     <div class="error">
         <p><?php printf(
                 esc_html__(
-                    'Event Espresso Wait Lists could not be activated. Please ensure that Event Espresso version %1$s or higher is running',
+                    'Event Espresso Wait Lists could not be activated. Please ensure that Event Espresso version %1$s or higher is activated and your server is running PHP version %2$s or greater.',
                     'event_espresso'
                 ),
-                '4.9.54.p'
+                '4.9.54.p',
+                '5.6'
             );
             ?></p>
     </div>

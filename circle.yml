@@ -4,14 +4,10 @@ machine:
   timezone:
     America/Denver # Set the timezone
 
-  # Version of php to use
-  php:
-    version: 5.4.21
-
   # Add some environment variables
   environment:
     CIRCLE_ENV: test
-    WP_VERSION: 3.8.1
+    WP_VERSION: latest
     WP_MULTISITE: 0
     WP_CORE_DIR: /home/ubuntu/wordpress-develop
     WP_TESTS_DIR: /home/ubuntu/wordpress-develop/tests/phpunit

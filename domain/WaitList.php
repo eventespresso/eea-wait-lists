@@ -228,6 +228,7 @@ class WaitList extends EE_Addon
                 null,
                 null,
                 'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
+                'EE_Registration_Config' => EE_Dependency_Map::load_from_cache,
             )
         );
         $this->dependencyMap()->registerDependencies(

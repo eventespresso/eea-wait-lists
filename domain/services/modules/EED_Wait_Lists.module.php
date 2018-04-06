@@ -13,7 +13,6 @@ use EventEspresso\WaitList\domain\services\forms\EventEditorWaitListMetaBoxFormH
 use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
-use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 
 defined('EVENT_ESPRESSO_VERSION') || exit;
 
@@ -30,17 +29,16 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
 class EED_Wait_Lists extends EED_Module
 {
 
-
     /**
      * @var Events_Admin_Page $admin_page
      */
     protected static $admin_page;
 
 
-    public static function reset() {
+    public static function reset()
+    {
         EED_Wait_Lists::$admin_page = null;
     }
-
 
 
     /**
@@ -59,7 +57,7 @@ class EED_Wait_Lists extends EED_Module
             'join',
             'EED_Wait_Lists',
             'process_wait_list_form_for_event',
-            'event_wait_list[route]'
+            'event-wait-list-*[route]'
         );
         EE_Config::register_route(
             'wait_list',
@@ -74,7 +72,6 @@ class EED_Wait_Lists extends EED_Module
         );
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
     }
-
 
 
     /**
@@ -123,8 +120,6 @@ class EED_Wait_Lists extends EED_Module
             array('EED_Wait_Lists', 'process_wait_list_form_for_event')
         );
     }
-
-
 
 
     /**
@@ -184,7 +179,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @var WP $WP
      * @return void
@@ -193,7 +187,6 @@ class EED_Wait_Lists extends EED_Module
     {
         // TODO: Implement run() method.
     }
-
 
 
     /**
@@ -205,9 +198,10 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListMonitor()
     {
-        return LoaderFactory::getLoader()->getShared('EventEspresso\WaitList\domain\services\event\WaitListMonitor');
+        return LoaderFactory::getLoader()->getShared(
+            'EventEspresso\WaitList\domain\services\event\WaitListMonitor'
+        );
     }
-
 
 
     /**
@@ -218,9 +212,10 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function getWaitListCheckoutMonitor()
     {
-        return LoaderFactory::getLoader()->getShared('EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor');
+        return LoaderFactory::getLoader()->getShared(
+            'EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor'
+        );
     }
-
 
 
     /**
@@ -275,7 +270,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @param string                $html
      * @param EE_Event              $event
@@ -290,15 +284,14 @@ class EED_Wait_Lists extends EED_Module
     ) {
         try {
             return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent(
-                $event,
-                $ticket_selector
-            );
+                    $event,
+                    $ticket_selector
+                );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
         return $html;
     }
-
 
 
     /**
@@ -308,16 +301,15 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function process_wait_list_form_for_event()
     {
-        $event_id = isset($_REQUEST['event_wait_list']['event_id'])
-            ? absint($_REQUEST['event_wait_list']['event_id'])
-            : 0;
+        /** @var EE_Request $request */
+        $request         = LoaderFactory::getLoader()->getShared('EE_Request');
+        $event_id        = absint($request->getMatch('event-wait-list-*[event_id]', 0));
         $redirect_params = array();
         try {
             $redirect_params = EED_Wait_Lists::getWaitListMonitor()->processWaitListFormForEvent($event_id);
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
-        EE_Error::get_notices(false, true);
         // todo submit form via AJAX and process return here
         if (defined('DOING_AJAX') && DOING_AJAX) {
             exit();
@@ -326,10 +318,8 @@ class EED_Wait_Lists extends EED_Module
             ? filter_input(INPUT_SERVER, 'HTTP_REFERER')
             : get_permalink($event_id);
         $referrer = add_query_arg($redirect_params, trailingslashit($referrer));
-        wp_safe_redirect($referrer);
-        exit();
+        EEH_URL::safeRedirectAndExit($referrer);
     }
-
 
 
     /**
@@ -371,15 +361,13 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** SPLIT FUNCTIONALITY ***************************/
-
-
     /**
      * increment or decrement the wait list reg count for an event when a registration's status changes to or from RWL
      *
-     * @param EE_Registration $registration
-     * @param                 $old_STS_ID
-     * @param                 $new_STS_ID
-     * @param ContextInterface|null    $context
+     * @param EE_Registration       $registration
+     * @param                       $old_STS_ID
+     * @param                       $new_STS_ID
+     * @param ContextInterface|null $context
      * @throws Exception
      */
     public static function registration_status_update(
@@ -401,9 +389,8 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
-     * @param int       $spaces_available
+     * @param int      $spaces_available
      * @param EE_Event $event
      * @return int
      * @throws Exception
@@ -424,25 +411,21 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** ADMIN FUNCTIONALITY ****************************/
-
-
-
     /**
      * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
      *
-     * @param array              $page_config current page config.
+     * @param array             $page_config current page config.
      * @param Events_Admin_Page $admin_page
      * @return array
      * @since  1.0.0
      */
     public static function setup_page_config(array $page_config, Events_Admin_Page $admin_page)
     {
-        EED_Wait_Lists::$admin_page = $admin_page;
-        $page_config['edit']['metaboxes'][] = array('EED_Wait_Lists', 'add_event_wait_list_meta_box');
+        EED_Wait_Lists::$admin_page             = $admin_page;
+        $page_config['edit']['metaboxes'][]     = array('EED_Wait_Lists', 'add_event_wait_list_meta_box');
         $page_config['create_new']['metaboxes'] = $page_config['edit']['metaboxes'];
         return $page_config;
     }
-
 
 
     /**
@@ -459,7 +442,6 @@ class EED_Wait_Lists extends EED_Module
             'core' // high    core    default    low
         );
     }
-
 
 
     /**
@@ -481,7 +463,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * callback that adds the main "event_wait_list_meta_box" meta_box
      * calls non static method below
@@ -498,14 +479,13 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @param array $page_routes
      * @return array
      */
     public static function reg_admin_page_routes(array $page_routes = array())
     {
-        $page_routes['wait_list_registrations'] = array(
+        $page_routes['wait_list_registrations']            = array(
             'func'       => 'bulk_action_on_registrations',
             'noheader'   => true,
             'capability' => 'ee_edit_registrations',
@@ -523,9 +503,10 @@ class EED_Wait_Lists extends EED_Module
 
     /**
      * Callback for FHEE__Registrations_Admin_Page___set_list_table_views_default__def_reg_status_actions_array
+     *
      * @param array $reg_status_actions
-     * @param array $active_message_types  Array of slugs for message types that are active.
-     * @param bool  $can_send              Whether the user has the capability to send messages or not.
+     * @param array $active_message_types Array of slugs for message types that are active.
+     * @param bool  $can_send             Whether the user has the capability to send messages or not.
      * @return array
      */
     public static function reg_status_actions(array $reg_status_actions = array(), $active_message_types, $can_send)
@@ -550,7 +531,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @param array $event_update_callbacks
      * @return array
@@ -563,7 +543,6 @@ class EED_Wait_Lists extends EED_Module
         );
         return $event_update_callbacks;
     }
-
 
 
     /**
@@ -580,8 +559,6 @@ class EED_Wait_Lists extends EED_Module
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
-
-
 
 
     /**
@@ -607,7 +584,7 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**
-     * @param array $query_args
+     * @param array           $query_args
      * @param EE_Registration $registration
      * @return array
      * @throws InvalidArgumentException
@@ -619,7 +596,7 @@ class EED_Wait_Lists extends EED_Module
     public static function wait_list_checkout_url_query_args(array $query_args, EE_Registration $registration)
     {
         // if the attendee info step has not been completed, then always go to that step
-        if($registration->transaction()->reg_step_completed('attendee_information') !== true) {
+        if ($registration->transaction()->reg_step_completed('attendee_information') !== true) {
             $query_args['step'] = 'attendee_information';
             // and also remove the 'revisit' and 'clear_session' parameters
             unset($query_args['revisit'], $query_args['clear_session']);
@@ -649,7 +626,7 @@ class EED_Wait_Lists extends EED_Module
             ),
             $registration
         );
-        if(WP_DEBUG){
+        if (WP_DEBUG) {
             EEM_Change_Log::instance()->log(
                 Domain::LOG_TYPE_WAIT_LIST,
                 "Wait List Checkout URL: {$checkout_url}",
@@ -658,8 +635,6 @@ class EED_Wait_Lists extends EED_Module
         }
         return $checkout_url;
     }
-
-
 
 
     /**
@@ -684,7 +659,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @param EE_Checkout $checkout
      * @throws Exception
@@ -697,7 +671,6 @@ class EED_Wait_Lists extends EED_Module
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
     }
-
 
 
     /**
@@ -724,7 +697,6 @@ class EED_Wait_Lists extends EED_Module
     }
 
 
-
     /**
      * @param array $log_type_labels
      * @return array
@@ -732,10 +704,9 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function register_wait_list_log_type(array $log_type_labels = array())
     {
-        $log_type_labels[Domain::LOG_TYPE_WAIT_LIST] = esc_html__('Wait List', 'event_espresso');
+        $log_type_labels[ Domain::LOG_TYPE_WAIT_LIST ] = esc_html__('Wait List', 'event_espresso');
         return $log_type_labels;
     }
-
 
 
     /**
@@ -745,15 +716,14 @@ class EED_Wait_Lists extends EED_Module
      * @param string    $line
      * @throws Exception
      */
-    protected static function handleException(Exception $exception, $file = '', $func = '', $line = '') {
+    protected static function handleException(Exception $exception, $file = '', $func = '', $line = '')
+    {
         if (WP_DEBUG) {
             new ExceptionStackTraceDisplay($exception);
         } else {
             EE_Error::add_error($exception->getMessage(), $file, $func, $line);
         }
     }
-
-
 }
 // End of file EED_Wait_Lists.module.php
 // Location: wp-content/plugins/eea-wait-lists/EED_Wait_Lists.module.php

@@ -7,9 +7,14 @@ use EE_Error;
 use EE_Event;
 use EE_Form_Section_Proper;
 use EE_Registry;
+use EE_Request;
+use EED_Recaptcha_Invisible;
+use EEH_URL;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
+use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
+use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 use InvalidArgumentException;
@@ -105,6 +110,9 @@ class WaitListFormHandler extends FormHandler
      *
      * @param array $form_data
      * @return NoticesContainerInterface
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
      * @throws ReflectionException
      * @throws RuntimeException
      * @throws LogicException
@@ -114,6 +122,9 @@ class WaitListFormHandler extends FormHandler
      */
     public function process($form_data = array())
     {
+        if (! $this->verifyRecaptcha()) {
+            return null;
+        }
         // process form
         $valid_data = (array) parent::process($form_data);
         if (empty($valid_data)) {
@@ -141,6 +152,26 @@ class WaitListFormHandler extends FormHandler
                         : 1,
                 )
             )
+        );
+    }
+
+
+    /**
+     * @return boolean
+     * @throws InvalidFormSubmissionException
+     * @throws InvalidArgumentException
+     * @throws InvalidInterfaceException
+     * @throws InvalidDataTypeException
+     * @throws RuntimeException
+     */
+    public function verifyRecaptcha()
+    {
+        // do nothing if test has  already  been passed
+        if (EED_Recaptcha_Invisible::recaptchaPassed()) {
+            return true;
+        }
+        return EED_Recaptcha_Invisible::verifyToken(
+            LoaderFactory::getLoader()->getShared('EE_Request')
         );
     }
 }

@@ -7,16 +7,14 @@ use EE_Error;
 use EE_Event;
 use EE_Form_Section_Proper;
 use EE_Registry;
-use EE_Request;
 use EED_Recaptcha_Invisible;
-use EEH_URL;
+use EventEspresso\caffeinated\modules\recaptcha_invisible\RecaptchaFactory;
 use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
-use EventEspresso\WpUser\domain\entities\exceptions\WpUserLogInRequiredException;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
@@ -117,7 +115,6 @@ class WaitListFormHandler extends FormHandler
      * @throws RuntimeException
      * @throws LogicException
      * @throws InvalidFormSubmissionException
-     * @throws WpUserLogInRequiredException
      * @throws EE_Error
      */
     public function process($form_data = array())
@@ -158,7 +155,6 @@ class WaitListFormHandler extends FormHandler
 
     /**
      * @return boolean
-     * @throws InvalidFormSubmissionException
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
      * @throws InvalidDataTypeException
@@ -167,7 +163,7 @@ class WaitListFormHandler extends FormHandler
     public function verifyRecaptcha()
     {
         // do nothing if test has  already  been passed
-        if (EED_Recaptcha_Invisible::recaptchaPassed()) {
+        if (RecaptchaFactory::create()->recaptchaPassed()) {
             return true;
         }
         return EED_Recaptcha_Invisible::verifyToken(

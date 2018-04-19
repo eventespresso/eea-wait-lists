@@ -48,8 +48,9 @@ class WaitList extends EE_Addon
     {
         // register addon via Plugin API
         EE_Register_Addon::register(
-            'EventEspresso\WaitList\domain\WaitList',
+            'Wait List',
             array(
+                'class_name'       => 'EventEspresso\WaitList\domain\WaitList',
                 'version'          => EE_WAIT_LISTS_VERSION,
                 'plugin_slug'      => 'eea_wait_lists',
                 'min_core_version' => Domain::CORE_VERSION_REQUIRED,

@@ -12,8 +12,6 @@
     "src/circle.yml",
     "src/.travis.yml"
   ],
-  "awsbucket" : "",
-  "awsregion" : "",
   "remoteNamesToPushTo" : [
     "demoee"
   ]

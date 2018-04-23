@@ -70,7 +70,7 @@ function load_espresso_wait_lists()
             && PHP_VERSION_ID > 50600
             && class_exists('EE_Addon')
             && class_exists('EventEspresso\core\domain\DomainBase')
-            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.54.rc.007', '>')
+            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.59.rc.055', '>')
     ) {
         // register namespace
         EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);

@@ -12,7 +12,6 @@
     "src/circle.yml",
     "src/.travis.yml"
   ],
-  "github" : true,
   "awsbucket" : "",
   "awsregion" : "",
   "remoteNamesToPushTo" : [

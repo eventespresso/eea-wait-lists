@@ -26,7 +26,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package EventEspresso\WaitList\tests\mocks
  * @author  Brent Christensen
- * @since   $VID:$
+ * @since   
  */
 class PromoteWaitListRegistrantsCommandHandlerMock extends PromoteWaitListRegistrantsCommandHandler
 {

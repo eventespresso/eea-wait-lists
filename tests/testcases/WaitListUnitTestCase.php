@@ -21,7 +21,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package EventEspresso\WaitList\tests\testcases
  * @author  Brent Christensen
- * @since   $VID:$
+ * @since   
  */
 abstract class WaitListUnitTestCase extends EE_UnitTestCase
 {

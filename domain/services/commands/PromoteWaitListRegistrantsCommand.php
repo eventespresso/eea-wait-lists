@@ -5,16 +5,13 @@ namespace EventEspresso\WaitList\domain\services\commands;
 use EE_Event;
 use EventEspresso\core\services\commands\Command;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
 /**
  * Class PromoteWaitListRegistrantsCommand
  * DTO for passing data to PromoteWaitListRegistrantsCommandHandler
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class PromoteWaitListRegistrantsCommand extends Command
 {
@@ -33,13 +30,13 @@ class PromoteWaitListRegistrantsCommand extends Command
     /**
      * PromoteWaitListRegistrantsCommand constructor.
      *
-     * @param EE_Event $event
+     * @param EE_Event  $event
      * @param int|float $spaces_remaining
      */
     public function __construct(EE_Event $event, $spaces_remaining)
     {
         $this->event = $event;
-        $this->spaces_remaining = $spaces_remaining === EE_INF ? $spaces_remaining : (int)$spaces_remaining;
+        $this->spaces_remaining = $spaces_remaining === EE_INF ? $spaces_remaining : (int) $spaces_remaining;
     }
 
 
@@ -59,6 +56,4 @@ class PromoteWaitListRegistrantsCommand extends Command
     {
         return $this->spaces_remaining;
     }
-
-
 }

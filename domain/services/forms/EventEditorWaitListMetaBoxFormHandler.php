@@ -20,10 +20,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 use LogicException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class EventEditorWaitListMetaBoxFormHandler
  * an admin form for controlling an event's wait list settings.
@@ -31,7 +27,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class EventEditorWaitListMetaBoxFormHandler extends FormHandler
 {
@@ -51,7 +47,6 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      * @param WaitListEventMeta $event_meta
      */
     private $event_meta;
-
 
 
     /**
@@ -85,7 +80,6 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
     }
 
 
-
     /**
      * creates and returns the actual form
      *
@@ -100,7 +94,6 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         );
         return $this->form();
     }
-
 
 
     /**
@@ -131,7 +124,8 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
                             esc_html__('Total Available Event Spaces: %1$s', 'event_espresso'),
                             $spaces_remaining
                         ),
-                        '', 'ee-available-spaces-before-waitlist-spn',
+                        '',
+                        'ee-available-spaces-before-waitlist-spn',
                         'color:#999;'
                     )
                     . EEH_HTML::br()
@@ -140,7 +134,8 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
                             esc_html__('Wait List Registrants Previously Promoted: %1$s', 'event_espresso'),
                             $this->event_meta->getPromotedRegIdsArrayCount($this->event)
                         ),
-                        '', 'ee-available-spaces-before-waitlist-spn',
+                        '',
+                        'ee-available-spaces-before-waitlist-spn',
                         'color:#999;'
                     )
                     . EEH_HTML::br(2)
@@ -150,7 +145,6 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         );
         return parent::display();
     }
-
 
 
     /**
@@ -188,7 +182,7 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
     public function process($form_data = array())
     {
         // process form
-        $valid_data = (array)parent::process($form_data);
+        $valid_data = (array) parent::process($form_data);
         if (empty($valid_data)) {
             return false;
         }
@@ -212,9 +206,4 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         $this->event->set('EVT_allow_overflow', $wait_list_spaces > 0);
         return false;
     }
-
-
-
 }
-// End of file EventEditorWaitListMetaBoxFormHandler.php
-// Location: EventEspresso\Constants/EventEditorWaitListMetaBoxFormHandler.php

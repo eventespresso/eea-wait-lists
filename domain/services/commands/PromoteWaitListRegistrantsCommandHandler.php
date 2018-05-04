@@ -23,10 +23,6 @@ use InvalidArgumentException;
 use ReflectionException;
 use RuntimeException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class PromoteWaitListRegistrantsCommandHandler
  * Manages "moving" registrations from the Wait List
@@ -60,7 +56,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     protected $notices;
 
 
-
     /**
      * PromoteWaitListRegistrantsCommandHandler constructor.
      *
@@ -78,12 +73,11 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         WaitListEventMeta $wait_list_event_meta
     ) {
         $this->registration_model = $registration_model;
-        $this->capabilities       = $capabilities;
-        $this->change_log         = $change_log;
-        $this->notices            = $notices;
+        $this->capabilities = $capabilities;
+        $this->change_log = $change_log;
+        $this->notices = $notices;
         parent::__construct($wait_list_event_meta);
     }
-
 
 
     /**
@@ -106,16 +100,16 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommand'
             );
         }
-        $event            = $command->getEvent();
+        $event = $command->getEvent();
         $spaces_remaining = $command->getSpacesRemaining();
         // registrations currently on wait list
         $wait_list_reg_count = $this->eventMeta()->getRegCount($event);
-        $spaces_remaining    += $wait_list_reg_count;
+        $spaces_remaining += $wait_list_reg_count;
         if ($spaces_remaining < 1) {
             return null;
         }
-        $auto_promote                  = $this->eventMeta()->getAutoPromote($event);
-        $manual_control_spaces         = $this->eventMeta()->getManualControlSpaces($event);
+        $auto_promote = $this->eventMeta()->getAutoPromote($event);
+        $manual_control_spaces = $this->eventMeta()->getManualControlSpaces($event);
         $promote_wait_list_registrants = $this->eventMeta()->getPromoteWaitListRegistrants($event);
         if ($promote_wait_list_registrants) {
             $wait_list_reg_count -= $this->autoPromoteRegistrations(
@@ -135,7 +129,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
     }
 
 
-
     /**
      * @param EE_Event $event
      * @param int      $spaces_remaining
@@ -152,8 +145,7 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         $manual_control_spaces,
         $auto_promote = false
     ) {
-        if (
-            $spaces_remaining > 0
+        if ($spaces_remaining > 0
             && $wait_list_reg_count > 0
             && ($manual_control_spaces > 0 || $auto_promote === false)
             && is_admin()
@@ -175,7 +167,9 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                     EED_Wait_Lists::wait_list_registrations_list_table_link($event),
                     '<br />'
                 ),
-                __FILE__, __FUNCTION__, __LINE__
+                __FILE__,
+                __FUNCTION__,
+                __LINE__
             );
         }
     }
@@ -247,7 +241,8 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
             );
             $message = sprintf(
                 esc_html__(
-                    'The registration status for "%1$s" %2$s(ID:%3$d)%4$s has been successfully updated to "%5$s". They were previously on the Wait List for "%6$s".'
+                    'The registration status for "%1$s" %2$s(ID:%3$d)%4$s has been successfully updated to "%5$s". They were previously on the Wait List for "%6$s".',
+                    'event_espresso'
                 ),
                 $registration->attendee() instanceof EE_Attendee ? $registration->attendee()->full_name() : '',
                 '<span class="lt-grey-text">',
@@ -257,12 +252,10 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 $event->name()
             );
             $this->change_log->log(Domain::LOG_TYPE_WAIT_LIST, $message, $event);
-            if (
-            $this->capabilities->current_user_can(
+            if ($this->capabilities->current_user_can(
                 'ee_edit_registrations',
                 'espresso_view_wait_list_update_notice'
-            )
-            ) {
+            )) {
                 $this->notices->addSuccess($message);
             }
             $promoted++;
@@ -274,6 +267,4 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         $this->eventMeta()->updatePerformSoldOutStatusCheck($event, true);
         return $promoted;
     }
-
-
 }

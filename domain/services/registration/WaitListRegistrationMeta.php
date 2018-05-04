@@ -6,17 +6,13 @@ use EE_Error;
 use EE_Registration;
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListRegistrationMeta
  * class for interacting with wait list related Registration meta
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListRegistrationMeta
 {
@@ -30,7 +26,6 @@ class WaitListRegistrationMeta
     {
         return $registration->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_SIGNED_UP, true);
     }
-
 
 
     /**
@@ -48,7 +43,6 @@ class WaitListRegistrationMeta
     }
 
 
-
     /**
      * @param EE_Registration $registration
      * @return bool
@@ -61,7 +55,6 @@ class WaitListRegistrationMeta
             current_time('mysql', true)
         );
     }
-
 
 
     /**
@@ -78,7 +71,6 @@ class WaitListRegistrationMeta
     }
 
 
-
     /**
      * @param EE_Registration $registration
      * @return bool
@@ -91,7 +83,6 @@ class WaitListRegistrationMeta
             current_time('mysql', true)
         );
     }
-
 
 
     /**
@@ -108,7 +99,6 @@ class WaitListRegistrationMeta
     }
 
 
-
     /**
      * @param EE_Registration $registration
      * @return string|null
@@ -121,7 +111,4 @@ class WaitListRegistrationMeta
             true
         );
     }
-
-
-
 }

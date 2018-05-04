@@ -1,11 +1,8 @@
 <?php
+
 namespace EventEspresso\WaitList\domain;
 
 use EventEspresso\core\domain\DomainBase;
-
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
 
 /**
  * Class Domain
@@ -113,8 +110,4 @@ class Domain extends DomainBase
      * Registration Meta Key used for tracking when a registrant has confirmed their desire to be on the wait list
      */
     const META_KEY_WAIT_LIST_SPACE_CONFIRMED = 'ee_wait_list_space_confirmed';
-
-
 }
-// End of file Constants.php
-// Location: /domain/Domain.php

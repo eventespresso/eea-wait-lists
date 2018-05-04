@@ -1,4 +1,5 @@
 <?php
+
 namespace EventEspresso\WaitList\domain\services\collections;
 
 use EE_Error;
@@ -10,17 +11,13 @@ use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\collections\Collection;
 use InvalidArgumentException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListEventsCollection
  * a Collection of EE_Event objects that have been tagged as having an active wait list
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListEventsCollection extends Collection
 {
@@ -52,7 +49,4 @@ class WaitListEventsCollection extends Collection
             }
         }
     }
-
 }
-// End of file WaitListEventsCollection.php
-// Location: wp-content/plugins/eea-wait-lists/WaitListEventsCollection.php

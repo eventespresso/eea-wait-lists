@@ -13,17 +13,13 @@ use EventEspresso\core\services\commands\CommandInterface;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class UpdateRegistrationWaitListMetaDataCommandHandler
  * Updates Wait List Registrations and their corresponding Event when a status change occurs
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHandler
 {
@@ -126,7 +122,6 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
     }
 
 
-
     /**
      * @param EE_Registration $registration
      * @param EE_Event        $event
@@ -140,11 +135,10 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
         // but we need a way to track registrations that were promoted from the wait list to pending payment
         if ($new_STS_ID === EEM_Registration::status_id_pending_payment) {
             $promoted_reg_ids = $this->eventMeta()->getPromotedRegIdsArray($event);
-            $promoted_reg_ids[$registration->ID()] = current_time('mysql', true);
+            $promoted_reg_ids[ $registration->ID() ] = current_time('mysql', true);
             $this->eventMeta()->updatePromotedRegIdsArray($event, $promoted_reg_ids);
         }
     }
-
 
 
     /**
@@ -161,7 +155,6 @@ class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHa
             $this->eventMeta()->removeRegistrationFromPromotedRegIdsArray($registration, $event);
         }
     }
-
 
 
     /**

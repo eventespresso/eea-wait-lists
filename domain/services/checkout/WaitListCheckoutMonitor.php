@@ -10,10 +10,6 @@ use EEM_Registration;
 use EventEspresso\core\exceptions\UnexpectedEntityException;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListCheckoutMonitor
  * monitors for any registrations that were previously on a wait list
@@ -32,7 +28,6 @@ class WaitListCheckoutMonitor
     protected $registration_meta;
 
 
-
     /**
      * WaitListCheckoutMonitor constructor.
      *
@@ -42,7 +37,6 @@ class WaitListCheckoutMonitor
     {
         $this->registration_meta = $registration_meta;
     }
-
 
 
     /**
@@ -83,7 +77,6 @@ class WaitListCheckoutMonitor
     }
 
 
-
     /**
      * ensures that the EE_Checkout has been initialized with ALL of the regular reg steps
      *
@@ -95,18 +88,17 @@ class WaitListCheckoutMonitor
     {
         $reg_steps = $checkout->transaction->reg_steps();
         if (empty($reg_steps)) {
-            $registrations                = $checkout->transaction->registrations();
+            $registrations = $checkout->transaction->registrations();
             $checkout->total_ticket_count = count($registrations);
             $checkout->transaction->set_reg_steps(
                 $checkout->initialize_txn_reg_steps_array()
             );
             $checkout->transaction->save();
         }
-        $checkout->revisit         = false;
+        $checkout->revisit = false;
         $checkout->primary_revisit = false;
         return $checkout;
     }
-
 
 
     /**
@@ -116,7 +108,6 @@ class WaitListCheckoutMonitor
     {
         return 'process_reg_step';
     }
-
 
 
     /**
@@ -142,7 +133,7 @@ class WaitListCheckoutMonitor
             );
         }
         $spaces_remaining = $event->spaces_remaining(array(), false);
-        if ($spaces_remaining !== EE_INF && (int)$spaces_remaining < 1) {
+        if ($spaces_remaining !== EE_INF && (int) $spaces_remaining < 1) {
             return false;
         }
         if ($this->registration_meta->getRegistrationSignedUp($registration) !== null) {
@@ -150,7 +141,4 @@ class WaitListCheckoutMonitor
         }
         return $allow_payment;
     }
-
 }
-// End of file WaitListCheckoutMonitor.php
-// Location: EventEspresso/Constants/WaitListCheckoutMonitor.php

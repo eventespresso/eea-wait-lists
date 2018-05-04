@@ -17,17 +17,13 @@ use EventEspresso\WaitList\domain\Domain;
 use Exception;
 use InvalidArgumentException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListRegistrationConfirmation
  * Handles the confirmation of wait list registrations
  *
  * @package EventEspresso\WaitList
  * @author  Brent Christensen
- * 
+ *
  */
 class WaitListRegistrationConfirmation
 {
@@ -114,7 +110,7 @@ class WaitListRegistrationConfirmation
                     )
                 );
             }
-            if(! $this->registration_meta->confirmWaitListSpace($registration)) {
+            if (! $this->registration_meta->confirmWaitListSpace($registration)) {
                 throw new DomainException(
                     esc_html__(
                         'We\'re sorry, but you\'re wait list registration could not be confirmed. Please contact support or refresh the page and try again.',
@@ -146,6 +142,4 @@ class WaitListRegistrationConfirmation
             }
         }
     }
-
 }
-// Location: WaitListRegistrationConfirmation.php

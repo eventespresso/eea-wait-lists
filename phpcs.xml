@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset name="Event Espresso Addon">
+    <description>Event Espresso Addon rules for PHP_CodeSniffer</description>
+
+    <file>./</file>
+
+    <arg name="extensions" value="php"/>
+    <arg value="sp"/>
+    <arg name="colors" />
+
+    <rule ref="EventEspresso" />
+
+    <!-- specific rule exclusions per file -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>eea-wait-lists.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>WaitList.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PEAR.Functions.ValidDefaultValue.NotAtEnd">
+        <exclude-pattern>CreateWaitListRegistrationsCommand.php</exclude-pattern>
+    </rule>
+</ruleset>

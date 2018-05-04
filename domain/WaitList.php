@@ -1,5 +1,4 @@
 <?php
-
 namespace EventEspresso\WaitList\domain;
 
 use DomainException;
@@ -14,10 +13,6 @@ use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use InvalidArgumentException;
 use ReflectionException;
-
-defined('EVENT_ESPRESSO_VERSION') || exit();
-
-
 
 /**
  * Class  WaitListAddon
@@ -120,7 +115,6 @@ class WaitList extends EE_Addon
     }
 
 
-
     /**
      * Register things that have to happen early in loading.
      *
@@ -136,7 +130,6 @@ class WaitList extends EE_Addon
         $this->registerDependencies();
         $this->registerCustomShortcodeLibrary();
     }
-
 
 
     /**
@@ -157,8 +150,7 @@ class WaitList extends EE_Addon
         );
         EE_Dependency_Map::register_class_loader(
             'EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection',
-            function ()
-            {
+            function () {
                 return new WaitListEventsCollection();
             }
         );
@@ -229,7 +221,7 @@ class WaitList extends EE_Addon
                 null,
                 null,
                 'EventEspresso\WaitList\domain\services\event\WaitListEventMeta' => EE_Dependency_Map::load_from_cache,
-                'EE_Registration_Config' => EE_Dependency_Map::load_from_cache,
+                'EE_Registration_Config'                                         => EE_Dependency_Map::load_from_cache,
             )
         );
         $this->dependencyMap()->registerDependencies(
@@ -250,7 +242,6 @@ class WaitList extends EE_Addon
     }
 
 
-
     /**
      * Takes care of registering the custom shortcode library for this add-on
      *
@@ -258,12 +249,11 @@ class WaitList extends EE_Addon
      */
     protected function registerCustomShortcodeLibrary()
     {
-        //ya intentionally using closures here.  If client code want's this library to not be registered there's
-        //facility for deregistering via the provided api.  This forces client code to use that api.
+        // ya intentionally using closures here.  If client code want's this library to not be registered there's
+        // facility for deregistering via the provided api.  This forces client code to use that api.
         add_action(
             'EE_Brewing_Regular___messages_caf',
-            function ()
-            {
+            function () {
                 EE_Register_Messages_Shortcode_Library::register(
                     'recipient_waitlist_shortcode_library',
                     array(
@@ -274,11 +264,10 @@ class WaitList extends EE_Addon
             },
             20
         );
-        //make sure the shortcode library is deregistered if this add-on is deregistered.
+        // make sure the shortcode library is deregistered if this add-on is deregistered.
         add_action(
             'AHEE__EE_Register_Addon__deregister__after',
-            function ($addon_name)
-            {
+            function ($addon_name) {
                 if ($addon_name === 'Wait_Lists') {
                     EE_Register_Messages_Shortcode_Library::deregister('recipient_waitlist_shortcode_library');
                 }

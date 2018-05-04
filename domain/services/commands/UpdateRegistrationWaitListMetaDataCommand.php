@@ -7,17 +7,13 @@ use EE_Registration;
 use EventEspresso\core\domain\entities\contexts\ContextInterface;
 use EventEspresso\core\services\commands\Command;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class UpdateRegistrationWaitListMetaDataCommand
  * DTO for passing data to UpdateRegistrationWaitListMetaDataCommandHandler
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class UpdateRegistrationWaitListMetaDataCommand extends Command
 {
@@ -51,11 +47,11 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     /**
      * UpdateRegistrationWaitListMetaDataCommand constructor.
      *
-     * @param EE_Event        $event
-     * @param EE_Registration $registration
-     * @param string          $old_Status_Id
-     * @param string          $new_Status_Id
-     * @param ContextInterface|null    $context
+     * @param EE_Event              $event
+     * @param EE_Registration       $registration
+     * @param string                $old_Status_Id
+     * @param string                $new_Status_Id
+     * @param ContextInterface|null $context
      */
     public function __construct(
         EE_Event $event,
@@ -72,7 +68,6 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     }
 
 
-
     /**
      * @return EE_Event
      */
@@ -80,7 +75,6 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     {
         return $this->event;
     }
-
 
 
     /**
@@ -92,7 +86,6 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     }
 
 
-
     /**
      * @return string
      */
@@ -100,7 +93,6 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     {
         return $this->old_Status_Id;
     }
-
 
 
     /**
@@ -119,6 +111,4 @@ class UpdateRegistrationWaitListMetaDataCommand extends Command
     {
         return $this->context;
     }
-
-
 }

@@ -8,17 +8,13 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\services\commands\Command;
 use InvalidArgumentException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class CreateWaitListRegistrationsCommand
  * DTO for passing data to CreateWaitListRegistrationsCommandHandler
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class CreateWaitListRegistrationsCommand extends Command
 {
@@ -42,7 +38,6 @@ class CreateWaitListRegistrationsCommand extends Command
      * @var int $quantity
      */
     private $quantity;
-
 
 
     /**
@@ -70,7 +65,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @param string $registrant_name
      * @throws InvalidArgumentException
@@ -92,7 +86,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @param string $registrant_email
      * @throws InvalidArgumentException
@@ -112,7 +105,6 @@ class CreateWaitListRegistrationsCommand extends Command
             );
         }
     }
-
 
 
     /**
@@ -138,7 +130,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @param int $quantity
      * @throws InvalidArgumentException
@@ -157,7 +148,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @return string
      */
@@ -165,7 +155,6 @@ class CreateWaitListRegistrationsCommand extends Command
     {
         return $this->registrant_name;
     }
-
 
 
     /**
@@ -177,7 +166,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @return EE_Ticket
      */
@@ -187,7 +175,6 @@ class CreateWaitListRegistrationsCommand extends Command
     }
 
 
-
     /**
      * @return int
      */
@@ -195,5 +182,4 @@ class CreateWaitListRegistrationsCommand extends Command
     {
         return $this->quantity;
     }
-
 }

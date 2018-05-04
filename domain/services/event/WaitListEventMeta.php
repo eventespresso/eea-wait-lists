@@ -7,17 +7,13 @@ use EE_Event;
 use EE_Registration;
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListEventMeta
  * class for interacting with wait list related event meta
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class WaitListEventMeta
 {
@@ -32,7 +28,6 @@ class WaitListEventMeta
     {
         return absint($event->get_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, true));
     }
-
 
 
     /**
@@ -60,7 +55,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Event $event
      * @param int      $reg_count
@@ -76,7 +70,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Event $event
      * @return array
@@ -85,11 +78,12 @@ class WaitListEventMeta
     public function getPromotedRegIdsArray(EE_Event $event)
     {
         $promoted_reg_ids = $event->get_extra_meta(
-            Domain::META_KEY_WAIT_LIST_PROMOTED_REG_IDS, false, array(array())
+            Domain::META_KEY_WAIT_LIST_PROMOTED_REG_IDS,
+            false,
+            array(array())
         );
         return reset($promoted_reg_ids);
     }
-
 
 
     /**
@@ -107,7 +101,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Registration $registration
      * @param EE_Event        $event
@@ -118,12 +111,11 @@ class WaitListEventMeta
     public function removeRegistrationFromPromotedRegIdsArray(EE_Registration $registration, EE_Event $event)
     {
         $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
-        //remove this registration
-        unset($promoted_reg_ids[$registration->ID()]);
+        // remove this registration
+        unset($promoted_reg_ids[ $registration->ID() ]);
         // resave the list of Reg IDs
         return $this->updatePromotedRegIdsArray($event, $promoted_reg_ids);
     }
-
 
 
     /**
@@ -136,7 +128,6 @@ class WaitListEventMeta
         $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
         return count($promoted_reg_ids);
     }
-
 
 
     /**
@@ -157,7 +148,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Event $event
      * @param bool     $promote_wait_list_registrants
@@ -176,7 +166,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Event $event
      * @return boolean
@@ -189,7 +178,6 @@ class WaitListEventMeta
             FILTER_VALIDATE_BOOLEAN
         );
     }
-
 
 
     /**
@@ -210,7 +198,6 @@ class WaitListEventMeta
     }
 
 
-
     /**
      * @param EE_Event $event
      * @return int
@@ -218,13 +205,13 @@ class WaitListEventMeta
      */
     public function getManualControlSpaces(EE_Event $event)
     {
-       return absint(
-           $event->get_extra_meta(
-               Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
-               true,
-               0
-           )
-       );
+        return absint(
+            $event->get_extra_meta(
+                Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
+                true,
+                0
+            )
+        );
     }
 
 
@@ -236,12 +223,11 @@ class WaitListEventMeta
      */
     public function updateManualControlSpaces(EE_Event $event, $manual_control_spaces)
     {
-       return $event->update_extra_meta(
-           Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
-           absint($manual_control_spaces)
-       );
+        return $event->update_extra_meta(
+            Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
+            absint($manual_control_spaces)
+        );
     }
-
 
 
     /**
@@ -275,5 +261,4 @@ class WaitListEventMeta
             )
         );
     }
-
 }

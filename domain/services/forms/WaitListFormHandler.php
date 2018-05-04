@@ -20,10 +20,6 @@ use LogicException;
 use ReflectionException;
 use RuntimeException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListFormHandler
  * displays and processes the wait list form
@@ -87,7 +83,7 @@ class WaitListFormHandler extends FormHandler
             ? $active_tickets
             : array($active_tickets);
         foreach ($active_tickets as $TKT_ID => $ticket) {
-            $tickets[$TKT_ID] = $ticket->name_and_info();
+            $tickets[ $TKT_ID ] = $ticket->name_and_info();
         }
         $tickets = (array) apply_filters(
             'FHEE__EventEspresso_WaitList_domain_services_forms__WaitListFormHandler__generate__tickets',

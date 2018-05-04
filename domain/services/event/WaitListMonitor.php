@@ -28,10 +28,6 @@ use LogicException;
 use ReflectionException;
 use RuntimeException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListMonitor
  * tracks which event have active wait lists
@@ -75,7 +71,6 @@ class WaitListMonitor
     private $notice_converter;
 
 
-
     /**
      * WaitListMonitor constructor.
      *
@@ -94,14 +89,13 @@ class WaitListMonitor
         LoaderInterface $loader,
         NoticeConverterInterface $notice_converter
     ) {
-        $this->wait_list_events        = $wait_list_events;
-        $this->wait_list_event_meta    = $wait_list_event_meta;
+        $this->wait_list_events = $wait_list_events;
+        $this->wait_list_event_meta = $wait_list_event_meta;
         $this->wait_list_form_handlers = $wait_list_forms;
-        $this->command_bus             = $command_bus;
-        $this->loader                  = $loader;
-        $this->notice_converter        = $notice_converter;
+        $this->command_bus = $command_bus;
+        $this->loader = $loader;
+        $this->notice_converter = $notice_converter;
     }
-
 
 
     /**
@@ -125,7 +119,6 @@ class WaitListMonitor
     }
 
 
-
     /**
      * @param EE_Event $event
      * @return WaitListFormHandler
@@ -138,17 +131,17 @@ class WaitListMonitor
      */
     public function waitListFormForEvent(EE_Event $event)
     {
-        if($this->wait_list_form_handlers->has($event->ID())) {
+        if ($this->wait_list_form_handlers->has($event->ID())) {
             return $this->wait_list_form_handlers->get($event->ID());
         }
         $wait_list_form_handler = LoaderFactory::getLoader()->getNew(
             'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
             array(
                 $event,
-                LoaderFactory::getLoader()->getNew('EE_Registry')
+                LoaderFactory::getLoader()->getNew('EE_Registry'),
             )
         );
-        if(! $this->wait_list_form_handlers->add($wait_list_form_handler, $event->ID())) {
+        if (! $this->wait_list_form_handlers->add($wait_list_form_handler, $event->ID())) {
             throw new DomainException(
                 sprintf(
                     esc_html__(
@@ -161,7 +154,6 @@ class WaitListMonitor
         }
         return $wait_list_form_handler;
     }
-
 
 
     /**
@@ -179,7 +171,7 @@ class WaitListMonitor
     public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector)
     {
         if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
-            if($ticket_selector->isIframe()) {
+            if ($ticket_selector->isIframe()) {
                 return $this->getWaitListLinkForEvent($event);
             }
             return apply_filters(
@@ -191,7 +183,6 @@ class WaitListMonitor
         }
         return '';
     }
-
 
 
     /**
@@ -211,7 +202,7 @@ class WaitListMonitor
      */
     public function processWaitListFormForEvent($event_id)
     {
-        if(!$event_id) {
+        if (! $event_id) {
             throw new DomainException(
                 esc_html__(
                     'The Wait List form can not be processed because an invalid or missing Event ID was supplied.',
@@ -241,7 +232,7 @@ class WaitListMonitor
                 $event,
                 $this
             );
-            if(empty($redirect_params)) {
+            if (empty($redirect_params)) {
                 throw $exception;
             }
         }
@@ -253,10 +244,10 @@ class WaitListMonitor
      * increment or decrement the wait list reg count for an event
      * when a registration's status changes to or from RWL
      *
-     * @param EE_Registration  $registration
-     * @param                  $old_STS_ID
-     * @param                  $new_STS_ID
-     * @param ContextInterface|null     $context
+     * @param EE_Registration       $registration
+     * @param                       $old_STS_ID
+     * @param                       $new_STS_ID
+     * @param ContextInterface|null $context
      * @throws EE_Error
      * @throws EntityNotFoundException
      */
@@ -274,7 +265,6 @@ class WaitListMonitor
             )
         );
     }
-
 
 
     /**
@@ -297,7 +287,6 @@ class WaitListMonitor
         }
         return $spaces_available;
     }
-
 
 
     /**
@@ -323,7 +312,6 @@ class WaitListMonitor
             $this->processNotices($notices);
         }
     }
-
 
 
     /**
@@ -388,8 +376,4 @@ class WaitListMonitor
         $wait_list_form_html .= EEH_HTML::divx('', 'event-wait-list-form');
         return $wait_list_form_html;
     }
-
-
 }
-// End of file WaitListMonitor.php
-// Location: EventEspresso/Constants/WaitListMonitor.php

@@ -24,17 +24,13 @@ use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta;
 use InvalidArgumentException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class CreateWaitListRegistrationsCommandHandler
  * Generates Registrations and the corresponding Transaction and Line Items for the Wait List
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
@@ -58,7 +54,6 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
      * @var NoticesContainerInterface $notices
      */
     private $notices;
-
 
 
     /**
@@ -151,8 +146,10 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
             apply_filters(
                 'FHEE_EventEspresso_WaitList_WaitListMonitor__processWaitListFormForEvent__success_msg',
                 sprintf(
-                    esc_html__('Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s',
-                        'event_espresso'),
+                    esc_html__(
+                        'Thank You %1$s.%2$sYou have been successfully added to the Wait List for:%2$s%3$s',
+                        'event_espresso'
+                    ),
                     $primary_registrant->full_name(),
                     '<br />',
                     $event->name()
@@ -161,7 +158,6 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         );
         return $this->notices;
     }
-
 
 
     /**
@@ -210,7 +206,7 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
                     $registrant_email
                 );
             }
-            //ok, we have all of the pieces, now let's do some final tweaking
+            // ok, we have all of the pieces, now let's do some final tweaking
             // add relation to attendee
             $registration->_add_relation_to($attendee, 'Attendee');
             $registration->set_attendee_id($attendee->ID());
@@ -225,7 +221,6 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
         );
         return $attendee;
     }
-
 
 
     /**
@@ -255,7 +250,4 @@ class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
             )
         );
     }
-
-
-
 }

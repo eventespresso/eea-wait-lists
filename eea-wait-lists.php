@@ -65,12 +65,11 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
  */
 function load_espresso_wait_lists()
 {
-    if (
-            defined('PHP_VERSION_ID')
-            && PHP_VERSION_ID > 50600
-            && class_exists('EE_Addon')
-            && class_exists('EventEspresso\core\domain\DomainBase')
-            && version_compare(EVENT_ESPRESSO_VERSION, '4.9.59.rc.055', '>')
+    if (defined('PHP_VERSION_ID')
+        && PHP_VERSION_ID > 50600
+        && class_exists('EE_Addon')
+        && class_exists('EventEspresso\core\domain\DomainBase')
+        && version_compare(EVENT_ESPRESSO_VERSION, '4.9.59.rc.055', '>')
     ) {
         // register namespace
         EE_Psr4AutoloaderInit::psr4_loader()->addNamespace('EventEspresso\WaitList', __DIR__);
@@ -89,7 +88,7 @@ function load_espresso_wait_lists()
                 ),
                 array(
                     new EventEspresso\core\domain\values\FilePath(EE_WAIT_LISTS_PLUGIN_FILE),
-                    EventEspresso\core\domain\values\Version::fromString(EE_WAIT_LISTS_VERSION)
+                    EventEspresso\core\domain\values\Version::fromString(EE_WAIT_LISTS_VERSION),
                 )
             )
         );
@@ -99,7 +98,6 @@ function load_espresso_wait_lists()
 }
 
 add_action('AHEE__EE_System__load_espresso_addons', 'load_espresso_wait_lists');
-
 
 
 /**
@@ -115,7 +113,6 @@ function espresso_wait_lists_activation_check()
 add_action('init', 'espresso_wait_lists_activation_check', 1);
 
 
-
 /**
  *    displays activation error admin notice
  */
@@ -128,7 +125,8 @@ function espresso_wait_lists_activation_error()
     deactivate_plugins(plugin_basename(EE_WAIT_LISTS_PLUGIN_FILE));
     ?>
     <div class="error">
-        <p><?php printf(
+        <p><?php
+            printf(
                 esc_html__(
                     'Event Espresso Wait Lists could not be activated. Please ensure that Event Espresso version %1$s or higher is activated and your server is running PHP version %2$s or greater.',
                     'event_espresso'
@@ -140,8 +138,3 @@ function espresso_wait_lists_activation_error()
     </div>
     <?php
 }
-
-
-
-// End of file espresso_wait_lists.php
-// Location: wp-content/plugins/eea-wait-lists/espresso_wait_lists.php

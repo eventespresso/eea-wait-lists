@@ -5,28 +5,22 @@ namespace EventEspresso\WaitList\domain\services\commands;
 use EventEspresso\core\services\commands\CommandHandler;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListCommandHandler
  * Shared logic for wait list command handlers
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 abstract class WaitListCommandHandler extends CommandHandler
 {
-
 
 
     /**
      * @param WaitListEventMeta $event_meta
      */
     private $event_meta;
-
 
 
     /**
@@ -40,7 +34,6 @@ abstract class WaitListCommandHandler extends CommandHandler
     }
 
 
-
     /**
      * @return WaitListEventMeta
      */
@@ -48,6 +41,4 @@ abstract class WaitListCommandHandler extends CommandHandler
     {
         return $this->event_meta;
     }
-
-
 }

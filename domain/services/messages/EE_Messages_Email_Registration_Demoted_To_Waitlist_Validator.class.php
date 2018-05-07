@@ -2,10 +2,6 @@
 
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
-
-
 /**
  * This is used when validating shortcodes that can be used for the registered fields and contexts for the
  * `waitlist_can_register` message type and the `email` messenger.

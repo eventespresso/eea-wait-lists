@@ -6,10 +6,6 @@ use EventEspresso\core\exceptions\InvalidDataTypeException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
-
-
 /**
  * Module for handling wait list integration with the messages system.
  *
@@ -46,7 +42,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     protected static function _set_shared_hooks()
     {
 
-        //notification triggers on promotion from wait list
+        // notification triggers on promotion from wait list
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_promoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_promotion_notifications'),
@@ -54,7 +50,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
-        //notification triggers on demotion to wait list.
+        // notification triggers on demotion to wait list.
         add_action(
             'AHEE__UpdateRegistrationWaitListMetaDataCommandHandler__handle__registration_demoted',
             array('EED_Wait_Lists_Messages', 'trigger_wait_list_demotion_notifications'),
@@ -62,7 +58,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             3
         );
 
-        //notification triggers adding to wait list (not demoted).
+        // notification triggers adding to wait list (not demoted).
         add_action(
             'FHEE__EEH_MSG_Template__reg_status_to_message_type_array',
             array(
@@ -94,7 +90,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
         EE_Event $event,
         ContextInterface $context = null
     ) {
-        //check context before triggering.
+        // check context before triggering.
         if ($context instanceof ContextInterface
             && (
                 $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE
@@ -128,7 +124,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
             }
         }
         if (is_admin()) {
-            //if called from admin, let's exclude this registration from being processed by the admin.
+            // if called from admin, let's exclude this registration from being processed by the admin.
             self::exclude_processing_notification_by_admin($registration);
         }
     }
@@ -152,7 +148,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
         EE_Event $event,
         ContextInterface $context = null
     ) {
-        //check context before triggering.
+        // check context before triggering.
         if ($context === null
             || (
                 $context instanceof ContextInterface
@@ -198,7 +194,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     public static function register_add_registration_to_waitlist_message_type_with_registration_status_map(
         $registration_status_to_message_type_map
     ) {
-        $registration_status_to_message_type_map[EEM_Registration::status_id_wait_list] =
+        $registration_status_to_message_type_map[ EEM_Registration::status_id_wait_list ] =
             Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST;
         return $registration_status_to_message_type_map;
     }
@@ -214,7 +210,7 @@ class EED_Wait_Lists_Messages extends EED_Messages
     {
         try {
             self::_load_controller();
-            //grab one of the registrations to get the transaction
+            // grab one of the registrations to get the transaction
             $registration = reset($registrations_added_to_waitlist);
             $transaction = $registration instanceof EE_Registration ? $registration->transaction() : null;
             $messages_to_generate = self::$_MSG_PROCESSOR->setup_mtgs_for_all_active_messengers(
@@ -268,14 +264,14 @@ class EED_Wait_Lists_Messages extends EED_Messages
     {
         add_filter(
             'FHEE__Registrations_Admin_Page___set_registration_status_from_request__REG_IDs',
-            //exclude these registrations from normal admin notifications when status manually changed.
-            //notifications will be handled for these registrations by EED_Waitlist_Messages.
+            // exclude these registrations from normal admin notifications when status manually changed.
+            // notifications will be handled for these registrations by EED_Waitlist_Messages.
             function ($registrations_ids) use ($registration) {
                 if (false !== (
                     $key = array_search($registration->ID(), (array) $registrations_ids, true)
                     )
                 ) {
-                    unset($registrations_ids[$key]);
+                    unset($registrations_ids[ $key ]);
                 }
                 return $registrations_ids;
             }

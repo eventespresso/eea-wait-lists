@@ -12,17 +12,13 @@ use EE_Yes_No_Input;
 use EEH_HTML;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class EventEditorWaitListMetaBoxForm
  * Top Level EE_Form_Section_Proper for the Wait List Event Editor form
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- * 
+ *
  */
 class EventEditorWaitListMetaBoxForm extends EE_Form_Section_Proper
 {
@@ -109,5 +105,4 @@ class EventEditorWaitListMetaBoxForm extends EE_Form_Section_Proper
             ),
         );
     }
-
 }

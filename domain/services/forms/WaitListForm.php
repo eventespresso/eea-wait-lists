@@ -22,10 +22,6 @@ use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class WaitListForm
  * Top Level EE_Form_Section_Proper for the Wait List Sign Up form
@@ -192,14 +188,16 @@ class WaitListForm extends EE_Form_Section_Proper
                                 'FHEE__EventEspresso_WaitList_domain_services_forms_WaitListForm__waitListFormOptions__hidden_inputs__wait_list_form_notice_html',
                                 EEH_HTML::h2(
                                     esc_html__('Join Now', 'event_espresso'),
-                                    '', 'ee-wait-list-notice-hdr'
+                                    '',
+                                    'ee-wait-list-notice-hdr'
                                 )
                                 . EEH_HTML::p(
                                     esc_html__(
                                         'If you would like to be added to the wait list for this event, then please enter your name and email address, and we will contact you when spaces become available.',
                                         'event_espresso'
                                     ),
-                                    '', 'small-text ee-wait-list-notice-pg'
+                                    '',
+                                    'small-text ee-wait-list-notice-pg'
                                 )
                             )
                         ),
@@ -297,13 +295,16 @@ class WaitListForm extends EE_Form_Section_Proper
                                 EEH_HTML::link(
                                     '',
                                     esc_html__('cancel', 'event_espresso'),
-                                    '', '',
-                                    'ee-wait-list-cancel-lnk small-text lt-grey-text', '',
+                                    '',
+                                    '',
+                                    'ee-wait-list-cancel-lnk small-text lt-grey-text',
+                                    '',
                                     ' data-inputs="event-wait-list-'
                                     . $event->ID()
                                     . '-hidden-inputs"'
                                 ),
-                                '', 'ee-wait-list-cancel-dv'
+                                '',
+                                'ee-wait-list-cancel-dv'
                             )
                         ),
                         'referrer'                 => new EE_Fixed_Hidden_Input(
@@ -319,7 +320,7 @@ class WaitListForm extends EE_Form_Section_Proper
             ),
         );
         // maybe add recaptcha
-        if($registration_config->use_captcha && $registration_config->recaptcha_theme === 'invisible'){
+        if ($registration_config->use_captcha && $registration_config->recaptcha_theme === 'invisible') {
             $subsections['espresso_recaptcha'] = new EE_Invisible_Recaptcha_Input(
                 array(
                     'recaptcha_id'     => "wait-list-{$event->ID()}",
@@ -343,6 +344,4 @@ class WaitListForm extends EE_Form_Section_Proper
             $this
         );
     }
-
-
 }

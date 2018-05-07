@@ -21,5 +21,6 @@
 
     <rule ref="PEAR.Functions.ValidDefaultValue.NotAtEnd">
         <exclude-pattern>CreateWaitListRegistrationsCommand.php</exclude-pattern>
+        <exclude-pattern>WaitListForm.php</exclude-pattern>
     </rule>
 </ruleset>

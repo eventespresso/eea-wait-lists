@@ -1,7 +1,4 @@
 <?php
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
-
 
 /**
  * Shortcode library for registration wait list message types
@@ -37,7 +34,7 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
                 'This returns the generated url for the wait list registrant to complete the sign-up process.',
                 'event_espresso'
             ),
-            //@todo commented out for now because doesn't work.
+            // @todo commented out for now because doesn't work.
             // '[RECIPIENT_WAITLIST_CONFIRMATION_URL]' => esc_html__(
             //     'This returns the generated url for a registrant to confirm being added to a wait list.',
             //     'event_espresso'
@@ -58,7 +55,7 @@ class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
      */
     protected function _parser($shortcode)
     {
-        //make sure we end up with a registration object.
+        // make sure we end up with a registration object.
         $messages_addressee = $this->_data instanceof EE_Messages_Addressee ? $this->_data : null;
         $messages_addressee = $this->_extra_data instanceof EE_Messages_Addressee
             ? $this->_extra_data

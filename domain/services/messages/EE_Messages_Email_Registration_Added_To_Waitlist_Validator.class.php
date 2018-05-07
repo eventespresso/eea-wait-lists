@@ -2,8 +2,6 @@
 
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed');
-
 class EE_Messages_Email_Registration_Added_To_Waitlist_Validator extends EE_Messages_Validator
 {
     public function __construct($fields, $context)
@@ -21,7 +19,7 @@ class EE_Messages_Email_Registration_Added_To_Waitlist_Validator extends EE_Mess
     protected function _modify_validator()
     {
         $new_config = $this->_messenger->get_validator_config();
-        //modify just event_list
+        // modify just event_list
         $new_config['event_list'] = array(
             'shortcodes' => array(
                 'event',
@@ -40,7 +38,7 @@ class EE_Messages_Email_Registration_Added_To_Waitlist_Validator extends EE_Mess
         );
         $this->_messenger->set_validator_config($new_config);
 
-        $this->_valid_shortcodes_modifier[$this->_context]['event_list'] = array(
+        $this->_valid_shortcodes_modifier[ $this->_context ]['event_list'] = array(
             'event',
             'attendee_list',
             'ticket_list',

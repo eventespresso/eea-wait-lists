@@ -14,10 +14,6 @@ use EventEspresso\WaitList\domain\Domain;
 use EventEspresso\WaitList\domain\services\checkout\WaitListCheckoutMonitor;
 use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
 
-defined('EVENT_ESPRESSO_VERSION') || exit;
-
-
-
 /**
  * Class EED_Wait_Lists
  * module class for controlling event registration wait lists
@@ -68,7 +64,8 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__EventEspresso_modules_ticket_selector_DisplayTicketSelector__displaySubmitButton__html',
             array('EED_Wait_Lists', 'add_wait_list_form_for_event'),
-            10, 3
+            10,
+            3
         );
         add_action('wp_enqueue_scripts', array('EED_Wait_Lists', 'enqueue_styles_and_scripts'));
     }
@@ -90,7 +87,8 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
             array('EED_Wait_Lists', 'setup_page_config'),
-            1, 2
+            1,
+            2
         );
         add_filter(
             'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
@@ -135,22 +133,26 @@ class EED_Wait_Lists extends EED_Module
         add_action(
             'AHEE__EE_Registration__set_status__after_update',
             array('EED_Wait_Lists', 'registration_status_update'),
-            10, 4
+            10,
+            4
         );
         add_filter(
             'FHEE_EE_Event__spaces_remaining',
             array('EED_Wait_Lists', 'event_spaces_available'),
-            10, 2
+            10,
+            2
         );
         add_filter(
             'FHEE_EE_Event__total_available_spaces__spaces_available',
             array('EED_Wait_Lists', 'event_spaces_available'),
-            10, 2
+            10,
+            2
         );
         add_action(
             'AHEE__EE_Event__perform_sold_out_status_check__end',
             array('EED_Wait_Lists', 'promote_wait_list_registrants'),
-            10, 3
+            10,
+            3
         );
         add_action(
             'AHEE__Single_Page_Checkout___load_and_instantiate_reg_steps__start',
@@ -159,7 +161,8 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__EE_SPCO_Reg_Step_Payment_Options__find_registrations_that_lost_their_space__allow_reg_payment',
             array('EED_Wait_Lists', 'allow_reg_payment'),
-            10, 3
+            10,
+            3
         );
         add_filter(
             'FHEE__EEM_Change_Log__get_pretty_label_map_for_registered_types',
@@ -169,12 +172,14 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__EE_Registration__edit_attendee_information_url__query_args',
             array('EED_Wait_Lists', 'wait_list_checkout_url_query_args'),
-            10, 3
+            10,
+            3
         );
         add_filter(
             'FHEE__EE_Registration__payment_overview_url__query_args',
             array('EED_Wait_Lists', 'wait_list_checkout_url_query_args'),
-            10, 3
+            10,
+            3
         );
     }
 
@@ -284,9 +289,9 @@ class EED_Wait_Lists extends EED_Module
     ) {
         try {
             return $html . EED_Wait_Lists::getWaitListMonitor()->getWaitListFormForEvent(
-                    $event,
-                    $ticket_selector
-                );
+                $event,
+                $ticket_selector
+            );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
         }
@@ -455,7 +460,8 @@ class EED_Wait_Lists extends EED_Module
         try {
             echo EEH_HTML::div(
                 EED_Wait_Lists::getEventEditorWaitListMetaBoxForm()->waitListRegCountDisplay(),
-                '', 'misc-pub-section'
+                '',
+                'misc-pub-section'
             );
         } catch (Exception $e) {
             EED_Wait_Lists::handleException($e, __FILE__, __FUNCTION__, __LINE__);
@@ -725,5 +731,3 @@ class EED_Wait_Lists extends EED_Module
         }
     }
 }
-// End of file EED_Wait_Lists.module.php
-// Location: wp-content/plugins/eea-wait-lists/EED_Wait_Lists.module.php

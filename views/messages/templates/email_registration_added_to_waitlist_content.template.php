@@ -31,8 +31,8 @@
                     <tbody>
                     <tr>
                         <td>
-                            <h2><?php printf(esc_html__( 'Hello, %s:', 'event_espresso' ), '[RECIPIENT_FNAME]' ); ?></h2>
-                            <p class="lead"><?php esc_html_e( "This confirms you've been added to the wait list. If a spot opens up, then we'll follow up through email so you can complete your registration.", 'event_espresso' ); ?></p>
+                            <h2><?php printf(esc_html__('Hello, %s:', 'event_espresso'), '[RECIPIENT_FNAME]'); ?></h2>
+                            <p class="lead"><?php esc_html_e("This confirms you've been added to the wait list. If a spot opens up, then we'll follow up through email so you can complete your registration.", 'event_espresso'); ?></p>
                             <p><?php esc_html_e('You are on the wait list for the following event(s):', 'event_espresso'); ?></p>
                         </td>
                     </tr>
@@ -61,10 +61,10 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    <h5><?php _e( 'Connect with Us:', 'event_espresso' ); ?></h5>
-                                    <a class="soc-btn fb" href="[CO_FACEBOOK_URL]"><?php _e( 'Facebook', 'event_espresso' ); ?></a>
-                                    <a class="soc-btn tw" href="[CO_TWITTER_URL]"><?php _e( 'Twitter', 'event_espresso' ); ?></a>
-                                    <a class="soc-btn gp" href="[CO_GOOGLE_URL]"><?php _e( 'Google+', 'event_espresso' ); ?></a>
+                                    <h5><?php _e('Connect with Us:', 'event_espresso'); ?></h5>
+                                    <a class="soc-btn fb" href="[CO_FACEBOOK_URL]"><?php _e('Facebook', 'event_espresso'); ?></a>
+                                    <a class="soc-btn tw" href="[CO_TWITTER_URL]"><?php _e('Twitter', 'event_espresso'); ?></a>
+                                    <a class="soc-btn gp" href="[CO_GOOGLE_URL]"><?php _e('Google+', 'event_espresso'); ?></a>
                                 </td>
                             </tr>
                             </tbody>
@@ -74,9 +74,9 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    <h5><?php _e( 'Contact Info:', 'event_espresso' ); ?></h5>
-                                    <?php _e( 'Phone:', 'event_espresso' ); ?> <strong>[CO_PHONE]</strong>
-                                    <?php _e( 'Email:', 'event_espresso' ); ?>
+                                    <h5><?php _e('Contact Info:', 'event_espresso'); ?></h5>
+                                    <?php _e('Phone:', 'event_espresso'); ?> <strong>[CO_PHONE]</strong>
+                                    <?php _e('Email:', 'event_espresso'); ?>
                                     <strong><a href="mailto:[CO_EMAIL]" target="_blank">[CO_EMAIL]</a></strong>
                                 </td>
                             </tr>

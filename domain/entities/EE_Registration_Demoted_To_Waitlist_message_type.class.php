@@ -2,8 +2,6 @@
 
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
 class EE_Registration_Demoted_To_Waitlist_message_type extends EE_Waitlist_Message_Type_Base
 {
     /**

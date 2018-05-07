@@ -1,10 +1,5 @@
 <?php
 
-
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
-
-
 /**
  * Base Message Type for wait list message types to inherit from.
  *
@@ -154,9 +149,9 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
         $addressee          = array();
         $data_for_addressee = array();
 
-        //just looping through the attendees to make sure that the attendees listed are JUST for this registration.
-        foreach ($this->_data->attendees[$this->_data->reg_obj->attendee_ID()] as $item => $value) {
-            $data_for_addressee[$item] = $value;
+        // just looping through the attendees to make sure that the attendees listed are JUST for this registration.
+        foreach ($this->_data->attendees[ $this->_data->reg_obj->attendee_ID() ] as $item => $value) {
+            $data_for_addressee[ $item ] = $value;
         }
 
         $data_for_addressee['events']    = $this->_data->events;

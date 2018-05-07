@@ -2,10 +2,6 @@
 
 use EventEspresso\WaitList\domain\Domain;
 
-defined('EVENT_ESPRESSO_VERSION') || exit('No direct access allowed.');
-
-
-
 /**
  * Message type for handling notifications to those on a wait list when there are registrations available.
  *

@@ -113,7 +113,7 @@ class WaitListRegistrationConfirmation
             if (! $this->registration_meta->confirmWaitListSpace($registration)) {
                 throw new DomainException(
                     esc_html__(
-                        'We\'re sorry, but you\'re wait list registration could not be confirmed. Please contact support or refresh the page and try again.',
+                        'We\'re sorry, but your wait list registration could not be confirmed. Please contact support or refresh the page and try again.',
                         'event_espresso'
                     )
                 );

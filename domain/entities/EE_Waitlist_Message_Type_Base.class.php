@@ -102,7 +102,7 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
         $this->_context_label = array(
             'label'       => esc_html__('recipient', 'event_espresso'),
             'plural'      => esc_html__('recipients', 'event_espresso'),
-            'description' => esc_html__("Recipient's are who will receive the message.", 'event_espresso'),
+            'description' => esc_html__("Recipients are who will receive the message.", 'event_espresso'),
         );
         $this->_contexts = array(
             'registrant' => array(

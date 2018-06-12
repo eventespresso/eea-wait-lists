@@ -4,7 +4,6 @@
 	"name": "Event Espresso Wait-lists Add-on",
 	"srcBuildFolderName": "eea-wait-lists",
 	"textDomain": "event_espresso",
-	"jsBuildDirectory": ".\/",
 	"wpi18nJsPotFilePath": ".\/languages\/ee-js.pot",
 	"releaseFilesRemove": [
 		"src\/tests\/**",

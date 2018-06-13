@@ -601,8 +601,18 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function wait_list_checkout_url_query_args(array $query_args, EE_Registration $registration)
     {
+        try {
+            $transaction = $registration->transaction();
+        } catch (EntityNotFoundException $exception) {
+            if (! (isset($_REQUEST['action']) && $_REQUEST['action'] === 'preview_message')) {
+                throw $exception;
+            }
+            $transaction = null;
+        }
         // if the attendee info step has not been completed, then always go to that step
-        if ($registration->transaction()->reg_step_completed('attendee_information') !== true) {
+        if ($transaction instanceof EE_Transaction
+            && $transaction->reg_step_completed('attendee_information') !== true
+        ) {
             $query_args['step'] = 'attendee_information';
             // and also remove the 'revisit' and 'clear_session' parameters
             unset($query_args['revisit'], $query_args['clear_session']);

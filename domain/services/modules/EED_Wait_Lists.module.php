@@ -306,8 +306,8 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function process_wait_list_form_for_event()
     {
-        /** @var EE_Request $request */
-        $request         = LoaderFactory::getLoader()->getShared('EE_Request');
+        /** @var EventEspresso\core\services\request\RequestInterface $request */
+        $request = LoaderFactory::getLoader()->getShared('EventEspresso\core\services\request\RequestInterface');
         $event_id        = absint($request->getMatch('event-wait-list-*[event_id]', 0));
         $redirect_params = array();
         try {
@@ -604,7 +604,9 @@ class EED_Wait_Lists extends EED_Module
         try {
             $transaction = $registration->transaction();
         } catch (EntityNotFoundException $exception) {
-            if (! (isset($_REQUEST['action']) && $_REQUEST['action'] === 'preview_message')) {
+            /** @var EventEspresso\core\services\request\RequestInterface $request */
+            $request = LoaderFactory::getLoader()->getShared('EventEspresso\core\services\request\RequestInterface');
+            if ($request->getRequestParam('action') !== 'preview_message') {
                 throw $exception;
             }
             $transaction = null;

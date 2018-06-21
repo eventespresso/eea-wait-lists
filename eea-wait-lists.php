@@ -1,6 +1,6 @@
 <?php
 /*
-  Plugin Name: Event Espresso - Wait Lists (EE4.9+)
+ Plugin Name: Event Espresso - Wait Lists (EE4.9+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Wait Lists Addon maximizes event sales by allowing attendees to partially register for a datetime or ticket that has sold out, but then complete the registration process later after spaces have become available due to venue change, additional tickets, non-payment, cancellation, etc.
   Version: 1.0.0.rc.094
@@ -34,7 +34,6 @@
  * @ link			http://www.eventespresso.com
  * @ version	 	EE4
  *
- * ------------------------------------------------------------------------
  */
 // define versions and this file
 define('EE_WAIT_LISTS_VERSION', '1.0.0.rc.094');

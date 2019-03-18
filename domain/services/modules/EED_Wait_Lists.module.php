@@ -319,11 +319,14 @@ class EED_Wait_Lists extends EED_Module
         if (defined('DOING_AJAX') && DOING_AJAX) {
             exit();
         }
-        $referrer = $event_id === 0
-            ? filter_input(INPUT_SERVER, 'HTTP_REFERER')
-            : get_permalink($event_id);
-        $referrer = add_query_arg($redirect_params, trailingslashit($referrer));
-        EEH_URL::safeRedirectAndExit($referrer);
+        EEH_URL::safeRedirectAndExit(
+            add_query_arg(
+                $redirect_params,
+                trailingslashit(
+                    filter_input(INPUT_SERVER, 'HTTP_REFERER')
+                )
+            )
+        );
     }
 
 

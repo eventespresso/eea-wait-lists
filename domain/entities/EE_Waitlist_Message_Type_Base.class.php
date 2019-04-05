@@ -155,7 +155,7 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
         }
 
         $related_event = reset($this->_data->events);
-        $data_for_addressee['user_id']   = $related_event['event'] instanceof EE_Event ? $related_event['event']->get('EVT_wp_user') : null;
+        $data_for_addressee['user_id']   = $related_event['event'] instanceof EE_Event ? $related_event['event']->get('EVT_wp_user') : 0;
         $data_for_addressee['events']    = $this->_data->events;
         $data_for_addressee['reg_obj']   = $this->_data->reg_obj;
         $data_for_addressee['attendees'] = $this->_data->attendees;

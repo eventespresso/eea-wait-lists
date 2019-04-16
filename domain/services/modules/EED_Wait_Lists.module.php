@@ -609,7 +609,8 @@ class EED_Wait_Lists extends EED_Module
         } catch (EntityNotFoundException $exception) {
             /** @var EventEspresso\core\services\request\RequestInterface $request */
             $request = LoaderFactory::getLoader()->getShared('EventEspresso\core\services\request\RequestInterface');
-            if ($request->getRequestParam('action') !== 'preview_message') {
+            $action = $request->getRequestParam('action');
+            if ($action !== 'preview_message' && $action !== 'update_message_template') {
                 throw $exception;
             }
             $transaction = null;

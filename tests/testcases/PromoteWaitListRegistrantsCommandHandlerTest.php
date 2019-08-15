@@ -79,7 +79,7 @@ class PromoteWaitListRegistrantsCommandHandlerTest extends WaitListUnitTestCase
             array(
                 0,
                 EEM_Registration::status_id_pending_payment,
-                EEM_Registration::status_id_approved,
+                EEM_Registration::status_id_pending_payment,
             ),
             array(
                 0,

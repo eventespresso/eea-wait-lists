@@ -222,12 +222,6 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 continue;
             }
             $new_reg_status = $event->default_registration_status();
-            // if default reg status is NOT RNA (Not Approved) and ALL of the regs on the TXN are free
-            // then set the reg status to Approved, otherwise just use the default
-            $new_reg_status = $new_reg_status !== EEM_Registration::status_id_not_approved
-                              && $registration->transaction()->is_free()
-                ? EEM_Registration::status_id_approved
-                : $new_reg_status;
             $registration->set_status(
                 $new_reg_status,
                 false,

@@ -90,10 +90,6 @@ class EED_Wait_Lists_Messages extends EED_Messages
         EE_Event $event,
         ContextInterface $context = null
     ) {
-        // only trigger if it's a primary registrant
-        if (! $registration->is_primary_registrant()) {
-            return;
-        }
         // check context before triggering.
         if ($context instanceof ContextInterface
             && (

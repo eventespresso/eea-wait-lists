@@ -648,13 +648,6 @@ class EED_Wait_Lists extends EED_Module
             ),
             $registration
         );
-        if (WP_DEBUG) {
-            EEM_Change_Log::instance()->log(
-                Domain::LOG_TYPE_WAIT_LIST,
-                "Wait List Checkout URL: {$checkout_url}",
-                $registration
-            );
-        }
         return $checkout_url;
     }
 

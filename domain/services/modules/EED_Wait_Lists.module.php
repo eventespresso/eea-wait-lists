@@ -641,20 +641,13 @@ class EED_Wait_Lists extends EED_Module
             'FHEE__EED_Wait_Lists__wait_list_checkout_url',
             add_query_arg(
                 array(
-                    'e_reg_url_link' => $registration->reg_url_link(),
+                    'e_reg_url_link' => $registration->get_primary_registration()->reg_url_link(),
                     'step'           => 'attendee_information',
                 ),
                 EE_Registry::instance()->CFG->core->reg_page_url()
             ),
             $registration
         );
-        if (WP_DEBUG) {
-            EEM_Change_Log::instance()->log(
-                Domain::LOG_TYPE_WAIT_LIST,
-                "Wait List Checkout URL: {$checkout_url}",
-                $registration
-            );
-        }
         return $checkout_url;
     }
 

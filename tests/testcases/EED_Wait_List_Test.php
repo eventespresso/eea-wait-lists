@@ -26,7 +26,12 @@ class EED_Wait_List_Test extends EE_UnitTestCase
     public function test_wait_list_checkout_url()
     {
         /** @var EE_Registration $registration */
-        $registration = $this->new_model_obj_with_dependencies('Registration');
+        $registration = $this->new_model_obj_with_dependencies(
+            'Registration',
+            array(
+                'REG_count' => 1
+            )
+        );
         PHPUnit_Framework_TestCase::assertInstanceOf(
             'EE_Registration',
             $registration
@@ -36,7 +41,7 @@ class EED_Wait_List_Test extends EE_UnitTestCase
         PHPUnit_Framework_TestCase::assertEquals(
             add_query_arg(
                 array(
-                    'e_reg_url_link' => $registration->reg_url_link(),
+                    'e_reg_url_link' => $registration->get_primary_registration()->reg_url_link(),
                     'step'           => 'attendee_information',
                 ),
                 $reg_page_url

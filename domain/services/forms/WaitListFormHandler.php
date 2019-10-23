@@ -163,7 +163,7 @@ class WaitListFormHandler extends FormHandler
             return true;
         }
         return EED_Recaptcha_Invisible::verifyToken(
-            LoaderFactory::getLoader()->getShared('EE_Request')
+            LoaderFactory::getLoader()->getShared('EventEspresso\core\services\request\RequestInterface')
         );
     }
 }

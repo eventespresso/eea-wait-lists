@@ -32,4 +32,29 @@ class EE_Waitlist_Can_Register_message_type extends EE_Waitlist_Message_Type_Bas
         );
         parent::__construct();
     }
+
+    /**
+     * _set_contexts
+     * This sets up the contexts associated with the message_type
+     */
+    public function _set_contexts()
+    {
+        parent::_set_contexts();
+        $this->_contexts = array(
+            'admin'    => array(
+                'label'       => esc_html__('Event Admin', 'event_espresso'),
+                'description' => esc_html__(
+                    'This template goes to the Event Administrator (event author) when registrations are automatically promoted to the wait list.',
+                    'event_espresso'
+                ),
+            ),
+            'registrant' => array(
+                'label'       => esc_html__('Registrant', 'event_espresso'),
+                'description' => esc_html__(
+                    'This template goes to registrations that were automatically promoted to the wait list.',
+                    'event_espresso'
+                ),
+            ),
+        );
+    }
 }

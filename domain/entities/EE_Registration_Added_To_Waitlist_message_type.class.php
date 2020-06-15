@@ -37,6 +37,13 @@ class EE_Registration_Added_To_Waitlist_message_type extends EE_Registration_Bas
             'description' => esc_html__('A recipient will receive the message.', 'event_espresso'),
         );
         $this->_contexts = array(
+            'admin'    => array(
+                'label'       => esc_html__('Event Admin', 'event_espresso'),
+                'description' => esc_html__(
+                    'Messages based on this template sent to the Event Administrator (event author) when users sign up to the waitlist.',
+                    'event_espresso'
+                ),
+            ),
             'attendee' => array(
                 'label'       => esc_html__('Registrant', 'event_espresso'),
                 'description' => esc_html__(

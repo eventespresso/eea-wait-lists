@@ -323,7 +323,7 @@ class EED_Wait_Lists extends EED_Module
             add_query_arg(
                 $redirect_params,
                 trailingslashit(
-                    filter_input(INPUT_SERVER, 'HTTP_REFERER')
+                    filter_var( $_SERVER['HTTP_REFERER'], FILTER_SANITIZE_STRING )
                 )
             )
         );

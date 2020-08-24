@@ -321,7 +321,7 @@ class EED_Wait_Lists extends EED_Module
         }
         // Pull the HTTP_REFERER if we can
         $referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
-        if(empty($referer)) {
+        if (empty($referer)) {
             // filter_input() can return null on some setups, so fall back to filter_var() in that case.
             $referer = filter_var($_SERVER['HTTP_REFERER'], FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
         }

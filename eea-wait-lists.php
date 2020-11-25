@@ -113,7 +113,7 @@ add_action('init', 'espresso_wait_lists_activation_check', 1);
 
 
 /**
- *    displays activation error admin notice
+ *   displays activation error admin notice
  */
 function espresso_wait_lists_activation_error()
 {

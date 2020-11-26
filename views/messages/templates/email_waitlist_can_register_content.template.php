@@ -54,7 +54,7 @@
                                         '<a href="[RECIPIENT_WAITLIST_REGISTRATION_URL]">',
                                         '</a>'
                                     );
-                                ?>
+                                    ?>
                             </h3>
                             <p>
                                 <strong><?php esc_html_e('Details about your selection:', 'event_espresso'); ?></strong>
@@ -68,7 +68,7 @@
                                         'Please remember you have a limited time to sign up! If you have any questions, or no longer wish to register, then please reply to get in touch.',
                                         'event_espresso'
                                     );
-                                ?>
+                                    ?>
                             </p>
                         </td>
                     </tr>

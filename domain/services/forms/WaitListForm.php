@@ -261,6 +261,7 @@ class WaitListForm extends EE_Form_Section_Proper
                             array(
                                 'html_label_text'  => esc_html__('Qty', 'event_espresso'),
                                 'html_label_class' => 'small-text grey-text',
+                                'html_class'       => 'wait-list-qty',
                                 'html_style'       => 'max-width:120px;',
                                 'default'          => 1,
                                 'required'         => true,

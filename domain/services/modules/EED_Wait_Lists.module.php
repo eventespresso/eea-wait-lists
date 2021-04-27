@@ -319,12 +319,22 @@ class EED_Wait_Lists extends EED_Module
         if (defined('DOING_AJAX') && DOING_AJAX) {
             exit();
         }
+        // Pull the HTTP_REFERER if we can
+        $referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
+        if (empty($referer)) {
+            // filter_input() can return null on some setups, so fall back to filter_var() in that case.
+            $referer = filter_var($_SERVER['HTTP_REFERER'], FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+        }
+        // Filter the redirect_url.
+        $redirect_url = apply_filters(
+            'FHEE__EED_Wait_Lists__process_wait_list_form_for_event__redirect_url',
+            $referer,
+            $redirect_params
+        );
         EEH_URL::safeRedirectAndExit(
             add_query_arg(
                 $redirect_params,
-                trailingslashit(
-                    filter_input(INPUT_SERVER, 'HTTP_REFERER')
-                )
+                trailingslashit($redirect_url)
             )
         );
     }

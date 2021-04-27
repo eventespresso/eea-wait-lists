@@ -33,6 +33,13 @@ class EE_Registration_Demoted_To_Waitlist_message_type extends EE_Waitlist_Messa
     {
         parent::_set_contexts();
         $this->_contexts = array(
+            'admin'    => array(
+                'label'       => esc_html__('Event Admin', 'event_espresso'),
+                'description' => esc_html__(
+                    'This template goes to the Event Administrator (event author) when registrations are automatically demoted to the wait list.',
+                    'event_espresso'
+                ),
+            ),
             'registrant' => array(
                 'label'       => esc_html__('Registrant', 'event_espresso'),
                 'description' => esc_html__(

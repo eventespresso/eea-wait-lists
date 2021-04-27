@@ -105,6 +105,13 @@ class EE_Waitlist_Message_Type_Base extends EE_message_type
             'description' => esc_html__("Recipients are who will receive the message.", 'event_espresso'),
         );
         $this->_contexts = array(
+            'admin'    => array(
+                'label'       => esc_html__('Event Admin', 'event_espresso'),
+                'description' => esc_html__(
+                    'This template will be used to generate the message from the context of Event Administrator (event author).',
+                    'event_espresso'
+                ),
+            ),
             'registrant' => array(
                 'label'       => esc_html__('Registrant', 'event_espresso'),
                 'description' => esc_html__(

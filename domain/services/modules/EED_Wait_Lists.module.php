@@ -85,6 +85,12 @@ class EED_Wait_Lists extends EED_Module
         EED_Wait_Lists::set_shared_hooks();
         // hooks into filter found in \EE_Admin_Page::_page_setup
         add_filter(
+            'FHEE__Events_Admin_Page__page_setup__page_config',
+            array('EED_Wait_Lists', 'setup_page_config'),
+            1,
+            2
+        );
+        add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
             array('EED_Wait_Lists', 'setup_page_config'),
             1,
@@ -430,7 +436,7 @@ class EED_Wait_Lists extends EED_Module
 
     /**************************** ADMIN FUNCTIONALITY ****************************/
     /**
-     * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
+     * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config && FHEE__Events_Admin_Page__page_setup__page_config
      *
      * @param array             $page_config current page config.
      * @param Events_Admin_Page $admin_page

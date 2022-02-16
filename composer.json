@@ -32,8 +32,8 @@
 		"yoast/phpunit-polyfills": "^1.0"
 	},
 	"require": {
-		"composer/installers": "~1.0",
-		"php": ">=5.5"
+		"composer/installers": "~2.0",
+		"php": ">=7.1"
 	},
 	"scripts": {
 		"config-eventespressocs": [

@@ -19,6 +19,9 @@ jobs:
                     php-version: ${{ matrix.php-version }}
                     cache-key: ${{ runner.os }}-${{ secrets.GH_ACTIONS_CACHE_VERSION }}-lint
 
+            -   name: Update Composer dependencies
+                run: composer update -W
+
             -   name: PHP Lint
                 run: composer config-eventespressocs && composer run-script lint:skip-warnings
 

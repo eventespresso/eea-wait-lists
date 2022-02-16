@@ -17,7 +17,7 @@ jobs:
                 uses: eventespresso/actions/packages/checkout-and-LAMP@main
                 with:
                     php-version: ${{ matrix.php-version }}
-                    cache-key: ${{ secrets.GH_ACTIONS_CACHE_VERSION }}
+                    cache-key: ${{ runner.os }}-${{ secrets.GH_ACTIONS_CACHE_VERSION }}-lint
 
             -   name: PHP Lint
                 run: composer config-eventespressocs && composer run-script lint:skip-warnings
@@ -37,7 +37,7 @@ jobs:
                 with:
                     php-version: ${{ matrix.php-version }}
                     php-tools: phpunit:v7
-                    cache-key: ${{ secrets.GH_ACTIONS_CACHE_VERSION }}
+                    cache-key: ${{ runner.os }}-${{ secrets.GH_ACTIONS_CACHE_VERSION }}-test
 
             -   name: Install WP Tests
                 uses: eventespresso/actions/packages/install-wp-tests@main

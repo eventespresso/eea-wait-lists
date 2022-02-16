@@ -45,6 +45,9 @@ jobs:
                     password: root
                     host: localhost
 
+            -   name: Set up Composer dependencies
+                run: composer update -W
+
             -   name: Set up EE addon tests
                 uses: eventespresso/actions/packages/setup-ee-addon-tests@main
                 with:

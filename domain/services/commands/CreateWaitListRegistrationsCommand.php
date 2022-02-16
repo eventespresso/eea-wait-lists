@@ -18,7 +18,6 @@ use InvalidArgumentException;
  */
 class CreateWaitListRegistrationsCommand extends Command
 {
-
     /**
      * @var string $registrant_name
      */

@@ -21,7 +21,6 @@ use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta
  */
 class WaitListCheckoutMonitor
 {
-
     /**
      * @var WaitListRegistrationMeta $event_meta
      */

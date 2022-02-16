@@ -17,8 +17,6 @@ use EventEspresso\WaitList\domain\Domain;
  */
 class WaitListEventMeta
 {
-
-
     /**
      * @param EE_Event $event
      * @return int

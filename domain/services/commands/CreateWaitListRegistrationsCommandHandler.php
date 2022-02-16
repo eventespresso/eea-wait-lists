@@ -34,7 +34,6 @@ use InvalidArgumentException;
  */
 class CreateWaitListRegistrationsCommandHandler extends CompositeCommandHandler
 {
-
     /**
      * @var WaitListEventMeta $event_meta
      */

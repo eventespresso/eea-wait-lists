@@ -14,7 +14,6 @@ use EventEspresso\core\domain\DomainBase;
  */
 class Domain extends DomainBase
 {
-
     /**
      * EE Core Version Required for Add-on
      */

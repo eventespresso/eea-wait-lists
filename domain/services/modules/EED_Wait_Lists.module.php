@@ -24,7 +24,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
  */
 class EED_Wait_Lists extends EED_Module
 {
-
     /**
      * @var Events_Admin_Page $admin_page
      */
@@ -552,7 +551,8 @@ class EED_Wait_Lists extends EED_Module
             'Move Registrations to Wait List',
             'event_espresso'
         );
-        if ($can_send
+        if (
+            $can_send
             && in_array(
                 Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION,
                 $active_message_types,
@@ -647,7 +647,8 @@ class EED_Wait_Lists extends EED_Module
             $transaction = null;
         }
         // if the attendee info step has not been completed, then always go to that step
-        if ($transaction instanceof EE_Transaction
+        if (
+            $transaction instanceof EE_Transaction
             && $transaction->reg_step_completed('attendee_information') !== true
         ) {
             $query_args['step'] = 'attendee_information';

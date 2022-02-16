@@ -17,7 +17,6 @@ use EventEspresso\core\services\commands\Command;
  */
 class UpdateRegistrationWaitListMetaDataCommand extends Command
 {
-
     /**
      * @var EE_Event $event
      */

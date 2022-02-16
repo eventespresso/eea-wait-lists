@@ -22,7 +22,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
  */
 class EventEditorWaitListMetaBoxForm extends EE_Form_Section_Proper
 {
-
     /**
      * @param WaitListEventMeta $event_meta
      */

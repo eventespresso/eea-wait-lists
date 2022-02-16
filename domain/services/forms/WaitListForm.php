@@ -32,8 +32,6 @@ use InvalidArgumentException;
  */
 class WaitListForm extends EE_Form_Section_Proper
 {
-
-
     /**
      * @param WaitListEventMeta $event_meta
      */

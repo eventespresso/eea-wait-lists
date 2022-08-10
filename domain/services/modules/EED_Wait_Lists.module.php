@@ -92,7 +92,8 @@ class EED_Wait_Lists extends EED_Module
         add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
             array('EED_Wait_Lists', 'setup_page_config'),
-            1
+            1,
+            2
         );
         add_filter(
             'FHEE__Events_Admin_Page___insert_update_cpt_item__event_update_callbacks',
@@ -452,11 +453,14 @@ class EED_Wait_Lists extends EED_Module
      * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config && FHEE__Events_Admin_Page__page_setup__page_config
      *
      * @param array             $page_config current page config.
+     * @param Events_Admin_Page $admin_page
      * @return array
      * @since  1.0.0
      */
-    public static function setup_page_config(array $page_config)
+    public static function setup_page_config(array $page_config, Events_Admin_Page $admin_page)
     {
+        EED_Wait_Lists::$admin_page = $admin_page;
+
         $page_config['edit']['metaboxes'][]     = array('EED_Wait_Lists', 'add_event_wait_list_meta_box');
         $page_config['create_new']['metaboxes'] = $page_config['edit']['metaboxes'];
         return $page_config;

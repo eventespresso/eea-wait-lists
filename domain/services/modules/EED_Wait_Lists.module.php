@@ -594,7 +594,10 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {
-        if (! EED_Wait_Lists::$admin_page instanceof Events_Admin_Page) {
+        if (
+            ! EED_Wait_Lists::$admin_page instanceof Events_Admin_Page
+            || ! isset($form_data['event_wait_list_settings'])
+        ) {
             return;
         }
         try {

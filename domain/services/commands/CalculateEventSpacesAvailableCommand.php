@@ -15,8 +15,6 @@ use EventEspresso\core\services\commands\Command;
  */
 class CalculateEventSpacesAvailableCommand extends Command
 {
-
-
     /**
      * @var EE_Event $event
      */

@@ -15,7 +15,6 @@ use EventEspresso\core\services\commands\Command;
  */
 class PromoteWaitListRegistrantsCommand extends Command
 {
-
     /**
      * @var EE_Event $event
      */

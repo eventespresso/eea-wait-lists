@@ -10,9 +10,6 @@
  */
 class EE_Waitlist_Message_Type_Base extends EE_message_type
 {
-
-
-
     /**
      * sets the _admin_settings_fields property which needs to be defined by child classes.
      * You will want to set the _admin_settings_fields properties as a multi-dimensional array with the following format

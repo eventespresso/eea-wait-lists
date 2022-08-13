@@ -15,8 +15,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
  */
 abstract class WaitListCommandHandler extends CommandHandler
 {
-
-
     /**
      * @param WaitListEventMeta $event_meta
      */

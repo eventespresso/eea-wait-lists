@@ -23,8 +23,6 @@ use EventEspresso\WaitList\domain\services\registration\WaitListRegistrationMeta
  */
 class UpdateRegistrationWaitListMetaDataCommandHandler extends WaitListCommandHandler
 {
-
-
     /**
      * @var WaitListRegistrationMeta $registration_meta
      */

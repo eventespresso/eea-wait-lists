@@ -16,8 +16,6 @@ use EventEspresso\core\services\commands\CommandInterface;
  */
 class CalculateEventSpacesAvailableCommandHandler extends WaitListCommandHandler
 {
-
-
     /**
      * @param CommandInterface $command
      * @return mixed

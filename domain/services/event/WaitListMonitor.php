@@ -39,7 +39,6 @@ use RuntimeException;
  */
 class WaitListMonitor
 {
-
     /**
      * @var WaitListEventsCollection $wait_list_events
      */

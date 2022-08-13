@@ -91,7 +91,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
         ContextInterface $context = null
     ) {
         // check context before triggering.
-        if ($context instanceof ContextInterface
+        if (
+            $context instanceof ContextInterface
             && (
                 $context->slug() === Domain::CONTEXT_REGISTRATION_STATUS_CHANGE_FROM_WAIT_LIST_AUTO_PROMOTE
                 || (
@@ -105,7 +106,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
         ) {
             try {
                 self::trigger_wait_list_notifications(array($registration));
-                if ($context->slug() ===
+                if (
+                    $context->slug() ===
                     CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_success(
@@ -116,7 +118,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     );
                 }
             } catch (Exception $e) {
-                if ($context->slug() ===
+                if (
+                    $context->slug() ===
                     CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
@@ -149,7 +152,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
         ContextInterface $context = null
     ) {
         // check context before triggering.
-        if ($context === null
+        if (
+            $context === null
             || (
                 $context instanceof ContextInterface
                 && ($context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
@@ -165,7 +169,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     array($registration),
                     Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION
                 );
-                if ($context instanceof ContextInterface
+                if (
+                    $context instanceof ContextInterface
                     && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_success(
@@ -176,7 +181,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
                     );
                 }
             } catch (Exception $e) {
-                if ($context instanceof ContextInterface
+                if (
+                    $context instanceof ContextInterface
                     && $context->slug() === CoreDomain::CONTEXT_REGISTRATION_STATUS_CHANGE_REGISTRATION_ADMIN_NOTIFY
                 ) {
                     EE_Error::add_error($e->getMessage(), __FILE__, __FUNCTION__, __LINE__);
@@ -267,7 +273,8 @@ class EED_Wait_Lists_Messages extends EED_Messages
             // exclude these registrations from normal admin notifications when status manually changed.
             // notifications will be handled for these registrations by EED_Waitlist_Messages.
             function ($registrations_ids) use ($registration) {
-                if (false !== (
+                if (
+                    false !== (
                     $key = array_search($registration->ID(), (array) $registrations_ids, true)
                     )
                 ) {

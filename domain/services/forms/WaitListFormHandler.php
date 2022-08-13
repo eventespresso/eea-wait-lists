@@ -29,7 +29,6 @@ use RuntimeException;
  */
 class WaitListFormHandler extends FormHandler
 {
-
     /**
      * @var EE_Event $event
      */

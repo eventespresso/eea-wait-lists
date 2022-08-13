@@ -64,7 +64,8 @@ add_action('activated_plugin', 'espresso_wait_lists_plugin_activation_errors');
  */
 function load_espresso_wait_lists()
 {
-    if (defined('PHP_VERSION_ID')
+    if (
+        defined('PHP_VERSION_ID')
         && PHP_VERSION_ID > 50600
         && class_exists('EE_Addon')
         && class_exists('EventEspresso\core\domain\DomainBase')

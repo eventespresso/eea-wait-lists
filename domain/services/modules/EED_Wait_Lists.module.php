@@ -24,7 +24,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListMonitor;
  */
 class EED_Wait_Lists extends EED_Module
 {
-
     /**
      * @var Events_Admin_Page $admin_page
      */
@@ -84,6 +83,12 @@ class EED_Wait_Lists extends EED_Module
     {
         EED_Wait_Lists::set_shared_hooks();
         // hooks into filter found in \EE_Admin_Page::_page_setup
+        add_filter(
+            'FHEE__Events_Admin_Page__page_setup__page_config',
+            array('EED_Wait_Lists', 'set_admin_page'),
+            0,
+            2
+        );
         add_filter(
             'FHEE__Extend_Events_Admin_Page__page_setup__page_config',
             array('EED_Wait_Lists', 'setup_page_config'),
@@ -429,8 +434,23 @@ class EED_Wait_Lists extends EED_Module
 
 
     /**************************** ADMIN FUNCTIONALITY ****************************/
+
+
+
     /**
-     * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config
+     * @param array             $page_config
+     * @param Events_Admin_Page $admin_page
+     * @return array
+     */
+    public static function set_admin_page(array $page_config, Events_Admin_Page $admin_page)
+    {
+        EED_Wait_Lists::$admin_page = $admin_page;
+        return $page_config;
+    }
+
+
+    /**
+     * callback for FHEE__Extend_Events_Admin_Page__page_setup__page_config && FHEE__Events_Admin_Page__page_setup__page_config
      *
      * @param array             $page_config current page config.
      * @param Events_Admin_Page $admin_page
@@ -439,7 +459,8 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function setup_page_config(array $page_config, Events_Admin_Page $admin_page)
     {
-        EED_Wait_Lists::$admin_page             = $admin_page;
+        EED_Wait_Lists::$admin_page = $admin_page;
+
         $page_config['edit']['metaboxes'][]     = array('EED_Wait_Lists', 'add_event_wait_list_meta_box');
         $page_config['create_new']['metaboxes'] = $page_config['edit']['metaboxes'];
         return $page_config;
@@ -534,7 +555,8 @@ class EED_Wait_Lists extends EED_Module
             'Move Registrations to Wait List',
             'event_espresso'
         );
-        if ($can_send
+        if (
+            $can_send
             && in_array(
                 Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION,
                 $active_message_types,
@@ -572,6 +594,12 @@ class EED_Wait_Lists extends EED_Module
      */
     public static function update_event_wait_list_settings(EE_Event $event, array $form_data)
     {
+        if (
+            ! EED_Wait_Lists::$admin_page instanceof Events_Admin_Page
+            || ! isset($form_data['event_wait_list_settings'])
+        ) {
+            return;
+        }
         try {
             EED_Wait_Lists::getEventEditorWaitListMetaBoxForm($event)->process($form_data);
         } catch (Exception $e) {
@@ -626,7 +654,8 @@ class EED_Wait_Lists extends EED_Module
             $transaction = null;
         }
         // if the attendee info step has not been completed, then always go to that step
-        if ($transaction instanceof EE_Transaction
+        if (
+            $transaction instanceof EE_Transaction
             && $transaction->reg_step_completed('attendee_information') !== true
         ) {
             $query_args['step'] = 'attendee_information';

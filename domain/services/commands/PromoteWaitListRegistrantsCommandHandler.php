@@ -34,7 +34,6 @@ use RuntimeException;
  */
 class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
 {
-
     /**
      * @var EEM_Registration $registration_model
      */
@@ -145,7 +144,8 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
         $manual_control_spaces,
         $auto_promote = false
     ) {
-        if ($spaces_remaining > 0
+        if (
+            $spaces_remaining > 0
             && $wait_list_reg_count > 0
             && ($manual_control_spaces > 0 || $auto_promote === false)
             && is_admin()
@@ -252,10 +252,12 @@ class PromoteWaitListRegistrantsCommandHandler extends WaitListCommandHandler
                 $event->name()
             );
             $this->change_log->log(Domain::LOG_TYPE_WAIT_LIST, $message, $event);
-            if ($this->capabilities->current_user_can(
-                'ee_edit_registrations',
-                'espresso_view_wait_list_update_notice'
-            )) {
+            if (
+                $this->capabilities->current_user_can(
+                    'ee_edit_registrations',
+                    'espresso_view_wait_list_update_notice'
+                )
+            ) {
                 $this->notices->addSuccess($message);
             }
             $promoted++;

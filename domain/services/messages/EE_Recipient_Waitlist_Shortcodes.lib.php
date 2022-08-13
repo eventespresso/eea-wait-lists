@@ -10,8 +10,6 @@
  */
 class EE_Recipient_Waitlist_Shortcodes extends EE_Shortcodes
 {
-
-
     /**
      * @var EE_Messages_Addressee
      */

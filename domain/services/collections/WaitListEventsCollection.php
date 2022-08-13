@@ -21,7 +21,6 @@ use InvalidArgumentException;
  */
 class WaitListEventsCollection extends Collection
 {
-
     /**
      * WaitListEventsCollection constructor.
      *

@@ -16,7 +16,6 @@ use EventEspresso\WaitList\domain\Domain;
  */
 class WaitListRegistrationMeta
 {
-
     /**
      * @param EE_Registration $registration
      * @return mixed

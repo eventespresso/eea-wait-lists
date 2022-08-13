@@ -13,7 +13,6 @@ use EventEspresso\WaitList\domain\Domain;
  */
 class EE_Messages_Email_Registration_Demoted_To_Waitlist_Validator extends EE_Messages_Validator
 {
-
     /**
      * EE_Messages_Email_Waitlist_Can_Register_Validator constructor.
      *

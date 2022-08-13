@@ -12,7 +12,6 @@ use EventEspresso\WaitList\domain\Domain;
  */
 class EE_Waitlist_Can_Register_message_type extends EE_Waitlist_Message_Type_Base
 {
-
     /**
      * EE_Waitlist_Can_Register_message_type constructor.
      */

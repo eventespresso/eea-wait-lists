@@ -1,4 +1,5 @@
 <?php
+
 namespace EventEspresso\WaitList\domain;
 
 use DomainException;
@@ -23,7 +24,6 @@ use ReflectionException;
  */
 class WaitList extends EE_Addon
 {
-
     /**
      * this is not the place to perform any logic or add any other filter or action callbacks
      * this is just to bootstrap your addon; and keep in mind the addon might be DE-registered

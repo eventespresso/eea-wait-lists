@@ -27,8 +27,6 @@ use InvalidArgumentException;
  */
 class WaitListRegistrationConfirmation
 {
-
-
     /**
      * @var WaitListRegistrationMeta $registration_meta
      */

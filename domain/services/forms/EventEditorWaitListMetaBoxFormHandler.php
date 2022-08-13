@@ -31,8 +31,6 @@ use LogicException;
  */
 class EventEditorWaitListMetaBoxFormHandler extends FormHandler
 {
-
-
     /**
      * @var EE_Event $event
      */

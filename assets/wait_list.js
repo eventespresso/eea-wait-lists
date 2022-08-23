@@ -57,6 +57,10 @@ jQuery(document).ready(function($) {
         $inputs.each(function() {
             valid_ticket_selection($(this), event);
         });
+        // once submitted, disable the submit button
+        $(this).parents('form:first').one('submit', function() {
+            $('input.ee-submit-wait-list-btn').prop('disabled', true);
+        });
     });
 
     var valid_ticket_selection = function($selector, event) {

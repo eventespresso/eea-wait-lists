@@ -14,6 +14,8 @@ use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\WaitList\domain\services\collections\WaitListEventsCollection;
 use InvalidArgumentException;
 use ReflectionException;
+use EE_Base_Class;
+use EE_Message_Template_Group;
 
 /**
  * Class  WaitListAddon
@@ -129,6 +131,12 @@ class WaitList extends EE_Addon
     {
         $this->registerDependencies();
         $this->registerCustomShortcodeLibrary();
+        add_filter(
+            'FHEE__EE_Base_Class__get_extra_meta__default_value',
+            array($this, 'setDefaultActiveStateForMessageTypes'),
+            10,
+            4
+        );
     }
 
 
@@ -273,5 +281,37 @@ class WaitList extends EE_Addon
                 }
             }
         );
+    }
+
+
+
+    /**
+     * Callback for FHEE__EE_Base_Class__get_extra_meta__default_value which is being used to ensure the default active
+     * state for our new message types is false.
+     *
+     * @param               $default
+     * @param               $meta_key
+     * @param               $single
+     * @param EE_Base_Class $model
+     * @return bool
+     * @throws EE_Error
+     */
+    public function setDefaultActiveStateForMessageTypes(
+        $default,
+        $meta_key,
+        $single,
+        EE_Base_Class $model
+    ) {
+        // only modify default for the active context meta key
+        if ($model instanceof EE_Message_Template_Group
+            && strpos($meta_key, EE_Message_Template_Group::ACTIVE_CONTEXT_RECORD_META_KEY_PREFIX . 'admin') !== false
+            && ($model->message_type() === Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST
+                || $model->message_type() === Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION
+                || $model->message_type() === Domain::MESSAGE_TYPE_WAIT_LIST_DEMOTION
+            )
+        ) {
+            return false;
+        }
+        return $default;
     }
 }

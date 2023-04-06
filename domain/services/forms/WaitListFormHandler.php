@@ -149,7 +149,7 @@ class WaitListFormHandler extends FormHandler
 
 
     /**
-     * @return boolean
+     * @return bool
      * @throws InvalidArgumentException
      * @throws InvalidInterfaceException
      * @throws InvalidDataTypeException

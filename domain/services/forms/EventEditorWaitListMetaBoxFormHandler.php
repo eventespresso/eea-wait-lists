@@ -19,6 +19,7 @@ use EventEspresso\core\libraries\form_sections\form_handlers\FormHandler;
 use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
 use InvalidArgumentException;
 use LogicException;
+use ReflectionException;
 
 /**
  * Class EventEditorWaitListMetaBoxFormHandler
@@ -27,7 +28,6 @@ use LogicException;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- *
  */
 class EventEditorWaitListMetaBoxFormHandler extends FormHandler
 {
@@ -64,8 +64,8 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         EEM_Registration $registration_model,
         EE_Registry $registry
     ) {
-        $this->event = $event;
-        $this->event_meta = $event_meta;
+        $this->event              = $event;
+        $this->event_meta         = $event_meta;
         $this->registration_model = $registration_model;
         parent::__construct(
             esc_html__('Event Wait List Settings', 'event_espresso'),
@@ -84,8 +84,9 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      * @return EE_Form_Section_Proper
      * @throws EE_Error
      * @throws LogicException
+     * @throws ReflectionException
      */
-    public function generate()
+    public function generate(): EE_Form_Section_Proper
     {
         $this->setForm(
             new EventEditorWaitListMetaBoxForm($this->event, $this->event_meta)
@@ -103,42 +104,49 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      * @throws DomainException
      * @throws LogicException
      * @throws EE_Error
+     * @throws ReflectionException
+     * @throws ReflectionException
      */
-    public function display()
+    public function display(): string
     {
-        $spaces_remaining = $this->event->spaces_remaining(array(), false);
+        $spaces_remaining = $this->event->spaces_remaining([], false);
         $spaces_remaining = $spaces_remaining === EE_INF
             ? esc_html__('unlimited', 'event_espresso')
             : $spaces_remaining;
         // inject some additional subsections with HTML that's for display only
         $this->form(true)->add_subsections(
-            array(
+            [
                 'view_wait_list_link' => new EE_Form_Section_HTML(
-                    EEH_HTML::br()
-                    . $this->waitListRegCountDisplay()
-                    . EEH_HTML::br()
-                    . EEH_HTML::span(
-                        sprintf(
-                            esc_html__('Total Available Event Spaces: %1$s', 'event_espresso'),
-                            $spaces_remaining
+                    EEH_HTML::div(
+                        EEH_HTML::div(
+                            EEH_HTML::label(
+                                esc_html__('Registration List', 'event_espresso')
+                            )
+                            . EEH_HTML::span($this->waitListRegCountDisplay()),
+                            '',
+                            'ee-waitlist-header__container ee-admin-container'
+                        )
+                        . EEH_HTML::div(
+                            EEH_HTML::label(
+                                esc_html__('Total Available Event Spaces', 'event_espresso')
+                            )
+                            . EEH_HTML::span($spaces_remaining),
+                            '',
+                            'ee-waitlist-header__container ee-admin-container'
+                        )
+                        . EEH_HTML::div(
+                            EEH_HTML::label(
+                                esc_html__('Wait List Registrants Previously Promoted', 'event_espresso')
+                            )
+                            . EEH_HTML::span($this->event_meta->getPromotedRegIdsArrayCount($this->event)),
+                            '',
+                            'ee-waitlist-header__container ee-admin-container'
                         ),
                         '',
-                        'ee-available-spaces-before-waitlist-spn',
-                        'color:#999;'
+                        'ee-waitlist-header__grid'
                     )
-                    . EEH_HTML::br()
-                    . EEH_HTML::span(
-                        sprintf(
-                            esc_html__('Wait List Registrants Previously Promoted: %1$s', 'event_espresso'),
-                            $this->event_meta->getPromotedRegIdsArrayCount($this->event)
-                        ),
-                        '',
-                        'ee-available-spaces-before-waitlist-spn',
-                        'color:#999;'
-                    )
-                    . EEH_HTML::br(2)
                 ),
-            ),
+            ],
             'wait_list_spaces'
         );
         return parent::display();
@@ -151,16 +159,21 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      *
      * @return string
      * @throws EE_Error
+     * @throws ReflectionException
+     * @throws ReflectionException
      */
-    public function waitListRegCountDisplay()
+    public function waitListRegCountDisplay(): string
     {
         $html = EEH_HTML::span(
             '',
             '',
-            'dashicons dashicons-groups ee-icon-color-ee-purple ee-icon-size-20'
+            'dashicons dashicons-groups ee-status-color--RWL',
+            'margin-inline-end: 0.5rem;'
         );
-        $html .= ' ' . EED_Wait_Lists::wait_list_registrations_list_table_link($this->event);
-        $html .= ' : ' . $this->event_meta->getRegCount($this->event);
+        $text = EEH_HTML::span($this->event_meta->getRegCount($this->event), '', 'ee-reg-list-link__reg-count');
+        $text .= ' ' . esc_html__('Wait List Registrations', 'event_espresso');
+        $text .= EEH_HTML::span('', '', 'dashicons dashicons-external');
+        $html .= EED_Wait_Lists::wait_list_registrations_list_table_link($this->event, $text);
         return $html;
     }
 
@@ -169,18 +182,19 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
      * handles processing the form submission
      * returns true or false depending on whether the form was processed successfully or not
      *
-     * @param array $form_data
+     * @param array $submitted_form_data
      * @return bool
      * @throws InvalidArgumentException
      * @throws InvalidStatusException
      * @throws LogicException
      * @throws InvalidFormSubmissionException
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function process($form_data = array())
+    public function process($submitted_form_data = []): bool
     {
         // process form
-        $valid_data = (array) parent::process($form_data);
+        $valid_data = parent::process($submitted_form_data);
         if (empty($valid_data)) {
             return false;
         }
@@ -202,6 +216,8 @@ class EventEditorWaitListMetaBoxFormHandler extends FormHandler
         );
         // mark event as having a wait list if number of spaces available is positive
         $this->event->set('EVT_allow_overflow', $wait_list_spaces > 0);
+        // make sure event is saved
+        $this->event->save();
         return false;
     }
 }

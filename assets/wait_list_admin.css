@@ -1,0 +1,78 @@
+.espresso-admin #event_wait_list_settings,
+.espresso-admin .ee-waitlist-header__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.espresso-admin .ee-input-width--tiny-input-dv {
+    padding: 1.25rem;
+    padding-inline: 1.5rem;
+    padding-block-start: 0.75rem;
+}
+
+.espresso-admin :not(#post-body-content) > .ee-admin-container.ee-waitlist-header__container {
+    background: hsl(160deg 58% 93%);
+    border-radius: 0.25rem;
+    font-size: 1.25rem;
+    padding: 1.25rem;
+    padding-inline: 1.5rem;
+    padding-block-start: 0.75rem;
+}
+.espresso-admin :not(#post-body-content) > .ee-admin-container.ee-waitlist-header__container:first-child {
+    background: hsl(280deg 60% 96%);
+}
+.espresso-admin :not(#post-body-content) > .ee-admin-container.ee-waitlist-header__container:last-child {
+    background: hsl(40deg 100% 95%);
+}
+
+
+
+.ee-waitlist-header__container > label:not(.ee-input-label):not(.screen-reader-text) {
+    margin-inline: 0;
+    padding-block-end: 0.5rem;
+}
+
+.ee-waitlist-header__container > span,
+.ee-waitlist-header__container > span > a.ee-status-color--RWL {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.ee-waitlist-header__container > span > a.ee-status-color--RWL {
+    color: var(--ee-status-color-purple) !important;
+    font-size: 1.2rem;
+}
+
+.ee-waitlist-header__container > span > .dashicons.dashicons-groups.ee-status-color--RWL {
+    font-size: 1.8rem;
+    height: 1.8rem;
+    vertical-align: sub;
+    width: 1.8rem;
+}
+
+
+@media only screen and (min-width: 768px) {
+    .espresso-admin .ee-waitlist-header__grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .ee-waitlist-header__container > span,
+    .ee-waitlist-header__container > span > a.ee-status-color--RWL {
+        margin-inline: unset;
+    }
+
+    .ee-waitlist-header__container > span > a.ee-status-color--RWL {
+        font-size: 1.4rem;
+    }
+}
+
+@media only screen and (min-width: 1920px) {
+    .espresso-admin #event_wait_list_settings {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .espresso-admin .ee-waitlist-header__grid {
+        grid-column: 1 / span 3;
+    }
+}

@@ -14,7 +14,6 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidFormSubmissionException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\commands\CommandBusInterface;
-use EventEspresso\core\services\loaders\LoaderFactory;
 use EventEspresso\core\services\notices\NoticeConverterInterface;
 use EventEspresso\core\services\notices\NoticesContainerInterface;
 use EventEspresso\core\services\loaders\LoaderInterface;
@@ -35,7 +34,6 @@ use RuntimeException;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- *
  */
 class WaitListMonitor
 {
@@ -88,12 +86,12 @@ class WaitListMonitor
         LoaderInterface $loader,
         NoticeConverterInterface $notice_converter
     ) {
-        $this->wait_list_events = $wait_list_events;
-        $this->wait_list_event_meta = $wait_list_event_meta;
+        $this->wait_list_events        = $wait_list_events;
+        $this->wait_list_event_meta    = $wait_list_event_meta;
         $this->wait_list_form_handlers = $wait_list_forms;
-        $this->command_bus = $command_bus;
-        $this->loader = $loader;
-        $this->notice_converter = $notice_converter;
+        $this->command_bus             = $command_bus;
+        $this->loader                  = $loader;
+        $this->notice_converter        = $notice_converter;
     }
 
 
@@ -104,12 +102,12 @@ class WaitListMonitor
      * @return bool
      * @throws EE_Error
      */
-    protected function eventHasOpenWaitList(EE_Event $event)
+    protected function eventHasOpenWaitList(EE_Event $event): bool
     {
         if ($this->wait_list_events->hasObject($event)) {
             $wait_list_reg_count = $this->wait_list_event_meta->getRegCount($event);
-            $wait_list_spaces = $this->wait_list_event_meta->getWaitListSpaces($event);
-            $promoted_reg_ids = $this->wait_list_event_meta->getPromotedRegIdsArrayCount($event);
+            $wait_list_spaces    = $this->wait_list_event_meta->getWaitListSpaces($event);
+            $promoted_reg_ids    = $this->wait_list_event_meta->getPromotedRegIdsArrayCount($event);
             if ($wait_list_reg_count + $promoted_reg_ids < $wait_list_spaces) {
                 return true;
             }
@@ -121,24 +119,22 @@ class WaitListMonitor
     /**
      * @param EE_Event $event
      * @return WaitListFormHandler
-     * @throws \DomainException
+     * @throws DomainException
      * @throws InvalidEntityException
      * @throws EE_Error
      * @throws InvalidArgumentException
      * @throws InvalidDataTypeException
      * @throws InvalidInterfaceException
+     * @throws ReflectionException
      */
-    public function waitListFormForEvent(EE_Event $event)
+    public function waitListFormForEvent(EE_Event $event): WaitListFormHandler
     {
         if ($this->wait_list_form_handlers->has($event->ID())) {
             return $this->wait_list_form_handlers->get($event->ID());
         }
-        $wait_list_form_handler = LoaderFactory::getLoader()->getNew(
+        $wait_list_form_handler = $this->loader->getNew(
             'EventEspresso\WaitList\domain\services\forms\WaitListFormHandler',
-            array(
-                $event,
-                LoaderFactory::getLoader()->getNew('EE_Registry'),
-            )
+            [ $event ]
         );
         if (! $this->wait_list_form_handlers->add($wait_list_form_handler, $event->ID())) {
             throw new DomainException(
@@ -166,10 +162,11 @@ class WaitListMonitor
      * @throws InvalidEntityException
      * @throws InvalidInterfaceException
      * @throws LogicException
+     * @throws ReflectionException
      */
-    public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector)
+    public function getWaitListFormForEvent(EE_Event $event, DisplayTicketSelector $ticket_selector): string
     {
-        if ($event->is_sold_out() && $this->eventHasOpenWaitList($event)) {
+        if ($event->is_sold_out(true) && $this->eventHasOpenWaitList($event)) {
             if ($ticket_selector->isIframe()) {
                 return $this->getWaitListLinkForEvent($event);
             }
@@ -199,7 +196,7 @@ class WaitListMonitor
      * @throws RuntimeException
      * @throws Exception
      */
-    public function processWaitListFormForEvent($event_id)
+    public function processWaitListFormForEvent(int $event_id): array
     {
         if (! $event_id) {
             throw new DomainException(
@@ -209,7 +206,7 @@ class WaitListMonitor
                 )
             );
         }
-        $redirect_params = array();
+        $redirect_params = [];
         if (! $this->wait_list_events->has($event_id)) {
             return $redirect_params;
         }
@@ -249,6 +246,7 @@ class WaitListMonitor
      * @param ContextInterface|null $context
      * @throws EE_Error
      * @throws EntityNotFoundException
+     * @throws ReflectionException
      */
     public function registrationStatusUpdate(
         EE_Registration $registration,
@@ -260,7 +258,7 @@ class WaitListMonitor
         $this->command_bus->execute(
             $this->loader->getNew(
                 'EventEspresso\WaitList\domain\services\commands\UpdateRegistrationWaitListMetaDataCommand',
-                array($event, $registration, $old_STS_ID, $new_STS_ID, $context)
+                [$event, $registration, $old_STS_ID, $new_STS_ID, $context]
             )
         );
     }
@@ -269,10 +267,9 @@ class WaitListMonitor
     /**
      * factors wait list registrations into calculations involving spaces available for events
      *
-     * @param int      $spaces_available
-     * @param EE_Event $event
-     * @return int
-     * @throws EE_Error
+     * @param int|float $spaces_available
+     * @param EE_Event  $event
+     * @return int|float
      */
     public function adjustEventSpacesAvailable($spaces_available, EE_Event $event)
     {
@@ -280,7 +277,7 @@ class WaitListMonitor
             $spaces_available = $this->command_bus->execute(
                 $this->loader->getNew(
                     'EventEspresso\WaitList\domain\services\commands\CalculateEventSpacesAvailableCommand',
-                    array($event, $spaces_available)
+                    [$event, $spaces_available]
                 )
             );
         }
@@ -293,19 +290,15 @@ class WaitListMonitor
      * then registrations will automatically have their statuses changed from RWL
      * to whatever the event's default reg status is as spaces become available
      *
-     * @param EE_Event $event
-     * @param int      $spaces_remaining
-     * @throws EE_Error
+     * @param EE_Event  $event
+     * @param int|float $spaces_remaining
      */
-    public function promoteWaitListRegistrants(
-        EE_Event $event,
-        $spaces_remaining = 0
-    ) {
+    public function promoteWaitListRegistrants(EE_Event $event, $spaces_remaining = 0) {
         if ($this->wait_list_events->hasObject($event)) {
             $notices = $this->command_bus->execute(
                 $this->loader->getNew(
                     'EventEspresso\WaitList\domain\services\commands\PromoteWaitListRegistrantsCommand',
-                    array($event, $spaces_remaining)
+                    [$event, $spaces_remaining]
                 )
             );
             $this->processNotices($notices);
@@ -314,10 +307,9 @@ class WaitListMonitor
 
 
     /**
-     * @param NoticesContainerInterface $notices
-     * @throws EE_Error
+     * @param NoticesContainerInterface|null $notices
      */
-    protected function processNotices(NoticesContainerInterface $notices = null)
+    protected function processNotices(?NoticesContainerInterface $notices = null)
     {
         if ($notices instanceof NoticesContainerInterface) {
             $this->notice_converter->process($notices);
@@ -333,19 +325,19 @@ class WaitListMonitor
      * @param EE_Event $event
      * @return string
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getWaitListLinkForEvent(EE_Event $event)
+    public function getWaitListLinkForEvent(EE_Event $event): string
     {
-        $EVT_ID = $event->ID();
-        $wait_list_form_html = '';
-        $wait_list_form_html .= EEH_HTML::div(
+        $EVT_ID              = $event->ID();
+        $wait_list_form_html = EEH_HTML::div(
             '',
             '',
             'event-wait-list-form'
         );
         $wait_list_form_html .= EEH_HTML::div(
             '',
-            "event-wait-list-{$EVT_ID}-join-wait-list-btn-submit-dv",
+            "event-wait-list-$EVT_ID-join-wait-list-btn-submit-dv",
             'ee-join-wait-list-btn float-right-submit-dv ee-submit-input-dv'
         );
         $wait_list_form_html .= '<input name="event_wait_list[join_wait_list_btn]"';
@@ -354,11 +346,11 @@ class WaitListMonitor
         $wait_list_form_html .= ' class="ee-join-wait-list-btn float-right button button-primary"';
         $wait_list_form_html .= ' type="submit" />';
         $wait_list_form_html .= EEH_HTML::divx(
-            "event-wait-list-{$EVT_ID}-join-wait-list-btn-submit-dv",
+            "event-wait-list-$EVT_ID-join-wait-list-btn-submit-dv",
             'ee-join-wait-list-btn float-right-submit-dv ee-submit-input-dv'
         );
-        $event_link = add_query_arg(
-            array('display-wait-list' => 'true'),
+        $event_link          = add_query_arg(
+            ['display-wait-list' => 'true'],
             $event->get_permalink()
         );
         $wait_list_form_html .= '

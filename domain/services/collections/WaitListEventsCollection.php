@@ -10,6 +10,7 @@ use EventEspresso\core\exceptions\InvalidEntityException;
 use EventEspresso\core\exceptions\InvalidInterfaceException;
 use EventEspresso\core\services\collections\Collection;
 use InvalidArgumentException;
+use ReflectionException;
 
 /**
  * Class WaitListEventsCollection
@@ -17,7 +18,6 @@ use InvalidArgumentException;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- *
  */
 class WaitListEventsCollection extends Collection
 {
@@ -29,16 +29,17 @@ class WaitListEventsCollection extends Collection
      * @throws InvalidEntityException
      * @throws InvalidDataTypeException
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function __construct()
     {
         parent::__construct('EE_Event');
         $wait_list_events = EEM_Event::instance()->get_active_and_upcoming_events(
-            array(
-                array(
+            [
+                [
                     'EVT_allow_overflow' => true,
-                ),
-            )
+                ],
+            ]
         );
         if (! empty($wait_list_events) && is_array($wait_list_events)) {
             foreach ($wait_list_events as $wait_list_event) {

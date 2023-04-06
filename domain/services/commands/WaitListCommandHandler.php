@@ -11,7 +11,6 @@ use EventEspresso\WaitList\domain\services\event\WaitListEventMeta;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- *
  */
 abstract class WaitListCommandHandler extends CommandHandler
 {
@@ -35,7 +34,7 @@ abstract class WaitListCommandHandler extends CommandHandler
     /**
      * @return WaitListEventMeta
      */
-    public function eventMeta()
+    public function eventMeta(): WaitListEventMeta
     {
         return $this->event_meta;
     }

@@ -6,6 +6,7 @@ use EE_Error;
 use EE_Event;
 use EE_Registration;
 use EventEspresso\WaitList\domain\Domain;
+use ReflectionException;
 
 /**
  * Class WaitListEventMeta
@@ -13,7 +14,6 @@ use EventEspresso\WaitList\domain\Domain;
  *
  * @package       Event Espresso
  * @author        Brent Christensen
- *
  */
 class WaitListEventMeta
 {
@@ -21,10 +21,18 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getWaitListSpaces(EE_Event $event)
+    public function getWaitListSpaces(EE_Event $event): int
     {
-        return absint($event->get_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, true));
+        return absint(
+            $event->get_extra_meta(
+                Domain::META_KEY_WAIT_LIST_SPACES,
+                true,
+                0,
+                ['EXM_type' => 'Event']
+            )
+        );
     }
 
 
@@ -33,8 +41,9 @@ class WaitListEventMeta
      * @param int      $wait_list_spaces
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updateWaitListSpaces(EE_Event $event, $wait_list_spaces)
+    public function updateWaitListSpaces(EE_Event $event, int $wait_list_spaces)
     {
         return $event->update_extra_meta(Domain::META_KEY_WAIT_LIST_SPACES, absint($wait_list_spaces));
     }
@@ -44,8 +53,9 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getRegCount(EE_Event $event)
+    public function getRegCount(EE_Event $event): int
     {
         return absint(
             $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_REG_COUNT, true, 0)
@@ -58,8 +68,9 @@ class WaitListEventMeta
      * @param int      $reg_count
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updateRegCount(EE_Event $event, $reg_count)
+    public function updateRegCount(EE_Event $event, int $reg_count)
     {
         return $event->update_extra_meta(
             Domain::META_KEY_WAIT_LIST_REG_COUNT,
@@ -72,13 +83,14 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return array
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getPromotedRegIdsArray(EE_Event $event)
+    public function getPromotedRegIdsArray(EE_Event $event): array
     {
         $promoted_reg_ids = $event->get_extra_meta(
             Domain::META_KEY_WAIT_LIST_PROMOTED_REG_IDS,
             false,
-            array(array())
+            [[]]
         );
         return reset($promoted_reg_ids);
     }
@@ -89,6 +101,7 @@ class WaitListEventMeta
      * @param array    $promoted_reg_ids
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
     public function updatePromotedRegIdsArray(EE_Event $event, array $promoted_reg_ids)
     {
@@ -104,6 +117,7 @@ class WaitListEventMeta
      * @param EE_Event        $event
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      * @internal param array $promoted_reg_ids
      */
     public function removeRegistrationFromPromotedRegIdsArray(EE_Registration $registration, EE_Event $event)
@@ -120,8 +134,9 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getPromotedRegIdsArrayCount(EE_Event $event)
+    public function getPromotedRegIdsArrayCount(EE_Event $event): int
     {
         $promoted_reg_ids = $this->getPromotedRegIdsArray($event);
         return count($promoted_reg_ids);
@@ -130,10 +145,11 @@ class WaitListEventMeta
 
     /**
      * @param EE_Event $event
-     * @return boolean
+     * @return bool
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getPromoteWaitListRegistrants(EE_Event $event)
+    public function getPromoteWaitListRegistrants(EE_Event $event): bool
     {
         return filter_var(
             $event->get_extra_meta(
@@ -151,8 +167,9 @@ class WaitListEventMeta
      * @param bool     $promote_wait_list_registrants
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updatePromoteWaitListRegistrants(EE_Event $event, $promote_wait_list_registrants)
+    public function updatePromoteWaitListRegistrants(EE_Event $event, bool $promote_wait_list_registrants)
     {
         return $event->update_extra_meta(
             Domain::META_KEY_WAIT_LIST_PROMOTE_WAIT_LIST_REGISTRANTS,
@@ -166,10 +183,11 @@ class WaitListEventMeta
 
     /**
      * @param EE_Event $event
-     * @return boolean
+     * @return bool
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getAutoPromote(EE_Event $event)
+    public function getAutoPromote(EE_Event $event): bool
     {
         return filter_var(
             $event->get_extra_meta(Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE, true, false),
@@ -183,8 +201,9 @@ class WaitListEventMeta
      * @param bool     $auto_promote_registrants
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updateAutoPromote(EE_Event $event, $auto_promote_registrants)
+    public function updateAutoPromote(EE_Event $event, bool $auto_promote_registrants)
     {
         return $event->update_extra_meta(
             Domain::META_KEY_WAIT_LIST_AUTO_PROMOTE,
@@ -200,8 +219,9 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function getManualControlSpaces(EE_Event $event)
+    public function getManualControlSpaces(EE_Event $event): int
     {
         return absint(
             $event->get_extra_meta(
@@ -218,8 +238,9 @@ class WaitListEventMeta
      * @param int      $manual_control_spaces
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updateManualControlSpaces(EE_Event $event, $manual_control_spaces)
+    public function updateManualControlSpaces(EE_Event $event, int $manual_control_spaces)
     {
         return $event->update_extra_meta(
             Domain::META_KEY_WAIT_LIST_MANUALLY_CONTROLLED_SPACES,
@@ -232,6 +253,7 @@ class WaitListEventMeta
      * @param EE_Event $event
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
     public function getPerformSoldOutStatusCheck(EE_Event $event)
     {
@@ -248,8 +270,9 @@ class WaitListEventMeta
      * @param bool     $perform_sold_out_status_check
      * @return bool|int
      * @throws EE_Error
+     * @throws ReflectionException
      */
-    public function updatePerformSoldOutStatusCheck(EE_Event $event, $perform_sold_out_status_check)
+    public function updatePerformSoldOutStatusCheck(EE_Event $event, bool $perform_sold_out_status_check)
     {
         return $event->update_extra_meta(
             Domain::META_KEY_WAIT_LIST_PERFORM_SOLD_OUT_STATUS_CHECK,

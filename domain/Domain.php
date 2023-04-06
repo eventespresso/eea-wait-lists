@@ -6,7 +6,7 @@ use EventEspresso\core\domain\DomainBase;
 
 /**
  * Class Domain
- * domain data regarding the Wait List
+ * for data regarding the Wait List
  *
  * @package       Event Espresso
  * @author        Brent Christensen
@@ -26,7 +26,7 @@ class Domain extends DomainBase
     const META_KEY_WAIT_LIST_SPACES = 'ee_wait_list_spaces';
 
     /**
-     * Event Meta Key used for tracking whether or not to automatically promote RWL registrants to RPP
+     * Event Meta Key used for tracking whether to automatically promote RWL registrants to RPP
      */
     const META_KEY_WAIT_LIST_AUTO_PROMOTE = 'ee_wait_list_auto_promote';
 
@@ -41,7 +41,7 @@ class Domain extends DomainBase
     const META_KEY_WAIT_LIST_REG_COUNT = 'ee_wait_list_reg_count';
 
     /**
-     * Event Meta Key used for tracking whether or not to proceed with promoting wait list registrants
+     * Event Meta Key used for tracking whether to proceed with promoting wait list registrants
      */
     const META_KEY_WAIT_LIST_PROMOTE_WAIT_LIST_REGISTRANTS = 'ee_wait_list_promote_wait_list_regs';
 
@@ -51,7 +51,7 @@ class Domain extends DomainBase
     const META_KEY_WAIT_LIST_PROMOTED_REG_IDS = 'ee_wait_list_promoted_reg_IDs';
 
     /**
-     * Event Meta Key used for tracking whether or not to perform a sold out status check for the event
+     * Event Meta Key used for tracking whether to perform a sold out status check for the event
      */
     const META_KEY_WAIT_LIST_PERFORM_SOLD_OUT_STATUS_CHECK = 'ee_wait_list_perform_sold_out_status_check';
 

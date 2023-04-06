@@ -218,8 +218,7 @@ class EED_Wait_Lists extends EED_Module
      * @throws InvalidInterfaceException
      * @throws InvalidDataTypeException
      */
-    public static function getEventEditorWaitListMetaBoxForm(?EE_Event $event = null):
-    EventEditorWaitListMetaBoxFormHandler
+    public static function getEventEditorWaitListMetaBoxForm(?EE_Event $event = null): EventEditorWaitListMetaBoxFormHandler
     {
         $event = $event instanceof EE_Event ? $event : EED_Wait_Lists::$admin_page->get_event_object();
         return LoaderFactory::getShared(

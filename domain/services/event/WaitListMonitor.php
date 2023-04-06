@@ -293,7 +293,8 @@ class WaitListMonitor
      * @param EE_Event  $event
      * @param int|float $spaces_remaining
      */
-    public function promoteWaitListRegistrants(EE_Event $event, $spaces_remaining = 0) {
+    public function promoteWaitListRegistrants(EE_Event $event, $spaces_remaining = 0)
+    {
         if ($this->wait_list_events->hasObject($event)) {
             $notices = $this->command_bus->execute(
                 $this->loader->getNew(

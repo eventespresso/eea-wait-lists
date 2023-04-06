@@ -303,7 +303,8 @@ class WaitList extends EE_Addon
         EE_Base_Class $model
     ) {
         // only modify default for the active context meta key
-        if ($model instanceof EE_Message_Template_Group
+        if (
+            $model instanceof EE_Message_Template_Group
             && strpos($meta_key, EE_Message_Template_Group::ACTIVE_CONTEXT_RECORD_META_KEY_PREFIX . 'admin') !== false
             && ($model->message_type() === Domain::MESSAGE_TYPE_REGISTRATION_ADDED_TO_WAIT_LIST
                 || $model->message_type() === Domain::MESSAGE_TYPE_WAIT_LIST_PROMOTION
